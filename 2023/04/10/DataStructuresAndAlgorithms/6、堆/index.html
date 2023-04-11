@@ -28,7 +28,7 @@
 <meta property="og:description" content="堆是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于&#x2F;小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。   （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。   一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-09T20:43:50.000Z">
-<meta property="article:modified_time" content="2023-04-10T13:42:17.630Z">
+<meta property="article:modified_time" content="2023-04-10T13:47:00.988Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="堆">
 <meta name="twitter:card" content="summary">
@@ -195,7 +195,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:42:17" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
+              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:47:00" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,9 +251,9 @@
 </ul>
 <p>  改写堆的要点</p>
 <ul>
-<li>建立反向索引表</li>
+<li>建立反向索引表indexMap</li>
 <li>建立比较器</li>
-<li>核心在于各种结构相互配合，非常容易出错</li>
+<li>push需要heapify、pop需要heapify，remove先将节点交换到heapSize位置，移除后调整。所有操作都要更新indexMap。</li>
 </ul>
 <hr />
 <h5 id="乱序不超过k长度的数组排序"><a class="markdownIt-Anchor" href="#乱序不超过k长度的数组排序"></a> 乱序不超过k长度的数组排序</h5>
@@ -312,7 +312,10 @@
     <a href="/2023/04/08/DataStructuresAndAlgorithms/5%E3%80%81%E6%8E%92%E5%BA%8F/" rel="prev" title="排序">
       <i class="fa fa-chevron-left"></i> 排序
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2023/04/10/DataStructuresAndAlgorithms/7%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" rel="next" title="前缀树">
+      前缀树 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -385,7 +388,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -398,7 +401,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

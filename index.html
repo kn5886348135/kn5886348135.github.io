@@ -165,6 +165,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/7%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/10/DataStructuresAndAlgorithms/7%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">前缀树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-10 21:51:33" itemprop="dateCreated datePublished" datetime="2023-04-10T21:51:33+08:00">2023-04-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-11 17:43:25" itemprop="dateModified" datetime="2023-04-11T17:43:25+08:00">2023-04-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Trie">前缀树</a>(prefix tree/trie tree)是多叉树，便于处理字符串前缀相关的问题。比如短信、搜索等场景的关键字过滤，黑名单白名单绿坝等。前缀树一般储存静态数据，适用于大量查询，很少新增、删除的场景。</p>
+<ul>
+<li>单个字符串中，字符从前到后的加到一棵多叉树上</li>
+<li>字符放在路上，节点上有专属的数据项（常见的是pass和end值）</li>
+<li>所有样本都这样添加，如果没有路就新建，如有路就复用</li>
+<li>沿途节点的pass值增加1，每个字符串结束时来到的节点end值增加1</li>
+</ul>
+<h4 id="前缀树结构"><a class="markdownIt-Anchor" href="#前缀树结构"></a> 前缀树结构</h4>
+<p>  前缀树的主要操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加某个字符串，可以重复添加，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 查询某个字符串在结构中还有几个</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">search</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 删掉某个字符串，可以重复删除，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">//   查询有多少个字符串，是以str做前缀的</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">prefixNumber</span><span class="params">(String str)</span></span><br></pre></td></tr></table></figure>
+<p>  前缀树路的实现可以用固定数组或者哈希表。每个节点的pass、end表示经过、结束的字符串个数，通过pass、end判断目标字符串是否存在。</p>
+<ul>
+<li>固定数组，子节点保存在Node[]数组中</li>
+<li>哈希表，子节点保存在map中</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%A0%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -190,7 +278,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:42:17" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
+              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:47:00" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,9 +334,9 @@
 </ul>
 <p>  改写堆的要点</p>
 <ul>
-<li>建立反向索引表</li>
+<li>建立反向索引表indexMap</li>
 <li>建立比较器</li>
-<li>核心在于各种结构相互配合，非常容易出错</li>
+<li>push需要heapify、pop需要heapify，remove先将节点交换到heapSize位置，移除后调整。所有操作都要更新indexMap。</li>
 </ul>
 <hr />
 <h5 id="乱序不超过k长度的数组排序"><a class="markdownIt-Anchor" href="#乱序不超过k长度的数组排序"></a> 乱序不超过k长度的数组排序</h5>
@@ -336,7 +424,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-10 04:31:33" itemprop="dateModified" datetime="2023-04-10T04:31:33+08:00">2023-04-10</time>
+                <time title="Modified: 2023-04-11 17:41:01" itemprop="dateModified" datetime="2023-04-11T17:41:01+08:00">2023-04-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -431,7 +519,7 @@
 <td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
 <td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
 <td>O(1)</td>
-<td></td>
+<td>比较排序</td>
 <td>不稳定</td>
 </tr>
 <tr>
@@ -494,7 +582,7 @@
 <td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>)</td>
 <td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>)</td>
 <td>O(N+k)</td>
-<td></td>
+<td>不急于比较</td>
 <td>稳定</td>
 </tr>
 <tr>
@@ -583,6 +671,21 @@
 <h5 id="单链表荷兰国旗问题"><a class="markdownIt-Anchor" href="#单链表荷兰国旗问题"></a> 单链表荷兰国旗问题</h5>
 <p>  遍历链表的时间复杂度是O(N)，链表节点的移动需要处理好next、记录pre。<br />
 // TODO</p>
+<h6 id="计数排序"><a class="markdownIt-Anchor" href="#计数排序"></a> 计数排序</h6>
+<p>  待排序数组arr要求全部是非负，如果不是正数则转化为正数，排序完以后再还原。arr的最大值决定bucket的长度，影响时间复杂度。</p>
+<ul>
+<li>拿到arr的最大值max+1作为bucket数组的长度</li>
+<li>将arr[index]作为bucket的下标，bucket[i]表示arr中等于i的个数。</li>
+<li>遍历bucket，将下标赋值给arr则完成排序。</li>
+</ul>
+<h6 id="基数排序"><a class="markdownIt-Anchor" href="#基数排序"></a> 基数排序</h6>
+<p>  要求非负的十进制，每次进桶出桶按照digit排序。</p>
+<ul>
+<li>拿到最大数的digit，从1-digit遍历</li>
+<li>桶数组count、辅助数组help，help保存每次出桶的顺序</li>
+<li>count的前缀和count[j]表示在digit位置为j的上限</li>
+<li>复制help到原数组，递归结束后整体有序</li>
+</ul>
 
       
     </div>
@@ -1386,7 +1489,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-08 18:59:16" itemprop="dateModified" datetime="2023-04-08T18:59:16+08:00">2023-04-08</time>
+                <time title="Modified: 2023-04-10 22:51:17" itemprop="dateModified" datetime="2023-04-10T22:51:17+08:00">2023-04-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1427,6 +1530,12 @@
 <p>  clone仓库{username}.github.io，用Nginx代理访问。</p>
 <h4 id="管理多个ssh账号"><a class="markdownIt-Anchor" href="#管理多个ssh账号"></a> 管理多个ssh账号</h4>
 <p>  新建~/.ssh/config文件，按照ssh协议规定的格式记录相关账号信息。</p>
+<h4 id="页面搜索"><a class="markdownIt-Anchor" href="#页面搜索"></a> 页面搜索</h4>
+<p>// TODO</p>
+<h4 id="seo优化"><a class="markdownIt-Anchor" href="#seo优化"></a> SEO优化</h4>
+<p>// TODO</p>
+<h4 id="页面压缩"><a class="markdownIt-Anchor" href="#页面压缩"></a> 页面压缩</h4>
+<p>// TODO</p>
 
       
     </div>
@@ -1508,7 +1617,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1521,7 +1630,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
