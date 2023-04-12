@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="认识位运算  异或运算：相同为0，不同为1 同或运算：相同为1，不同为0 异或运算可以理解成无进位相加 与运算&amp; 或运算| 取反~ 无符号右移&gt;&gt;&gt; 左移&lt;&lt;   异或运算的性质  0 ^ N &#x3D;&#x3D; N N ^ N &#x3D;&#x3D; 0 异或运算满足交换律和结合律  12345678&#x2F;&#x2F; 交换律a ^ b &#x3D; b ^ a&#x2F;&#x2F; 结合律((a ^ b) ^ c) &#x3D;&#x3D; (a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="位运算">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="认识位运算  异或运算：相同为0，不同为1 同或运算：相同为1，不同为0 异或运算可以理解成无进位相加 与运算&amp; 或运算| 取反~ 无符号右移&gt;&gt;&gt; 左移&lt;&lt;   异或运算的性质  0 ^ N &#x3D;&#x3D; N N ^ N &#x3D;&#x3D; 0 异或运算满足交换律和结合律  12345678&#x2F;&#x2F; 交换律a ^ b &#x3D; b ^ a&#x2F;&#x2F; 结合律((a ^ b) ^ c) &#x3D;&#x3D; (a">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-05T14:29:39.000Z">
+<meta property="article:modified_time" content="2023-04-08T11:02:20.135Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="位运算">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>位运算 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          位运算
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-05 22:29:39" itemprop="dateCreated datePublished" datetime="2023-04-05T22:29:39+08:00">2023-04-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-08 19:02:20" itemprop="dateModified" datetime="2023-04-08T19:02:20+08:00">2023-04-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="认识位运算"><a class="markdownIt-Anchor" href="#认识位运算"></a> 认识位运算</h4>
+<ul>
+<li>异或运算：相同为0，不同为1</li>
+<li>同或运算：相同为1，不同为0</li>
+<li>异或运算可以理解成无进位相加</li>
+<li>与运算&amp;</li>
+<li>或运算|</li>
+<li>取反~</li>
+<li>无符号右移&gt;&gt;&gt;</li>
+<li>左移&lt;&lt;</li>
+</ul>
+<h4 id="异或运算的性质"><a class="markdownIt-Anchor" href="#异或运算的性质"></a> 异或运算的性质</h4>
+<ul>
+<li>0 ^ N == N</li>
+<li>N ^ N == 0</li>
+<li>异或运算满足交换律和结合律</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 交换律</span></span><br><span class="line">a ^ b = b ^ a</span><br><span class="line"><span class="comment">// 结合律</span></span><br><span class="line">((a ^ b) ^ c) == (a ^ (b ^ c))</span><br><span class="line"><span class="comment">// a、b两个整数交换，位运算不需要临时变量</span></span><br><span class="line">a = a ^ b;</span><br><span class="line">b = a ^ b; <span class="comment">// a ^ b -&gt; a ^ b ^ b -&gt; a ^ 0 -&gt; a</span></span><br><span class="line">a = a ^ b; <span class="comment">// a ^ b -&gt; a ^ a ^ b -&gt; 0 ^ b -&gt; b</span></span><br></pre></td></tr></table></figure>
+<h4 id="题目"><a class="markdownIt-Anchor" href="#题目"></a> 题目</h4>
+<ul>
+<li>
+<h5 id="如何不用额外变量交换两个数"><a class="markdownIt-Anchor" href="#如何不用额外变量交换两个数"></a> 如何不用额外变量交换两个数</h5>
+<ul>
+<li>位运算的结合律</li>
+</ul>
+</li>
+<li>
+<h5 id="一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"></a> 一个数组中有一种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这种数</h5>
+<ul>
+<li>异或运算的性质，0 ^ N == N，N ^ N == 0，N的奇数次的异或结果还是N。</li>
+<li>根据交换律，将奇数次的数交换到最后，数组所有元素异或的结果就是答案。</li>
+<li>偶数次异或为0，奇数次异或为本身，遍历每一个元素并异或，最后结果就是奇数次的数字。</li>
+</ul>
+</li>
+<li>
+<h5 id="怎么把一个int类型的数提取出最右侧的1来"><a class="markdownIt-Anchor" href="#怎么把一个int类型的数提取出最右侧的1来"></a> 怎么把一个int类型的数，提取出最右侧的1来</h5>
+<ul>
+<li>假设int类型变量a，a最右侧的1在index位置，获取int b = ~a + 1</li>
+<li>则a的index位置以后都是0，b的index位置及以后都是1，a、b的index之前都是相反的</li>
+<li>a &amp; b即为答案</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a的二进制</span></span><br><span class="line"><span class="number">00010100</span> <span class="number">00010100</span> <span class="number">01001000</span> <span class="number">00000000</span></span><br><span class="line"><span class="comment">// ~a的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10110111</span> <span class="number">11111111</span></span><br><span class="line"><span class="comment">// ~a + 1的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10111000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<h5 id="一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"><a class="markdownIt-Anchor" href="#一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"></a> 一个数组中有两种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这两种数</h5>
+<ul>
+<li>假设这两个数是a、b，并且res = a ^ b</li>
+<li>遍历数组进行异或计算，并拿到res</li>
+<li>计算res最右边的1，记为c，数组中除a、b之外的任意其它数记为arr[i]，则arr[i] &amp; c == 0。因为其他的数经过异或的交换律和结合律最后结果都是0，不存在最右边的1.</li>
+<li>res是ab经过异或计算得到的，所以最右边的1必定属于a、b其中一个。</li>
+<li>遍历数组并判断是否是a、b之一，拿到一个结果，记为a</li>
+<li>res ^ a拿到b</li>
+</ul>
+</li>
+<li>
+<h5 id="一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"></a> 一个数组中有一种数出现K次，其他数都出现了M次，M &gt; 1,  K &lt; M。找到，出现了K次的数。要求，额外空间复杂度O(1)，时间复杂度O(N)</h5>
+<ul>
+<li>假设a出现k次，b出现m次</li>
+<li>将所有数字的二进制位相加，则t[i] % m就是a的二进制在i位置次数，要么是0，要么是k</li>
+</ul>
+</li>
+<li>
+<h5 id="位运算实现加减乘除-leetcode29"><a class="markdownIt-Anchor" href="#位运算实现加减乘除-leetcode29"></a> 位运算实现加减乘除 LeetCode29</h5>
+<ul>
+<li>加法add
+<ul>
+<li>a ^ b结果为无进位相加，(a &amp; b) &lt;&lt; 1是进位信息，递归到进位信息为0，注意中间变量。</li>
+</ul>
+</li>
+<li>减法delete
+<ul>
+<li>add(a, add(~b,1))，取反加1后为相反。</li>
+</ul>
+</li>
+<li>乘法
+<ul>
+<li>a左移b的每一位进制的位数相加。</li>
+<li>b  = 2<sup>k</sup> + 2<sup>k-1</sup>  + 2<sup>k-2</sup> + 2<sup>k-3</sup> + 2<sup>k-4</sup> + 2<sup>k-5</sup> + …</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">a \times 2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.849108em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span> = a &lt;&lt; k</li>
+</ul>
+</li>
+<li>除法
+<ul>
+<li>分别处理除数、被除数为Integer.MIN_VALUE的场景</li>
+<li>a / b = 2<sup>i</sup> + 2<sup>j</sup> + 2<sup>k</sup> + 2<sup>p</sup> + 2<sup>q</sup> + 2<sup>r</sup> + …，并且i、j、k、p、q、r依次减小</li>
+<li>先取绝对值，a右移到刚好大于等于b，拿到一个商，最后所有商相加，补上符号。对系统最小值特殊处理。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 核心代码</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">30</span>; i &gt;= <span class="number">0</span>; i = subtraction(i, <span class="number">1</span>)) &#123;</span><br><span class="line">    <span class="comment">// dividend为Integer.MIN_VALUE的时候，&gt;&gt;&gt;左侧补的都是0，&gt;&gt;左侧补的都是1</span></span><br><span class="line">    <span class="keyword">if</span> ((dividend &gt;&gt; i) &gt;= divisor) &#123;</span><br><span class="line">        ans |= (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">        dividend = subtraction(dividend, divisor &lt;&lt; i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h4>
+<ul>
+<li>
+<h5 id="相反数"><a class="markdownIt-Anchor" href="#相反数"></a> 相反数</h5>
+<ul>
+<li>一个数的相反数为取反加1。取反的结果和原来的数相加结果为2<sup>32</sup>-1,再加1则进位为0。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2^32^-1二进制为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">例如 int a = 1024;二进制为</span></span><br><span class="line">00000000 00000000 00001000 00000000</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取反后</span></span><br><span class="line">11111111 11111111 11110111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相加为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">再加1则溢出为0</span></span><br><span class="line">a + (~a) + 1 = 0; 则-a = (~a) + 1;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<h5 id="溢出"><a class="markdownIt-Anchor" href="#溢出"></a> 溢出</h5>
+<ul>
+<li>Integer.MIN_VALUE取反加一后仍然为Integer.MIN_VALUE。</li>
+<li>Integer.MIN_VALUE二进制为100000000 00000000 00000000 0000000</li>
+<li>Integer.MAX_VALUE加1后溢出为Integer.MIN_VALUE</li>
+<li>Integer.MIN_VALUE减一则溢出为Integer.MAX_VALUE。</li>
+</ul>
+</li>
+<li>
+<h5 id="位图"><a class="markdownIt-Anchor" href="#位图"></a> 位图</h5>
+<ul>
+<li>位图的功能
+<ul>
+<li>保存已知最大值的集合，比如一亿bit标记用户是否登录</li>
+</ul>
+</li>
+<li>位图的好处
+<ul>
+<li>极大的节省空间，一个bit位标记true/false信息</li>
+</ul>
+</li>
+<li>位图的实现
+<ul>
+<li>java.util.BitSet</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bitmap实现加减法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMap</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span>[] bits;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BitMap</span><span class="params">(<span class="type">int</span> max)</span> &#123;</span><br><span class="line">        bits = <span class="keyword">new</span> <span class="title class_">long</span>[(max + <span class="number">64</span>) &gt;&gt; <span class="number">6</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 给定数字除以64的结果result，模64的结果mod分开保存，bits[result]位置的mod位设置为1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="comment">// num &amp; 63等于num % 64</span></span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] |= (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] &amp;= ~(<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (bits[num &gt;&gt; <span class="number">6</span>] &amp; (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>))) != <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" rel="tag"># 位运算</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="prev" title="二分法">
+      <i class="fa fa-chevron-left"></i> 二分法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" rel="next" title="链表、栈和队列">
+      链表、栈和队列 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A4%E8%AF%86%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="nav-number">1.</span> <span class="nav-text"> 认识位运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E6%88%96%E8%BF%90%E7%AE%97%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">2.</span> <span class="nav-text"> 异或运算的性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">3.</span> <span class="nav-text"> 题目</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%B8%8D%E7%94%A8%E9%A2%9D%E5%A4%96%E5%8F%98%E9%87%8F%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text"> 如何不用额外变量交换两个数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E4%B8%AD%E6%9C%89%E4%B8%80%E7%A7%8D%E6%95%B0%E5%87%BA%E7%8E%B0%E4%BA%86%E5%A5%87%E6%95%B0%E6%AC%A1%E5%85%B6%E4%BB%96%E6%95%B0%E9%83%BD%E5%87%BA%E7%8E%B0%E4%BA%86%E5%81%B6%E6%95%B0%E6%AC%A1%E6%80%8E%E4%B9%88%E6%89%BE%E5%88%B0%E5%B9%B6%E6%89%93%E5%8D%B0%E8%BF%99%E7%A7%8D%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text"> 一个数组中有一种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这种数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E6%8A%8A%E4%B8%80%E4%B8%AAint%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8F%90%E5%8F%96%E5%87%BA%E6%9C%80%E5%8F%B3%E4%BE%A7%E7%9A%841%E6%9D%A5"><span class="nav-number">3.3.</span> <span class="nav-text"> 怎么把一个int类型的数，提取出最右侧的1来</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E4%B8%AD%E6%9C%89%E4%B8%A4%E7%A7%8D%E6%95%B0%E5%87%BA%E7%8E%B0%E4%BA%86%E5%A5%87%E6%95%B0%E6%AC%A1%E5%85%B6%E4%BB%96%E6%95%B0%E9%83%BD%E5%87%BA%E7%8E%B0%E4%BA%86%E5%81%B6%E6%95%B0%E6%AC%A1%E6%80%8E%E4%B9%88%E6%89%BE%E5%88%B0%E5%B9%B6%E6%89%93%E5%8D%B0%E8%BF%99%E4%B8%A4%E7%A7%8D%E6%95%B0"><span class="nav-number">3.4.</span> <span class="nav-text"> 一个数组中有两种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这两种数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E4%B8%AD%E6%9C%89%E4%B8%80%E7%A7%8D%E6%95%B0%E5%87%BA%E7%8E%B0k%E6%AC%A1%E5%85%B6%E4%BB%96%E6%95%B0%E9%83%BD%E5%87%BA%E7%8E%B0%E4%BA%86m%E6%AC%A1m-1-k-m-%E6%89%BE%E5%88%B0%E5%87%BA%E7%8E%B0%E4%BA%86k%E6%AC%A1%E7%9A%84%E6%95%B0-%E8%A6%81%E6%B1%82%E9%A2%9D%E5%A4%96%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6o1%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6on"><span class="nav-number">3.5.</span> <span class="nav-text"> 一个数组中有一种数出现K次，其他数都出现了M次，M &gt; 1,  K &lt; M。找到，出现了K次的数。要求，额外空间复杂度O(1)，时间复杂度O(N)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%8D%E8%BF%90%E7%AE%97%E5%AE%9E%E7%8E%B0%E5%8A%A0%E5%87%8F%E4%B9%98%E9%99%A4-leetcode29"><span class="nav-number">3.6.</span> <span class="nav-text"> 位运算实现加减乘除 LeetCode29</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">4.</span> <span class="nav-text"> 其他</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9B%B8%E5%8F%8D%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text"> 相反数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%BA%A2%E5%87%BA"><span class="nav-number">4.2.</span> <span class="nav-text"> 溢出</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%8D%E5%9B%BE"><span class="nav-number">4.3.</span> <span class="nav-text"> 位图</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="堆是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于&#x2F;小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。   （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。   一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="堆">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="堆是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于&#x2F;小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。   （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。   一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-09T20:43:50.000Z">
+<meta property="article:modified_time" content="2023-04-10T13:47:00.988Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="堆">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>堆 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          堆
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:47:00" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heap_(data_structure)">堆</a>是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于/小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。<br />
+  （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。<br />
+  一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，产生新的版本</p>
+<h4 id="堆的特点"><a class="markdownIt-Anchor" href="#堆的特点"></a> 堆的特点</h4>
+<ul>
+<li>堆结构就是用数组实现的完全二叉树结构</li>
+<li>完全二叉树中如果每棵子树的最大值都在顶部就是大根堆</li>
+<li>完全二叉树中如果每棵子树的最小值都在顶部就是小根堆</li>
+<li>堆结构的heapInsert与heapify操作</li>
+<li>堆结构的增大和减少</li>
+<li>优先级队列结构，就是堆结构</li>
+<li>堆的父子节点有大小关系，左右节点没有大小限制。</li>
+</ul>
+<h4 id="堆排序"><a class="markdownIt-Anchor" href="#堆排序"></a> 堆排序</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heapsort">堆排序</a>的逻辑</p>
+<ul>
+<li>先让整个数组都变成大根堆结构，建立堆的过程
+<ul>
+<li>从上到下的方法，时间复杂度为O(N*logN)</li>
+<li>从下到上的方法，时间复杂度为O(N)</li>
+</ul>
+</li>
+<li>把堆的最大值和堆末尾的值交换，然后减少堆的大小之后，递归调整堆，时间复杂度为O(N*logN)</li>
+<li>堆的大小减小成0之后，排序完成。</li>
+</ul>
+<h4 id="改写堆"><a class="markdownIt-Anchor" href="#改写堆"></a> 改写堆</h4>
+<p>  JDK的堆(PriorityQueue)无法做到</p>
+<ul>
+<li>已经入堆的元素，如果参与排序的指标方法变化，系统提供的堆无法做到时间复杂度O(logN)调整，都是O(N)的调整。</li>
+<li>系统提供的堆只能弹出堆顶，做不到自由删除任何一个堆中的元素，无法在时间复杂度O(logN)内完成，一定会高于O(logN)。根本原因是无反向索引表。</li>
+</ul>
+<p>  改写堆的要点</p>
+<ul>
+<li>建立反向索引表indexMap</li>
+<li>建立比较器</li>
+<li>push需要heapify、pop需要heapify，remove先将节点交换到heapSize位置，移除后调整。所有操作都要更新indexMap。</li>
+</ul>
+<hr />
+<h5 id="乱序不超过k长度的数组排序"><a class="markdownIt-Anchor" href="#乱序不超过k长度的数组排序"></a> 乱序不超过k长度的数组排序</h5>
+<p>  已知一个几乎有序的数组。几乎有序是指，如果把数组排好顺序的话，每个元素移动的距离一定不超过k，并且k相对于数组长度来说是比较小的。请选择一个合适的排序策略，对这个数组进行排序。<br />
+  将前k个元素放入ProritityQueue，保证数组在k长度有序，遍历完数组即为整体有序。</p>
+<h5 id="最大线段重合问题"><a class="markdownIt-Anchor" href="#最大线段重合问题"></a> 最大线段重合问题</h5>
+<p>  给定很多线段，每个线段都有两个数[start, end]，表示线段开始位置和结束位置，左右都是闭区间。</p>
+<ul>
+<li>线段的开始和结束位置一定都是整数值</li>
+<li>线段重合区域的长度必须&gt;=1</li>
+<li>返回线段最多重合区域中，包含了几条线段？</li>
+</ul>
+<ol>
+<li>将所有线段按照start升序排序</li>
+<li>构造堆，保存当前重合所有重合线段的end, heap的size就是当前重合线段的数量</li>
+<li>遍历所有线段，如果出现不重合线段则弹出不重合的线段，如果重合则加入end</li>
+</ol>
+<h5 id="给购买次数最多的前k名用户颁奖"><a class="markdownIt-Anchor" href="#给购买次数最多的前k名用户颁奖"></a> 给购买次数最多的前K名用户颁奖</h5>
+<p>  给定一个整型数组，int[] arr；和一个布尔类型数组，boolean[] op。两个数组一定等长，假设长度为N，arr[i]表示客户编号，op[i]表示客户操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr = [ 3, 3, 1, 2, 1, 2, 5…</span><br><span class="line">op  = [ T, T, T, T, F, T, F…</span><br></pre></td></tr></table></figure>
+<p>  依次表示：3用户购买了一件商品，3用户购买了一件商品，1用户购买了一件商品，2用户购买了一件商品，1用户退货了一件商品，2用户购买了一件商品，5用户退货了一件商品…</p>
+<p>  一对arr[i]和op[i]就代表一个事件：用户号为arr[i]，op[i] == T就代表这个用户购买了一件商品，op[i] == F就代表这个用户退货了一件商品。现在你作为电商平台负责人，你想在每一个事件到来的时候，都给购买次数最多的前K名用户颁奖。所以每个事件发生后，你都需要一个得奖名单（得奖区）。</p>
+<p>  得奖系统的规则：</p>
+<ol>
+<li>如果某个用户购买商品数为0，但是又发生了退货事件，则认为该事件无效，得奖名单和上一个事件发生后一致，例子中的5用户</li>
+<li>某用户发生购买商品事件，购买商品数+1，发生退货事件，购买商品数-1</li>
+<li>每次都是最多K个用户得奖，K也为传入的参数。如果根据全部规则，得奖人数确实不够K个，那就以不够的情况输出结果</li>
+<li>得奖系统分为得奖区和候选区，任何用户只要购买数&gt;0，一定在这两个区域中的一个</li>
+<li>购买数最大的前K名用户进入得奖区，在最初时如果得奖区没有到达K个用户，那么新来的用户直接进入得奖区</li>
+<li>如果购买数不足以进入得奖区的用户，进入候选区</li>
+<li>如果候选区购买数最多的用户，已经足以进入得奖区，该用户就会替换得奖区中购买数最少的用户（大于才能替换），如果得奖区中购买数最少的用户有多个，就替换最早进入得奖区的用户，如果候选区中购买数最多的用户有多个，机会会给最早进入候选区的用户</li>
+<li>候选区和得奖区是两套时间，因用户只会在其中一个区域，所以只会有一个区域的时间，另一个没有。从得奖区出来进入候选区的用户，得奖区时间删除，进入候选区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i，从候选区出来进入得奖区的用户，候选区时间删除，进入得奖区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i</li>
+<li>如果某用户购买数==0，不管在哪个区域都离开，区域时间删除，离开是指彻底离开，哪个区域也不会找到该用户。如果下次该用户又发生购买行为，产生&gt;0的购买数，会再次根据之前规则回到某个区域中，进入区域的时间重记<br />
+  请遍历arr数组和op数组，遍历每一步输出一个得奖名单</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt;  <span class="title function_">topK</span> <span class="params">(<span class="type">int</span>[] arr, <span class="type">boolean</span>[] op, <span class="type">int</span> k)</span></span><br></pre></td></tr></table></figure>
+<p>  自定义堆，添加反向索引表。按照业务逻辑进行遍历，调整中奖区、候选区。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A0%86/" rel="tag"># 堆</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/" rel="prev" title="排序">
+      <i class="fa fa-chevron-left"></i> 排序
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" rel="next" title="前缀树">
+      前缀树 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A0%86%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text"> 堆的特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F"><span class="nav-number">2.</span> <span class="nav-text"> 堆排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%94%B9%E5%86%99%E5%A0%86"><span class="nav-number">3.</span> <span class="nav-text"> 改写堆</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B9%B1%E5%BA%8F%E4%B8%8D%E8%B6%85%E8%BF%87k%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84%E6%8E%92%E5%BA%8F"><span class="nav-number">3.1.</span> <span class="nav-text"> 乱序不超过k长度的数组排序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E7%BA%BF%E6%AE%B5%E9%87%8D%E5%90%88%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text"> 最大线段重合问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%99%E8%B4%AD%E4%B9%B0%E6%AC%A1%E6%95%B0%E6%9C%80%E5%A4%9A%E7%9A%84%E5%89%8Dk%E5%90%8D%E7%94%A8%E6%88%B7%E9%A2%81%E5%A5%96"><span class="nav-number">3.3.</span> <span class="nav-text"> 给购买次数最多的前K名用户颁奖</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

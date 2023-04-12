@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/7%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,7 +179,203 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/10/DataStructuresAndAlgorithms/7%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">前缀树</a>
+            <a href="/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/" class="post-title-link" itemprop="url">二叉树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-11 17:46:23" itemprop="dateCreated datePublished" datetime="2023-04-11T17:46:23+08:00">2023-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-12 18:28:35" itemprop="dateModified" datetime="2023-04-12T18:28:35+08:00">2023-04-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_tree">二叉树</a>是一种很基础的数据结构，二叉树仅要求左右节点和父节点。搜索二叉树要求左节点小于父节点、右节点大于父节点，有序表对搜索二叉树的要求更严格，避免搜索二叉树退化成链表。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>要求左右子树的高度差不超过1，<a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/sbt/">Size-balanced tree</a>要求左右子树的节点个数相差不超过两倍，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">红黑树</a>的限制更复杂，在调整平衡的时候需要考虑的场景更多。AVL Tree每次变更节点时都需要调整平衡，Size balance Tree在删除的时候可以不调整平衡，红黑树调整平衡的次数很少、均摊时间复杂度是O(1)。<br />
+  完全二叉树，只有叶子节点最右侧是空的。平衡二叉树，左右子树高度差不超过1</p>
+<h4 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h4>
+<p>  可以用递归和非递归方式实现二叉树的先序、中序、后序遍历。二叉树的递归序，每一个节点都会经过3次，先序、中序、后序都可以基于递归序实现，第一次到达一个节点就打印就是先序、第二次打印即中序、第三次即后序。<br />
+  利用Stack或者Queue实现系统的弹栈压栈操作，可以非递归方式实现二叉树的先序、中序、后序遍历。</p>
+<ul>
+<li>先序：头、左、右</li>
+<li>中序：左、头、右</li>
+<li>后序：左、右、头</li>
+</ul>
+<h4 id="二叉树的递归套路"><a class="markdownIt-Anchor" href="#二叉树的递归套路"></a> 二叉树的递归套路</h4>
+<ul>
+<li>假设以X节点为头，并且可以获取左子树和右子树的信息</li>
+<li>计算以X为头节点的树，得到答案的可能性</li>
+<li>列出所有可能性后，确定到底需要向左树和右树要什么样的信息</li>
+<li>把左树信息和右树信息求全集，就是任何一棵子树都需要返回的信息S</li>
+<li>递归函数都返回S</li>
+<li>在代码中考虑如何把左树的信息和右树信息整合出整棵树的信息</li>
+</ul>
+<h4 id="实现二叉树的按层遍历"><a class="markdownIt-Anchor" href="#实现二叉树的按层遍历"></a> 实现二叉树的按层遍历</h4>
+<ul>
+<li>宽度优先遍历，用队列</li>
+<li>依次出队列level层的节点，并入队列level+1层的left、right节点</li>
+</ul>
+<h4 id="实现二叉树的序列化和反序列化"><a class="markdownIt-Anchor" href="#实现二叉树的序列化和反序列化"></a> 实现二叉树的序列化和反序列化</h4>
+<ul>
+<li>先序遍历序列化和反序列化</li>
+<li>后序遍历序列化和反序列化</li>
+<li>按层方式序列化和反序列化</li>
+<li>中序遍历无法找到root，不同的二叉树中序结果可能相同，所以不能反序列化</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root 2 、left 1 的中序结果是null 1 null 2 null</span><br><span class="line">root 1 、right 2 的中序结果也是null 1 null 2 null</span><br></pre></td></tr></table></figure>
+<h4 id="将多叉树编码为二叉树-leetcode431"><a class="markdownIt-Anchor" href="#将多叉树编码为二叉树-leetcode431"></a> 将多叉树编码为二叉树 LeetCode431</h4>
+<ul>
+<li>收费题目，多叉树的每一层以null分割。</li>
+<li>深度优先遍历，将多叉树的X节点的所有子节点作为二叉树X的右节点，拉长成一个链表</li>
+<li>解码的时候也是递归，将链表的元素收集作为子节点</li>
+</ul>
+<h4 id="二叉树的宽度"><a class="markdownIt-Anchor" href="#二叉树的宽度"></a> 二叉树的宽度</h4>
+<p>  求二叉树最宽的层有多少个节点</p>
+<h4 id="找出某个节点的后继节点"><a class="markdownIt-Anchor" href="#找出某个节点的后继节点"></a> 找出某个节点的后继节点</h4>
+<p>  二叉树结构如下定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class Node &#123;</span><br><span class="line"> V value;</span><br><span class="line"> Node left;</span><br><span class="line"> Node right;</span><br><span class="line"> Node parent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  给你二叉树中的某个节点，返回该节点的后继节点。前驱节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的前一个节点;后继节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的后一个节点。</p>
+<ul>
+<li>右子树的最左节点即是答案</li>
+<li>右子树为空，并且当前节点是parent的左节点，parent也是答案</li>
+</ul>
+<h4 id="折纸问题"><a class="markdownIt-Anchor" href="#折纸问题"></a> 折纸问题</h4>
+<p>  请把一段纸条竖着放在桌子上，然后从纸条的下边向上方对折1次，压出折痕后展开。此时折痕是凹下去的，即折痕突起的方向指向纸条的背面。 如果从纸条的下边向上方连续对折2次，压出折痕后展开，此时有三条折痕，从上到下依次是下折痕、下折痕和上折痕。<br />
+  给定一个输入参数N，代表纸条都从下边向上方连续对折N次。 请从上到下打印所有折痕的方向。例如:N=1时，打印: down N=2时，打印: down down up。</p>
+<ul>
+<li>中序打印凹凸</li>
+</ul>
+<h4 id="判断两颗二叉树是否相同-leetcode100"><a class="markdownIt-Anchor" href="#判断两颗二叉树是否相同-leetcode100"></a> 判断两颗二叉树是否相同 LeetCode100</h4>
+<ul>
+<li>判断当前节点是否为空，值是否相等</li>
+<li>递归比较左右节点</li>
+</ul>
+<h4 id="判断一个二叉树是否对称-leetcode101"><a class="markdownIt-Anchor" href="#判断一个二叉树是否对称-leetcode101"></a> 判断一个二叉树是否对称 LeetCode101</h4>
+<ul>
+<li>node1 = node.left、node2 = node.right</li>
+<li>node1.left == node2.right &amp;&amp; node1.right == node2.left</li>
+<li>递归比较</li>
+</ul>
+<h4 id="获取一个二叉树的高度-leetcode104"><a class="markdownIt-Anchor" href="#获取一个二叉树的高度-leetcode104"></a> 获取一个二叉树的高度 LeetCode104</h4>
+<ul>
+<li>递归获取左子树的高度和右子树的高度</li>
+</ul>
+<h4 id="用先序数组和中序数组重建一个二叉树-leetcode105"><a class="markdownIt-Anchor" href="#用先序数组和中序数组重建一个二叉树-leetcode105"></a> 用先序数组和中序数组重建一个二叉树 LeetCode105</h4>
+<p>  先序遍历的第一个元素是头结点，先序遍历剩余部分左边是左节点的先序，右边是右节点的先序，中序遍历左边是左节点的中序，右边是右节点的中序。递归构建二叉树，递归函数入参为先序遍历的起止index，中序遍历的起止index，返回头结点。</p>
+<h4 id="祖先节点-先序遍历和后序遍历的交集"><a class="markdownIt-Anchor" href="#祖先节点-先序遍历和后序遍历的交集"></a> 祖先节点   先序遍历和后序遍历的交集</h4>
+<p>  X是一棵二叉树的某一个节点，A是二叉树先序遍历X的左边部分，B是二叉树后序遍历X右边部分，AB相交的结果是且仅是X的所有父节点。</p>
+<ol>
+<li>X的所有父节点在先序遍历的左边，X的所有父节点在后序遍历的右边，交集一定包含所有父节点</li>
+<li>X的所有子节点在先序遍历的左边，X的所有子节点在后序遍历的左边，交集一定不包含所有子节点</li>
+<li>A不包含所有祖先节点的右兄弟节点，B不包含所有祖先节点的左兄弟节点</li>
+</ol>
+<p>  X的所有祖先节点、X自己、X的子节点、X或者X的父节点作为左树的右兄节点、X或者X的父节点作为右树的左兄节点。</p>
+<h4 id="二叉树按层遍历收集节点-leetcode107-leetcode102"><a class="markdownIt-Anchor" href="#二叉树按层遍历收集节点-leetcode107-leetcode102"></a> 二叉树按层遍历收集节点 LeetCode107 LeetCode102</h4>
+<p>  使用LinkedList(有序，快速插入)，递归将每一层的节点入队、出队。</p>
+<h4 id="平衡二叉树-leetcode110"><a class="markdownIt-Anchor" href="#平衡二叉树-leetcode110"></a> 平衡二叉树 LeetCode110</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是平衡二叉树。<br />
+  判断二叉树是否是平衡二叉树，左子树的高度和右子树的高度相差不超过1，则称为平衡二叉树。</p>
+<h4 id="搜索二叉树-leetcode98"><a class="markdownIt-Anchor" href="#搜索二叉树-leetcode98"></a> 搜索二叉树 LeetCode98</h4>
+<p>  判断二叉树是否是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_search_tree">搜索二叉树</a>。用递归解决。</p>
+<h4 id="路径总和-leetcode112"><a class="markdownIt-Anchor" href="#路径总和-leetcode112"></a> 路径总和 LeetCode112</h4>
+<ul>
+<li>递归计算路径和</li>
+<li>左子树和右子树分别递归</li>
+</ul>
+<h4 id="达标路径总和-leetcode113"><a class="markdownIt-Anchor" href="#达标路径总和-leetcode113"></a> 达标路径总和 LeetCode113</h4>
+<p>  同LeetCode112，收集所有达标路径并返回。</p>
+<h4 id="二叉树的最大距离"><a class="markdownIt-Anchor" href="#二叉树的最大距离"></a> 二叉树的最大距离</h4>
+<p>  给定一颗二叉树的头结点，任何两个节点之间都存在距离，返回整颗二叉树的最大距离。</p>
+<h4 id="判断完全二叉树"><a class="markdownIt-Anchor" href="#判断完全二叉树"></a> 判断完全二叉树</h4>
+<p>  判断二叉树是否是完全二叉树<br />
+  按照二叉树的定义判断，逐行遍历</p>
+<h4 id="满二叉树"><a class="markdownIt-Anchor" href="#满二叉树"></a> 满二叉树</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是满二叉树。</p>
+<h4 id="最大的二叉搜索子树"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树"></a> 最大的二叉搜索子树</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的头节点。</p>
+<h4 id="最大的二叉搜索子树大小"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树大小"></a> 最大的二叉搜索子树大小</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的大小。</p>
+<h4 id="最低公共祖先"><a class="markdownIt-Anchor" href="#最低公共祖先"></a> 最低公共祖先</h4>
+<p>  给定一棵二叉树的头节点head，和另外两个节点a和b。返回a和b的最低公共祖先。a、b可能在head的左右子树，也可能在同一棵子树。</p>
+<ul>
+<li>遍历整棵树，用map保存所有节点的父节点</li>
+<li>遍历a的所有父节点，用set保存</li>
+<li>遍历b的所有父节点，看set中是否存在</li>
+<li>后序遍历递归套路</li>
+</ul>
+<h4 id="派对的最大快乐值"><a class="markdownIt-Anchor" href="#派对的最大快乐值"></a> 派对的最大快乐值</h4>
+<p>  员工信息的定义如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Employee</span> &#123;</span><br><span class="line">    <span class="comment">// 快乐值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> happy;</span><br><span class="line">    <span class="comment">// 直接下级</span></span><br><span class="line">    List&lt;Employee&gt; subordinates;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  公司的每个员工都符合 Employee 类的描述。整个公司的人员结构可以看作是一棵标准的、 没有环的多叉树。树的头节点是公司唯一的老板。除老板之外的每个员工都有唯一的直接上级。 叶节点是没有任何下属的基层员工(subordinates列表为空)，除基层员工外，每个员工都有一个或多个直接下级。<br />
+  这个公司现在要办party，你可以决定哪些员工来，哪些员工不来，规则：</p>
+<ol>
+<li>如果某个员工来了，那么这个员工的所有直接下级都不能来</li>
+<li>派对的整体快乐值是所有到场员工快乐值的累加</li>
+<li>你的目标是让派对的整体快乐值尽量大</li>
+</ol>
+<p>  给定一棵多叉树的头节点boss，请返回派对的最大快乐值。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">前缀树</a>
         </h2>
 
         <div class="post-meta">
@@ -253,7 +449,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%A0%86/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -267,7 +463,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
+            <a href="/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
         </h2>
 
         <div class="post-meta">
@@ -393,7 +589,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/08/DataStructuresAndAlgorithms/5%E3%80%81%E6%8E%92%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -407,7 +603,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/08/DataStructuresAndAlgorithms/5%E3%80%81%E6%8E%92%E5%BA%8F/" class="post-title-link" itemprop="url">排序</a>
+            <a href="/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/" class="post-title-link" itemprop="url">排序</a>
         </h2>
 
         <div class="post-meta">
@@ -705,7 +901,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/06/DataStructuresAndAlgorithms/4%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -719,7 +915,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/06/DataStructuresAndAlgorithms/4%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">链表、栈和队列</a>
+            <a href="/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">链表、栈和队列</a>
         </h2>
 
         <div class="post-meta">
@@ -933,7 +1129,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/3%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -947,7 +1143,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/05/DataStructuresAndAlgorithms/3%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/" class="post-title-link" itemprop="url">位运算</a>
+            <a href="/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/" class="post-title-link" itemprop="url">位运算</a>
         </h2>
 
         <div class="post-meta">
@@ -1142,7 +1338,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/04/DataStructuresAndAlgorithms/2%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1156,7 +1352,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/04/DataStructuresAndAlgorithms/2%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">二分法</a>
+            <a href="/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">二分法</a>
         </h2>
 
         <div class="post-meta">
@@ -1266,7 +1462,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-08 19:01:25" itemprop="dateModified" datetime="2023-04-08T19:01:25+08:00">2023-04-08</time>
+                <time title="Modified: 2023-04-11 18:48:02" itemprop="dateModified" datetime="2023-04-11T18:48:02+08:00">2023-04-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1302,80 +1498,7 @@
   有一些辅助学习的资料比如<a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/">数据结构可视化</a>，<a target="_blank" rel="noopener" href="https://algorithm-visualizer.org/">算法可视化网站</a>，<a target="_blank" rel="noopener" href="https://visualgo.net/en">可视化</a>等，某些特别复杂的数据结构和算法可能没有被收录。<br />
   <a target="_blank" rel="noopener" href="https://www.bigocheatsheet.com/">常见算法的复杂度</a>，也可以参考下图。<br />
 <img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/big-o-cheat-sheet-poster.png" alt="bigO" /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/03/DataStructuresAndAlgorithms/1%E3%80%81%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/03/DataStructuresAndAlgorithms/1%E3%80%81%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/" class="post-title-link" itemprop="url">时间复杂度</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-03 17:53:55" itemprop="dateCreated datePublished" datetime="2023-04-03T17:53:55+08:00">2023-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-08 19:00:33" itemprop="dateModified" datetime="2023-04-08T19:00:33+08:00">2023-04-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="算法的5个特点"><a class="markdownIt-Anchor" href="#算法的5个特点"></a> 算法的5个特点</h4>
+<h4 id="算法的5个特点"><a class="markdownIt-Anchor" href="#算法的5个特点"></a> 算法的5个特点</h4>
 <ol>
 <li>有穷性</li>
 <li>确定性(确定的执行流程或者确定的尝试流程)</li>
@@ -1630,7 +1753,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
