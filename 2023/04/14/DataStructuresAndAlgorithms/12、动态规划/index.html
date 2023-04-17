@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="暴力递归和动态规划的关系  某一个暴力递归，有解的重复调用，就可以把这个暴力递归优化成动态规划 任何动态规划问题，都一定对应着某一个有重复过程的暴力递归 但不是所有的暴力递归，都一定对应着动态规划   暴力递归的优化  有重复调用同一个子问题的解，这种递归可以优化 如果每一个子问题都是不同的解，无法优化也不用优化    解决一个问题，可能有很多尝试方法，可能在很多尝试方法中，又有若干个尝试方法有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态规划">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="暴力递归和动态规划的关系  某一个暴力递归，有解的重复调用，就可以把这个暴力递归优化成动态规划 任何动态规划问题，都一定对应着某一个有重复过程的暴力递归 但不是所有的暴力递归，都一定对应着动态规划   暴力递归的优化  有重复调用同一个子问题的解，这种递归可以优化 如果每一个子问题都是不同的解，无法优化也不用优化    解决一个问题，可能有很多尝试方法，可能在很多尝试方法中，又有若干个尝试方法有">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-14T15:03:50.000Z">
+<meta property="article:modified_time" content="2023-04-17T13:38:21.574Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="动态规划">
+<meta property="article:tag" content="dp">
+<meta property="article:tag" content="Dynamic programming">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>动态规划 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          动态规划
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-14 23:03:50" itemprop="dateCreated datePublished" datetime="2023-04-14T23:03:50+08:00">2023-04-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-17 21:38:21" itemprop="dateModified" datetime="2023-04-17T21:38:21+08:00">2023-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="暴力递归和动态规划的关系"><a class="markdownIt-Anchor" href="#暴力递归和动态规划的关系"></a> 暴力递归和动态规划的关系</h4>
+<ul>
+<li>某一个暴力递归，有解的重复调用，就可以把这个暴力递归优化成动态规划</li>
+<li>任何动态规划问题，都一定对应着某一个有重复过程的暴力递归</li>
+<li>但不是所有的暴力递归，都一定对应着动态规划</li>
+</ul>
+<h4 id="暴力递归的优化"><a class="markdownIt-Anchor" href="#暴力递归的优化"></a> 暴力递归的优化</h4>
+<ul>
+<li>有重复调用同一个子问题的解，这种递归可以优化</li>
+<li>如果每一个子问题都是不同的解，无法优化也不用优化</li>
+</ul>
+<p>  解决一个问题，可能有很多尝试方法，可能在很多尝试方法中，又有若干个尝试方法有动态规划的方式，一个问题可能有若干种动态规划的解法。</p>
+<h4 id="如何找到某个问题的动态规划方式"><a class="markdownIt-Anchor" href="#如何找到某个问题的动态规划方式"></a> 如何找到某个问题的动态规划方式</h4>
+<ol>
+<li>设计暴力递归：重要原则+4种常见尝试模型</li>
+<li>分析有没有重复解：列出调用过程的前几层就能发现是否有重复解</li>
+<li>用记忆化搜索 -&gt; 用严格表结构实现动态规划：套路解决</li>
+<li>看看能否继续优化：套路解决</li>
+</ol>
+<h5 id="暴力递归过程的原则"><a class="markdownIt-Anchor" href="#暴力递归过程的原则"></a> 暴力递归过程的原则</h5>
+<ol>
+<li>每一个可变参数的类型，一定不要比int类型更加复杂</li>
+<li>原则1）可以违反，让类型突破到一维线性结构，那必须是单一可变参数</li>
+<li>如果发现原则1）被违反，但不违反原则2），只需要做到记忆化搜索即可</li>
+<li>可变参数的个数，能少则少</li>
+<li>面试中违反以上原则的概率很小</li>
+</ol>
+<h5 id="常见的4种尝试模型"><a class="markdownIt-Anchor" href="#常见的4种尝试模型"></a> 常见的4种尝试模型</h5>
+<ul>
+<li>从左往右的尝试模型</li>
+<li>范围上的尝试模型</li>
+<li>多样本位置全对应的尝试模型</li>
+<li>寻找业务限制的尝试模型</li>
+</ul>
+<h4 id="暴力递归到动态规划的套路"><a class="markdownIt-Anchor" href="#暴力递归到动态规划的套路"></a> 暴力递归到动态规划的套路</h4>
+<ul>
+<li>你已经有了一个不违反原则的暴力递归，而且的确存在解的重复调用</li>
+<li>找到哪些参数的变化会影响返回值，对每一个列出变化范围</li>
+<li>参数间的所有的组合数量，意味着表大小</li>
+<li>记忆化搜索的方法就是缓存，非常容易得到</li>
+<li>规定好严格表的大小，分析位置的依赖顺序，然后从基础填写到最终解</li>
+<li>对于有枚举行为的决策过程，进一步优化</li>
+</ul>
+<h4 id="动态规划的优化技巧"><a class="markdownIt-Anchor" href="#动态规划的优化技巧"></a> 动态规划的优化技巧</h4>
+<ul>
+<li>空间压缩</li>
+<li>状态化简</li>
+<li>四边形不等式</li>
+<li>其他优化技巧</li>
+</ul>
+<h5 id="1-机器人问题"><a class="markdownIt-Anchor" href="#1-机器人问题"></a> 1、机器人问题</h5>
+<p>  假设有排成一行的N个位置，记为1~N，N 一定大于或等于2。开始时机器人在其中的M位置上(M一定是 1~N 中的一个)，如果机器人来到1位置，那么下一步只能往右来到2位置；如果机器人来到N位置，那么下一步只能往左来到 N-1 位置；如果机器人来到中间位置，那么下一步可以往左走或者往右走；规定机器人必须走 K 步，最终能来到P位置(P也是1~N中的一个)的方法有多少种？<br />
+  给定四个参数 N、M、K、P，返回方法数。</p>
+<h5 id="2-扑克问题"><a class="markdownIt-Anchor" href="#2-扑克问题"></a> 2、扑克问题</h5>
+<p>  给定一个整型数组arr，代表数值不同的纸牌排成一条线。玩家A和玩家B依次拿走每张纸牌，规定玩家A先拿，玩家B后拿。但是每个玩家每次只能拿走最左或最右的纸牌，玩家A和玩家B都绝顶聪明。请返回最后获胜者的分数。</p>
+<h5 id="3-背包问题"><a class="markdownIt-Anchor" href="#3-背包问题"></a> 3、背包问题</h5>
+<p>  给定两个长度都为N的数组weights和values，weights[i]和values[i]分别代表 i号物品的重量和价值。给定一个正数bag，表示一个载重bag的袋子，你装的物品不能超过这个重量。返回你能装下最多的价值是多少?</p>
+<h5 id="4-数字和字符转化问题"><a class="markdownIt-Anchor" href="#4-数字和字符转化问题"></a> 4、数字和字符转化问题</h5>
+<p>  规定1和A对应、2和B对应、3和C对应…26和Z对应。那么一个数字字符串比如&quot;111”就可以转化为:“AAA”、“KA&quot;和&quot;AK”。给定一个只有数字字符组成的字符串str，返回有多少种转化结果？</p>
+<h5 id="5-剪裁贴纸"><a class="markdownIt-Anchor" href="#5-剪裁贴纸"></a> 5、剪裁贴纸</h5>
+<p>  给定一个字符串str，给定一个字符串类型的数组arr，出现的字符都是小写英文。arr每一个字符串，代表一张贴纸，你可以把单个字符剪开使用，目的是拼出str来。返回需要至少多少张贴纸可以完成这个任务。<br />
+  例子：str= “babac”，arr = {“ba”,“c”,“abcd”} ba + ba + c  3  abcd + abcd 2  abcd+ba 2 所以返回2</p>
+<h5 id="6-最长公共子串"><a class="markdownIt-Anchor" href="#6-最长公共子串"></a> 6、最长公共子串</h5>
+<p>  给定两个字符串str1和str2，返回这两个字符串的最长公共子序列长度。<br />
+  比如 ： str1 = “a12b3c456d”,str2 = “1ef23ghi4j56k”。最长公共子序列是“123456”，所以返回长度6</p>
+<h5 id="7-最长回文子序列"><a class="markdownIt-Anchor" href="#7-最长回文子序列"></a> 7、最长回文子序列</h5>
+<p>  给定一个字符串str，返回这个字符串的最长回文子序列长度。比如 ： str =“a12b3c43def2ghi1kpm”，最长回文子序列是“1234321”或者“123c321”，返回长度7</p>
+<h5 id="8-象棋跳马"><a class="markdownIt-Anchor" href="#8-象棋跳马"></a> 8、象棋跳马</h5>
+<p>  想象一个象棋的棋盘，然后把整个棋盘放入第一象限，棋盘的最左下角是(0,0)位置。那么整个棋盘就是横坐标上9条线、纵坐标上10条线的区域。给你三个参数 x，y，k，返回“马”从(0,0)位置出发，必须走k步，最后落在(x,y)上的方法数有多少种?</p>
+<h5 id="9-泡咖啡"><a class="markdownIt-Anchor" href="#9-泡咖啡"></a> 9、泡咖啡</h5>
+<p>  给定一个数组arr，arr[i]代表第i号咖啡机泡一杯咖啡的时间，给定一个正数N，表示N个人等着咖啡机泡咖啡，每台咖啡机只能轮流泡咖啡。只有一台咖啡机，一次只能洗一个杯子，时间耗费a，洗完才能洗下一杯。每个咖啡杯也可以自己挥发干净，时间耗费b，咖啡杯可以并行挥发。假设所有人拿到咖啡之后立刻喝干净，返回从开始等到所有咖啡机变干净的最短时间。参数：int[] arr、int N，int a、int b</p>
+<h5 id="10-最小距离累加和"><a class="markdownIt-Anchor" href="#10-最小距离累加和"></a> 10、最小距离累加和</h5>
+<p>  给定一个二维数组matrix，一个人必须从左上角出发，最后到达右下角。沿途只可以向下或者向右走，沿途的数字都累加就是距离累加和。返回最小距离累加和。</p>
+<h5 id="11-计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#11-计算重复货币数组组成aim"></a> 11、计算重复货币数组组成aim</h5>
+<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，即便是值相同的货币也认为每一张都是不同的，返回组成aim的方法数。<br />
+  例如：arr = {1,1,1}，aim = 2，第0个和第1个能组成2，第1个和第2个能组成2，第0个和第2个能组成2。一共就3种方法，所以返回3</p>
+<h5 id="12-无限张货币数组组成aim"><a class="markdownIt-Anchor" href="#12-无限张货币数组组成aim"></a> 12、无限张货币数组组成aim</h5>
+<p>  arr是面值数组，其中的值都是正数且没有重复。再给定一个正数aim。每个值都认为是一种面值，且认为张数是无限的。返回组成aim的方法数<br />
+  例如：arr = {1,2}，aim = 4。方法如下：1+1+1+1、1+1+2、2+2，一共就3种方法，所以返回3。</p>
+<h5 id="13-不计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#13-不计算重复货币数组组成aim"></a> 13、不计算重复货币数组组成aim</h5>
+<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，认为值相同的货币没有任何不同，返回组成aim的方法数。<br />
+  例如：arr = {1,2,1,1,2,1,2}，aim = 4。方法：1+1+1+1、1+1+2、2+2。一共就3种方法，所以返回3。</p>
+<h5 id="14-醉汉bob"><a class="markdownIt-Anchor" href="#14-醉汉bob"></a> 14、醉汉Bob</h5>
+<p>  给定5个参数，N，M，row，col，k，表示在N<em>M的区域上，醉汉Bob初始在(row,col)位置。Bob一共要迈出k步，且每步都会等概率向上下左右四个方向走一个单位。任何时候Bob只要离开N</em>M的区域，就直接死亡。返回k步之后，Bob还在N*M的区域的概率。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag"># 动态规划</a>
+              <a href="/tags/dp/" rel="tag"># dp</a>
+              <a href="/tags/Dynamic-programming/" rel="tag"># Dynamic programming</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/14/DataStructuresAndAlgorithms/11%E3%80%81%E9%80%92%E5%BD%92/" rel="prev" title="递归">
+      <i class="fa fa-chevron-left"></i> 递归
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9A%B4%E5%8A%9B%E9%80%92%E5%BD%92%E5%92%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.</span> <span class="nav-text"> 暴力递归和动态规划的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9A%B4%E5%8A%9B%E9%80%92%E5%BD%92%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text"> 暴力递归的优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0%E6%9F%90%E4%B8%AA%E9%97%AE%E9%A2%98%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text"> 如何找到某个问题的动态规划方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9A%B4%E5%8A%9B%E9%80%92%E5%BD%92%E8%BF%87%E7%A8%8B%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text"> 暴力递归过程的原则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%844%E7%A7%8D%E5%B0%9D%E8%AF%95%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text"> 常见的4种尝试模型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9A%B4%E5%8A%9B%E9%80%92%E5%BD%92%E5%88%B0%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%A5%97%E8%B7%AF"><span class="nav-number">4.</span> <span class="nav-text"> 暴力递归到动态规划的套路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7"><span class="nav-number">5.</span> <span class="nav-text"> 动态规划的优化技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%9C%BA%E5%99%A8%E4%BA%BA%E9%97%AE%E9%A2%98"><span class="nav-number">5.1.</span> <span class="nav-text"> 1、机器人问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E6%89%91%E5%85%8B%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text"> 2、扑克问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="nav-number">5.3.</span> <span class="nav-text"> 3、背包问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E6%95%B0%E5%AD%97%E5%92%8C%E5%AD%97%E7%AC%A6%E8%BD%AC%E5%8C%96%E9%97%AE%E9%A2%98"><span class="nav-number">5.4.</span> <span class="nav-text"> 4、数字和字符转化问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E5%89%AA%E8%A3%81%E8%B4%B4%E7%BA%B8"><span class="nav-number">5.5.</span> <span class="nav-text"> 5、剪裁贴纸</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E4%B8%B2"><span class="nav-number">5.6.</span> <span class="nav-text"> 6、最长公共子串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E5%AD%90%E5%BA%8F%E5%88%97"><span class="nav-number">5.7.</span> <span class="nav-text"> 7、最长回文子序列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8-%E8%B1%A1%E6%A3%8B%E8%B7%B3%E9%A9%AC"><span class="nav-number">5.8.</span> <span class="nav-text"> 8、象棋跳马</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#9-%E6%B3%A1%E5%92%96%E5%95%A1"><span class="nav-number">5.9.</span> <span class="nav-text"> 9、泡咖啡</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#10-%E6%9C%80%E5%B0%8F%E8%B7%9D%E7%A6%BB%E7%B4%AF%E5%8A%A0%E5%92%8C"><span class="nav-number">5.10.</span> <span class="nav-text"> 10、最小距离累加和</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#11-%E8%AE%A1%E7%AE%97%E9%87%8D%E5%A4%8D%E8%B4%A7%E5%B8%81%E6%95%B0%E7%BB%84%E7%BB%84%E6%88%90aim"><span class="nav-number">5.11.</span> <span class="nav-text"> 11、计算重复货币数组组成aim</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#12-%E6%97%A0%E9%99%90%E5%BC%A0%E8%B4%A7%E5%B8%81%E6%95%B0%E7%BB%84%E7%BB%84%E6%88%90aim"><span class="nav-number">5.12.</span> <span class="nav-text"> 12、无限张货币数组组成aim</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#13-%E4%B8%8D%E8%AE%A1%E7%AE%97%E9%87%8D%E5%A4%8D%E8%B4%A7%E5%B8%81%E6%95%B0%E7%BB%84%E7%BB%84%E6%88%90aim"><span class="nav-number">5.13.</span> <span class="nav-text"> 13、不计算重复货币数组组成aim</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#14-%E9%86%89%E6%B1%89bob"><span class="nav-number">5.14.</span> <span class="nav-text"> 14、醉汉Bob</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>
