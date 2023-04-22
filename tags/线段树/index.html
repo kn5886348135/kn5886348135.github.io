@@ -20,20 +20,15 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="manacher算法，给定一个长度为 n 的字符串 s，请找到所有对 (i, j) 使得子串 s[i …\dots… j] 为一个回文串。当 t &#x3D; trev_{\text{rev}}rev​ 时，字符串 t 是一个回文串（trev_{\text{rev}}rev​ 是 t 的反转字符串）。时间复杂度O(N)。 Manacher算法核心 1）理解回文半径数组 2）理解所有中心的回文最右边界R，">
-<meta property="og:type" content="article">
-<meta property="og:title" content="manacher">
-<meta property="og:url" content="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/17%E3%80%81manacher/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="缘分天注定">
+<meta property="og:url" content="https://www.goodserendipity.com/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="manacher算法，给定一个长度为 n 的字符串 s，请找到所有对 (i, j) 使得子串 s[i …\dots… j] 为一个回文串。当 t &#x3D; trev_{\text{rev}}rev​ 时，字符串 t 是一个回文串（trev_{\text{rev}}rev​ 是 t 的反转字符串）。时间复杂度O(N)。 Manacher算法核心 1）理解回文半径数组 2）理解所有中心的回文最右边界R，">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-04-18T11:37:02.000Z">
-<meta property="article:modified_time" content="2023-04-21T17:06:46.482Z">
 <meta property="article:author" content="Louis">
-<meta property="article:tag" content="manacher">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/17%E3%80%81manacher/">
+<link rel="canonical" href="https://www.goodserendipity.com/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/">
 
 
 <script id="page-configurations">
@@ -41,12 +36,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : true,
+    isPost : false,
     lang   : 'en'
   };
 </script>
 
-  <title>manacher | 缘分天注定</title>
+  <title>Tag: 线段树 | 缘分天注定</title>
   
 
 
@@ -164,106 +159,51 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content tag">
             
 
-    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/17%E3%80%81manacher/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          manacher
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-18 19:37:02" itemprop="dateCreated datePublished" datetime="2023-04-18T19:37:02+08:00">2023-04-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-22 01:06:46" itemprop="dateModified" datetime="2023-04-22T01:06:46+08:00">2023-04-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        <h2 class="collection-header">线段树
+          <small>Tag</small>
+        </h2>
+      </div>
 
       
-        <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/manacher/">manacher</a>算法，给定一个长度为 n 的字符串 s，请找到所有对 (i, j) 使得子串 s[i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>…</mo></mrow><annotation encoding="application/x-tex">\dots</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="minner">…</span></span></span></span> j] 为一个回文串。当 t = t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 时，字符串 t 是一个回文串（t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 是 t 的反转字符串）。时间复杂度O(N)。</p>
-<p>Manacher算法核心</p>
-<p>1）理解回文半径数组</p>
-<p>2）理解所有中心的回文最右边界R，和取得R时的中心点C</p>
-<p>3）理解   L…(i`)…C…(i)…R  的结构，以及根据i’回文长度进行的状况划分</p>
-<p>4）每一种情况划分，都可以加速求解i回文半径的过程</p>
-<hr />
-<h5 id="判断head1是否包含head2"><a class="markdownIt-Anchor" href="#判断head1是否包含head2"></a> 判断head1是否包含head2</h5>
-<p>  给定两棵二叉树的头节点head1和head2，想知道head1中是否有某个子树的结构和head2完全一样。</p>
-
+    <div class="collection-year">
+      <span class="collection-header">2023</span>
     </div>
 
-    
-    
-    
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
 
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/manacher/" rel="tag"># manacher</a>
-          </div>
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2023-04-18T19:59:07+08:00"
+              content="2023-04-18">
+          04-18
+        </time>
+      </div>
 
-        
+      <div class="post-title">
+          <a class="post-title-link" href="/2023/04/18/DataStructuresAndAlgorithms/20%E3%80%81segmenttree/" itemprop="url">
+            <span itemprop="name">segmenttree</span>
+          </a>
+      </div>
 
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2023/04/18/DataStructuresAndAlgorithms/16%E3%80%81kmp/" rel="prev" title="kmp">
-      <i class="fa fa-chevron-left"></i> kmp
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/" rel="next" title="bfprt">
-      bfprt <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
+    </header>
   </article>
+
+    </div>
+  </div>
   
   
+  
+
   
 
 
@@ -316,7 +256,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%A4%E6%96%ADhead1%E6%98%AF%E5%90%A6%E5%8C%85%E5%90%ABhead2"><span class="nav-number">1.</span> <span class="nav-text"> 判断head1是否包含head2</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
