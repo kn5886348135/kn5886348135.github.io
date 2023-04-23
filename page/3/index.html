@@ -165,6 +165,536 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">链表、栈和队列</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-06 13:31:10" itemprop="dateCreated datePublished" datetime="2023-04-06T13:31:10+08:00">2023-04-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-08 19:03:42" itemprop="dateModified" datetime="2023-04-08T19:03:42+08:00">2023-04-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  链表（Linked list）是一种常见的基础数据结构，是一种线性表，但是并不会按线性的顺序存储数据，而是在每一个节点里存到下一个节点的指针(Pointer)。由于不必须按顺序存储，链表在插入的时候可以达到O(1)的复杂度，比另一种线性表顺序表快得多，但是查找一个节点或者访问特定编号的节点则需要O(n)的时间，而顺序表相应的时间复杂度分别是O(logn)和O(1)。</p>
+<p>  使用链表结构可以克服数组链表需要预先知道数据大小的缺点，链表结构可以充分利用计算机内存空间，实现灵活的内存动态管理。但是链表失去了数组随机读取的优点，同时链表由于增加了结点的指针域，空间开销比较大。</p>
+<p>  链表有很多种不同的类型：单向链表，双向链表以及循环链表。单链表有一个next指针指向下一个节点，双链表有一个next和一个last指针，循环链表的头尾相连。</p>
+<p>  栈是数据先进后出，队列是数据先进先出。<br />
+  链表、栈和队列相关的题目可以合理使用一些技巧，比如哈希表、有序表、数组、快慢指针等。</p>
+<h4 id="递归"><a class="markdownIt-Anchor" href="#递归"></a> 递归</h4>
+<p>  递归（英语：Recursion），在数学和计算机科学中是指在函数的定义中使用函数自身的方法，在计算机科学中还额外指一种通过重复将问题分解为同类的子问题而解决问题的方法。<br />
+  任何递归都可以改成非递归方式实现。将系统压栈改为自定义实现，则可以避免递归。<br />
+  例如递归求数组arr[L…R]中的最大值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、将[L..R]范围分成左右两半。左：[L..Mid]  右[Mid+<span class="number">1.</span>.R]</span><br><span class="line"><span class="number">2</span>、左部分求最大值，右部分求最大值</span><br><span class="line"><span class="number">3</span>、[L..R]范围上的最大值，是max&#123;左部分最大值，右部分最大值&#125;</span><br><span class="line">注意：步骤<span class="number">2</span>是个递归过程，当范围上只有一个数，就可以不用再递归了</span><br><span class="line"><span class="comment">// 特别容易栈溢出</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">process</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">    <span class="comment">// 递归终止条件</span></span><br><span class="line">    <span class="keyword">if</span> (left == right) &#123;</span><br><span class="line">        <span class="keyword">return</span> Math.max(arr[left], arr[right]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">middle</span> <span class="operator">=</span> left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">ans1</span> <span class="operator">=</span> process(arr, left, middle);</span><br><span class="line">    <span class="type">int</span> <span class="variable">ans2</span> <span class="operator">=</span> process(arr, middle + <span class="number">1</span>, right);</span><br><span class="line">    <span class="keyword">return</span> Math.max(ans1, ans2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="master公式"><a class="markdownIt-Anchor" href="#master公式"></a> Master公式</h4>
+<p>  master公式预估递归的时间复杂度，要求子问题数据规模一样。<br />
+  形如T(N) = a <em>T(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mi>b</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{N}{b}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>) + O(N<sup>d</sup>)(其中的a、b、d都是常数)的递归函数，可以直接通过Master公式来确定时间复杂度。<br />
+   如果 log(b,a) &lt; d，时间复杂度为O(N<sup>d</sup>)<br />
+   如果 log(b,a) &gt; d，时间复杂度为O(N<sup>log(b,a)</sup>)<br />
+   如果 log(b,a) == d，时间复杂度为O(N<sup>d</sup></em> logN)</p>
+<h4 id="哈希表"><a class="markdownIt-Anchor" href="#哈希表"></a> 哈希表</h4>
+<ol>
+<li>哈希表在使用层面上可以理解为一种集合结构</li>
+<li>如果只有key，没有伴随数据value，可以使用HashSet结构</li>
+<li>如果既有key，又有伴随数据value，可以使用HashMap结构</li>
+<li>有无伴随数据，是HashMap和HashSet唯一的区别，实际结构是一回事</li>
+<li>使用哈希表增(put)、删(remove)、改(put)和查(get)的操作，可以认为时间复杂度为 O(1)，但是常数时间比较大</li>
+<li>放入哈希表的东西，如果是基础类型，内部按值传递，内存占用是这个东西的大小</li>
+<li>放入哈希表的东西，如果不是基础类型，内部按引用传递，内存占用是8字节</li>
+</ol>
+<h4 id="有序表"><a class="markdownIt-Anchor" href="#有序表"></a> 有序表</h4>
+<ol>
+<li>有序表在使用层面上可以理解为一种集合结构</li>
+<li>如果只有key，没有伴随数据value，可以使用TreeSet结构</li>
+<li>如果既有key，又有伴随数据value，可以使用TreeMap结构</li>
+<li>有无伴随数据，是TreeSet和TreeMap唯一的区别，底层的实际结构是一回事</li>
+<li>有序表把key按照顺序组织起来，而哈希表完全不组织</li>
+<li>红黑树、AVL树、size-balance-tree和跳表等都属于有序表结构，只是底层具体实现不同</li>
+<li>放入如果是基础类型，内部按值传递，内存占用就是这个东西的大小</li>
+<li>放入如果不是基础类型，内部按引用传递，内存占用是8字节</li>
+<li>不管是什么底层具体实现，只要是有序表，都有以下固定的基本功能和固定的时间复杂度
+<ul>
+<li>void put(K key, V value)将一个(key，value)记录加入到表中，或者将key的记录 更新成value。</li>
+<li>V get(K key)根据给定的key，查询value并返回。</li>
+<li>void remove(K key)移除key的记录。</li>
+<li>boolean containsKey(K key)询问是否有关于key的记录。</li>
+<li>K firstKey()返回所有键值的排序结果中，最小的那个。</li>
+<li>K lastKey()返回所有键值的排序结果中，最大的那个。</li>
+<li>K floorKey(K key)返回&lt;= key 离key最近的那个</li>
+<li>K ceilingKey(K key）返回&gt;= key 离key最近的那个</li>
+</ul>
+</li>
+</ol>
+<h4 id="哈希表和有序表的优点"><a class="markdownIt-Anchor" href="#哈希表和有序表的优点"></a> 哈希表和有序表的优点</h4>
+<ul>
+<li>哈希表在使用时，增删改查时间复杂度都是O(1)</li>
+<li>有序表在使用时，比哈希表功能多，时间复杂度都是O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><msub><mi>g</mi><mi>N</mi></msub></mrow><annotation encoding="application/x-tex">log_N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)</li>
+</ul>
+<hr />
+<h5 id="1-反转单链表和双链表"><a class="markdownIt-Anchor" href="#1-反转单链表和双链表"></a> 1、反转单链表和双链表</h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用while循环，保存next节点，设置当前节点的next，保存pre，移动head，最后返回pre</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Node <span class="title function_">reverseLinkedList</span><span class="params">(Node head)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">pre</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">while</span> (head != <span class="literal">null</span>) &#123;</span><br><span class="line">        next = head.getNext();</span><br><span class="line">        head.next = pre;</span><br><span class="line">        pre = head;</span><br><span class="line">        head = next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pre;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用while循环，保存next节点，设置当前节点的last和pre，保存pre，移动head，最后返回pre</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Node <span class="title function_">reverDoubleLinkedList</span><span class="params">(Node head)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">pre</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">while</span> (head != <span class="literal">null</span>) &#123;</span><br><span class="line">        next = head.getLast();</span><br><span class="line">        head.setLast(pre);</span><br><span class="line">        head.setPre(next);</span><br><span class="line">        pre = head;</span><br><span class="line">        head = next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pre;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-删除单链表和双链表的指定值"><a class="markdownIt-Anchor" href="#2-删除单链表和双链表的指定值"></a> 2、删除单链表和双链表的指定值</h5>
+<h5 id="3-单链表实现队列和栈"><a class="markdownIt-Anchor" href="#3-单链表实现队列和栈"></a> 3、单链表实现队列和栈</h5>
+<h5 id="4-双向链表实现队列和栈"><a class="markdownIt-Anchor" href="#4-双向链表实现队列和栈"></a> 4、双向链表实现队列和栈</h5>
+<h5 id="5-使用双链表实现双端队列"><a class="markdownIt-Anchor" href="#5-使用双链表实现双端队列"></a> 5、使用双链表实现双端队列</h5>
+<ul>
+<li>单链表和双链表的新增、删除，主要注意处理好前驱和后继指针，必要的时候添加中间变量保存。双链表注意处理头尾重合、为空的边界条件。</li>
+</ul>
+<h5 id="6-数组实现队列和栈"><a class="markdownIt-Anchor" href="#6-数组实现队列和栈"></a> 6、数组实现队列和栈</h5>
+<h5 id="7-数组实现不超过固定大小的队列和栈"><a class="markdownIt-Anchor" href="#7-数组实现不超过固定大小的队列和栈"></a> 7、数组实现不超过固定大小的队列和栈</h5>
+<ul>
+<li>栈：正常使用</li>
+<li>队列：环形数组</li>
+</ul>
+<h5 id="8-两个栈实现队列"><a class="markdownIt-Anchor" href="#8-两个栈实现队列"></a> 8、两个栈实现队列</h5>
+<h5 id="9-两个队列实现栈"><a class="markdownIt-Anchor" href="#9-两个队列实现栈"></a> 9、两个队列实现栈</h5>
+<h5 id="10-实现一个特殊的栈一个栈保存min-一个栈正常操作"><a class="markdownIt-Anchor" href="#10-实现一个特殊的栈一个栈保存min-一个栈正常操作"></a> 10、实现一个特殊的栈(一个栈保存min、一个栈正常操作)</h5>
+<ul>
+<li>实现方法push、pop、peek、empty、search，getMin</li>
+<li>pop、push、getMin操作的时间复杂度都是 O(1)。</li>
+<li>设计的栈类型可以使用现成的栈结构。</li>
+</ul>
+<h5 id="11-图的宽度优先搜索使用队列实现图的深度优先搜索实现栈实现"><a class="markdownIt-Anchor" href="#11-图的宽度优先搜索使用队列实现图的深度优先搜索实现栈实现"></a> 11、图的宽度优先搜索，使用队列实现，图的深度优先搜索，实现栈实现</h5>
+<h5 id="12-图的宽度优先搜索使用栈实现图的深度优先搜索实现队列实现"><a class="markdownIt-Anchor" href="#12-图的宽度优先搜索使用栈实现图的深度优先搜索实现队列实现"></a> 12、图的宽度优先搜索，使用栈实现，图的深度优先搜索，实现队列实现</h5>
+<h5 id="13-k个节点的组内逆序调整-leetcode25"><a class="markdownIt-Anchor" href="#13-k个节点的组内逆序调整-leetcode25"></a> 13、K个节点的组内逆序调整 LeetCode25</h5>
+<ul>
+<li>k个一组，获取start和end</li>
+<li>翻转start到end，将start指向end.next</li>
+<li>lastEnd = start，递归终止条件lastEnd.next != null</li>
+</ul>
+<h5 id="14-两个链表相加-leetcode2-leetcode445"><a class="markdownIt-Anchor" href="#14-两个链表相加-leetcode2-leetcode445"></a> 14、两个链表相加 LeetCode2、LeetCode445</h5>
+<ul>
+<li>根据链表长度分三段处理，第一段处理短链表，第二段处理长链表多出的部分，第三段处理长链表最后的进位</li>
+</ul>
+<h5 id="15-合并两个有序链表-leetcode21"><a class="markdownIt-Anchor" href="#15-合并两个有序链表-leetcode21"></a> 15、合并两个有序链表 LeetCode21</h5>
+<ul>
+<li>比较头结点，选取较小的那个作为返回链表的头部head</li>
+<li>将head作为一个单独的链表，尾部记为pre</li>
+<li>依次比较node1、node2，pre指向node1、node2较小的那个</li>
+<li>返回head</li>
+</ul>
+<h5 id="16-合并k个升序链表-leetcode23"><a class="markdownIt-Anchor" href="#16-合并k个升序链表-leetcode23"></a> 16、合并K个升序链表 LeetCode23</h5>
+<ul>
+<li>使用PriorityQueue保存各链表的头结点，链表的头结点是当前链表的最小值。每次prorityQueue.poll()弹出最小值，注意单链表的next指针和中间变量。循环终止条件为优先级队列变空。</li>
+</ul>
+<h5 id="17-快慢指针双指针"><a class="markdownIt-Anchor" href="#17-快慢指针双指针"></a> 17、快慢指针/双指针</h5>
+<p>  快慢指针一般用于链表成环、相交等场景，某些具有单调性的范围上的问题可以使用双指针，比如求正数数组中乘积小于k的连续子数组个数等。</p>
+<ol>
+<li>输入链表头节点，奇数长度返回中点，偶数长度返回上中点</li>
+<li>输入链表头节点，奇数长度返回中点，偶数长度返回下中点</li>
+<li>输入链表头节点，奇数长度返回中点前一个，偶数长度返回上中点前一个</li>
+<li>输入链表头节点，奇数长度返回中点前一个，偶数长度返回下中点前一个</li>
+</ol>
+<h5 id="18-判断链表是否回文结构"><a class="markdownIt-Anchor" href="#18-判断链表是否回文结构"></a> 18、判断链表是否回文结构</h5>
+<ol>
+<li>辅助栈，遍历栈和单链表，每个元素相同则是回文链表</li>
+<li>拿到链表中点，将链表后半部分入栈，遍历单链表和栈</li>
+<li>将中点后的指针逆向，从两边遍历链表对比，然后将链表逆序部分还原。</li>
+<li>借助hash表，key保存链表位置，value保存链表值。取left和right位置比较，递归终止条件为left&gt;right。</li>
+</ol>
+<h5 id="19-寻找链表环入口"><a class="markdownIt-Anchor" href="#19-寻找链表环入口"></a> 19、寻找链表环入口</h5>
+<ul>
+<li>快慢指针，快指针走两步，慢指针走一步，如果快指针走到null仍未相遇则无环</li>
+<li>假设链表在环中是顺时针的，在p点相遇时，慢指针走了m圈，快指针走了n圈</li>
+<li>则2(c+m(a+b)+a) = c+n*(a+b)+a得出c=(n-2m-1)(a+b)+b</li>
+<li>n-2m-1是整数并且不小于0，如果小于0则c成负数</li>
+<li>所以快指针从O点出发，每次走一步可以和慢指针在Q点相遇。</li>
+<li><img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/%E9%93%BE%E8%A1%A8%E5%85%A5%E7%8E%AF%E7%82%B9%E8%AF%81%E6%98%8E.png" alt="证明辅助图" /></li>
+</ul>
+<h5 id="20-两个链表相交"><a class="markdownIt-Anchor" href="#20-两个链表相交"></a> 20、两个链表相交</h5>
+<p>  给定两个可能有环也可能无环的单链表，头节点head1和head2。请实现一个函数，如果两个链表相交，请返回相交的 第一个节点。如果不相交，返回null<br />
+  要求如果两个链表长度之和为N，时间复杂度请达到O(N)，额外空间复杂度 请达到O(1)。</p>
+<ul>
+<li>要么都有环，要么都没环，一个有环一个没环无法相交。因为链表只有一个next指针，相交后的节点完全一样。</li>
+<li>快慢指针获取链表入环节点</li>
+<li>都没环，遍历两个链表，相交的两个链表尾结点一定相同。长链表先走len1-len2步，然后两个链表同时遍历，出现相同的节点即相交的第一个节点</li>
+<li>都有环，环外相交同都没有环，环内相交则验证入环点在同一个环，返回任意一个入环点即可。</li>
+</ul>
+<h5 id="21-链表分组-将单向链表按某值划分成左边小-中间相等-右边大的形式"><a class="markdownIt-Anchor" href="#21-链表分组-将单向链表按某值划分成左边小-中间相等-右边大的形式"></a> 21、链表分组、将单向链表按某值划分成左边小、中间相等、右边大的形式</h5>
+<ul>
+<li>把链表放入数组里，在数组上做partition</li>
+<li>分成小、中、大三部分，再把各个部分之间串起来</li>
+</ul>
+<h5 id="22-复制无环单链表"><a class="markdownIt-Anchor" href="#22-复制无环单链表"></a> 22、复制无环单链表</h5>
+<p>  一种特殊的单链表节点类描述如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">  <span class="type">int</span> value;</span><br><span class="line">  Node next;</span><br><span class="line">  Node rand;</span><br><span class="line">  Node(<span class="type">int</span> val) &#123; value = val; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  rand指针是单链表节点结构中新增的指针，rand可能指向链表中的任意一个节点，也可能指向null。给定一个由Node节点类型组成的无环单链表的头节点 head，请实现一个函数完成这个链表的复制，并返回复制的新链表的头节点。<br />
+  要求时间复杂度O(N)，额外空间复杂度O(1)</p>
+<ul>
+<li>使用map保存节点和复制后的节点，设置next和random，返回map.get(head)</li>
+<li>将复制后的节点插入原链表对应节点后，设置random，拆开链表。</li>
+</ul>
+<h5 id="23-没有头结点不能删除链表节点"><a class="markdownIt-Anchor" href="#23-没有头结点不能删除链表节点"></a> 23、没有头结点，不能删除链表节点</h5>
+<p>  不给单链表的头节点，只给想要删除的节点，没法删除这个节点。</p>
+<ol>
+<li>给定的节点是头结点，可以删除</li>
+<li>给定的节点是中间节点，把后面节点依次往前移动，只能将移动后的尾结点指向null，但无法删除尾结点</li>
+<li>给定的节点是尾结点，也无法删除尾结点。只能将尾结点设置为null，但无法删除尾结点。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/" class="post-title-link" itemprop="url">位运算</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-05 22:29:39" itemprop="dateCreated datePublished" datetime="2023-04-05T22:29:39+08:00">2023-04-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-08 19:02:20" itemprop="dateModified" datetime="2023-04-08T19:02:20+08:00">2023-04-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="认识位运算"><a class="markdownIt-Anchor" href="#认识位运算"></a> 认识位运算</h4>
+<ul>
+<li>异或运算：相同为0，不同为1</li>
+<li>同或运算：相同为1，不同为0</li>
+<li>异或运算可以理解成无进位相加</li>
+<li>与运算&amp;</li>
+<li>或运算|</li>
+<li>取反~</li>
+<li>无符号右移&gt;&gt;&gt;</li>
+<li>左移&lt;&lt;</li>
+</ul>
+<h4 id="异或运算的性质"><a class="markdownIt-Anchor" href="#异或运算的性质"></a> 异或运算的性质</h4>
+<ul>
+<li>0 ^ N == N</li>
+<li>N ^ N == 0</li>
+<li>异或运算满足交换律和结合律</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 交换律</span></span><br><span class="line">a ^ b = b ^ a</span><br><span class="line"><span class="comment">// 结合律</span></span><br><span class="line">((a ^ b) ^ c) == (a ^ (b ^ c))</span><br><span class="line"><span class="comment">// a、b两个整数交换，位运算不需要临时变量</span></span><br><span class="line">a = a ^ b;</span><br><span class="line">b = a ^ b; <span class="comment">// a ^ b -&gt; a ^ b ^ b -&gt; a ^ 0 -&gt; a</span></span><br><span class="line">a = a ^ b; <span class="comment">// a ^ b -&gt; a ^ a ^ b -&gt; 0 ^ b -&gt; b</span></span><br></pre></td></tr></table></figure>
+<h4 id="题目"><a class="markdownIt-Anchor" href="#题目"></a> 题目</h4>
+<ul>
+<li>
+<h5 id="如何不用额外变量交换两个数"><a class="markdownIt-Anchor" href="#如何不用额外变量交换两个数"></a> 如何不用额外变量交换两个数</h5>
+<ul>
+<li>位运算的结合律</li>
+</ul>
+</li>
+<li>
+<h5 id="一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"></a> 一个数组中有一种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这种数</h5>
+<ul>
+<li>异或运算的性质，0 ^ N == N，N ^ N == 0，N的奇数次的异或结果还是N。</li>
+<li>根据交换律，将奇数次的数交换到最后，数组所有元素异或的结果就是答案。</li>
+<li>偶数次异或为0，奇数次异或为本身，遍历每一个元素并异或，最后结果就是奇数次的数字。</li>
+</ul>
+</li>
+<li>
+<h5 id="怎么把一个int类型的数提取出最右侧的1来"><a class="markdownIt-Anchor" href="#怎么把一个int类型的数提取出最右侧的1来"></a> 怎么把一个int类型的数，提取出最右侧的1来</h5>
+<ul>
+<li>假设int类型变量a，a最右侧的1在index位置，获取int b = ~a + 1</li>
+<li>则a的index位置以后都是0，b的index位置及以后都是1，a、b的index之前都是相反的</li>
+<li>a &amp; b即为答案</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a的二进制</span></span><br><span class="line"><span class="number">00010100</span> <span class="number">00010100</span> <span class="number">01001000</span> <span class="number">00000000</span></span><br><span class="line"><span class="comment">// ~a的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10110111</span> <span class="number">11111111</span></span><br><span class="line"><span class="comment">// ~a + 1的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10111000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<h5 id="一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"><a class="markdownIt-Anchor" href="#一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"></a> 一个数组中有两种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这两种数</h5>
+<ul>
+<li>假设这两个数是a、b，并且res = a ^ b</li>
+<li>遍历数组进行异或计算，并拿到res</li>
+<li>计算res最右边的1，记为c，数组中除a、b之外的任意其它数记为arr[i]，则arr[i] &amp; c == 0。因为其他的数经过异或的交换律和结合律最后结果都是0，不存在最右边的1.</li>
+<li>res是ab经过异或计算得到的，所以最右边的1必定属于a、b其中一个。</li>
+<li>遍历数组并判断是否是a、b之一，拿到一个结果，记为a</li>
+<li>res ^ a拿到b</li>
+</ul>
+</li>
+<li>
+<h5 id="一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"></a> 一个数组中有一种数出现K次，其他数都出现了M次，M &gt; 1,  K &lt; M。找到，出现了K次的数。要求，额外空间复杂度O(1)，时间复杂度O(N)</h5>
+<ul>
+<li>假设a出现k次，b出现m次</li>
+<li>将所有数字的二进制位相加，则t[i] % m就是a的二进制在i位置次数，要么是0，要么是k</li>
+</ul>
+</li>
+<li>
+<h5 id="位运算实现加减乘除-leetcode29"><a class="markdownIt-Anchor" href="#位运算实现加减乘除-leetcode29"></a> 位运算实现加减乘除 LeetCode29</h5>
+<ul>
+<li>加法add
+<ul>
+<li>a ^ b结果为无进位相加，(a &amp; b) &lt;&lt; 1是进位信息，递归到进位信息为0，注意中间变量。</li>
+</ul>
+</li>
+<li>减法delete
+<ul>
+<li>add(a, add(~b,1))，取反加1后为相反。</li>
+</ul>
+</li>
+<li>乘法
+<ul>
+<li>a左移b的每一位进制的位数相加。</li>
+<li>b  = 2<sup>k</sup> + 2<sup>k-1</sup>  + 2<sup>k-2</sup> + 2<sup>k-3</sup> + 2<sup>k-4</sup> + 2<sup>k-5</sup> + …</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">a \times 2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.849108em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span> = a &lt;&lt; k</li>
+</ul>
+</li>
+<li>除法
+<ul>
+<li>分别处理除数、被除数为Integer.MIN_VALUE的场景</li>
+<li>a / b = 2<sup>i</sup> + 2<sup>j</sup> + 2<sup>k</sup> + 2<sup>p</sup> + 2<sup>q</sup> + 2<sup>r</sup> + …，并且i、j、k、p、q、r依次减小</li>
+<li>先取绝对值，a右移到刚好大于等于b，拿到一个商，最后所有商相加，补上符号。对系统最小值特殊处理。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 核心代码</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">30</span>; i &gt;= <span class="number">0</span>; i = subtraction(i, <span class="number">1</span>)) &#123;</span><br><span class="line">    <span class="comment">// dividend为Integer.MIN_VALUE的时候，&gt;&gt;&gt;左侧补的都是0，&gt;&gt;左侧补的都是1</span></span><br><span class="line">    <span class="keyword">if</span> ((dividend &gt;&gt; i) &gt;= divisor) &#123;</span><br><span class="line">        ans |= (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">        dividend = subtraction(dividend, divisor &lt;&lt; i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h4>
+<ul>
+<li>
+<h5 id="相反数"><a class="markdownIt-Anchor" href="#相反数"></a> 相反数</h5>
+<ul>
+<li>一个数的相反数为取反加1。取反的结果和原来的数相加结果为2<sup>32</sup>-1,再加1则进位为0。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2^32^-1二进制为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">例如 int a = 1024;二进制为</span></span><br><span class="line">00000000 00000000 00001000 00000000</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取反后</span></span><br><span class="line">11111111 11111111 11110111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相加为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">再加1则溢出为0</span></span><br><span class="line">a + (~a) + 1 = 0; 则-a = (~a) + 1;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<h5 id="溢出"><a class="markdownIt-Anchor" href="#溢出"></a> 溢出</h5>
+<ul>
+<li>Integer.MIN_VALUE取反加一后仍然为Integer.MIN_VALUE。</li>
+<li>Integer.MIN_VALUE二进制为100000000 00000000 00000000 0000000</li>
+<li>Integer.MAX_VALUE加1后溢出为Integer.MIN_VALUE</li>
+<li>Integer.MIN_VALUE减一则溢出为Integer.MAX_VALUE。</li>
+</ul>
+</li>
+<li>
+<h5 id="位图"><a class="markdownIt-Anchor" href="#位图"></a> 位图</h5>
+<ul>
+<li>位图的功能
+<ul>
+<li>保存已知最大值的集合，比如一亿bit标记用户是否登录</li>
+</ul>
+</li>
+<li>位图的好处
+<ul>
+<li>极大的节省空间，一个bit位标记true/false信息</li>
+</ul>
+</li>
+<li>位图的实现
+<ul>
+<li>java.util.BitSet</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bitmap实现加减法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMap</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span>[] bits;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BitMap</span><span class="params">(<span class="type">int</span> max)</span> &#123;</span><br><span class="line">        bits = <span class="keyword">new</span> <span class="title class_">long</span>[(max + <span class="number">64</span>) &gt;&gt; <span class="number">6</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 给定数字除以64的结果result，模64的结果mod分开保存，bits[result]位置的mod位设置为1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="comment">// num &amp; 63等于num % 64</span></span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] |= (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] &amp;= ~(<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (bits[num &gt;&gt; <span class="number">6</span>] &amp; (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>))) != <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">二分法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-04 22:59:15" itemprop="dateCreated datePublished" datetime="2023-04-04T22:59:15+08:00">2023-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-05 22:32:52" itemprop="dateModified" datetime="2023-04-05T22:32:52+08:00">2023-04-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  二分查找算法（英语：binary search algorithm），也称折半搜索算法（英语：half-interval search algorithm）[1]、对数搜索算法（英语：logarithmic search algorithm）[2]，是一种在有序数组中查找某一特定元素的搜索算法。搜索过程从数组的中间元素开始，如果中间元素正好是要查找的元素，则搜索过程结束；如果某一特定元素大于或者小于中间元素，则在数组大于或小于中间元素的那一半中查找，而且跟开始一样从中间元素开始比较。如果在某一步骤数组为空，则代表找不到。这种搜索算法每一次比较都使搜索范围缩小一半。但有序不是使用二分的必要条件，只要能正确构建左右两侧的淘汰逻辑，就可以使用二分。</p>
+<h4 id="二分查找算法的要点"><a class="markdownIt-Anchor" href="#二分查找算法的要点"></a> 二分查找算法的要点</h4>
+<ul>
+<li>while循环递归</li>
+<li>构造淘汰逻辑</li>
+<li>移动left、right</li>
+<li>递归终止条件</li>
+</ul>
+<h4 id="二分法题目"><a class="markdownIt-Anchor" href="#二分法题目"></a> 二分法题目</h4>
+<ol>
+<li>在一个有序数组中，找某个数是否存在</li>
+<li>在一个有序数组中，找&gt;=某个数最左侧的位置</li>
+<li>在一个有序数组中，找&lt;=某个数最右侧的位置</li>
+<li>局部最小值问题</li>
+<li>求有序数组给定区间元素的个数</li>
+</ol>
+<p>  使用while循环，根据arr[target]和arr[middle]的大小，移动left或者right。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">binarySearch</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">        <span class="comment">// 边界条件</span></span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="comment">// 递归终止条件</span></span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &gt; target) &#123;</span><br><span class="line">                <span class="comment">// target在middle左边</span></span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[middle] &lt; target) &#123;</span><br><span class="line">                <span class="comment">// target在middle右边</span></span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 找到target</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 大于等于target最左的位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">binarySearchLeft</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 当left + 1 = right时，如果while条件为left &lt; right则会漏掉right</span></span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &lt; target) &#123;</span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                index = middle;</span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 小于等于target最右的位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">binarySearchRight</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &gt; value) &#123;</span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                index = middle;</span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> index;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>  在while循环中递归，总是能构造淘汰逻辑，所以可以使用二分法查找到一个局部最小值。如果arr[0]和arr[arr.length-1]都不是局部最小值，那么中间必然存在最小值，满足递归之后依然满足或者递归终止。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">localMin</span><span class="params">(<span class="type">int</span>[] arr)</span> &#123;</span><br><span class="line">    <span class="comment">// 边界条件</span></span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> arr.length;</span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">1</span> || arr[<span class="number">0</span>] &lt; arr[<span class="number">1</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (arr[len - <span class="number">1</span>] &lt; arr[len - <span class="number">2</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> len - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> len - <span class="number">2</span>;</span><br><span class="line">    <span class="type">int</span> mid;</span><br><span class="line">    <span class="comment">// 开始二分</span></span><br><span class="line">    <span class="keyword">while</span> (left &lt; right) &#123;</span><br><span class="line">        mid = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 左边</span></span><br><span class="line">        <span class="keyword">if</span> (arr[mid] &gt; arr[mid - <span class="number">1</span>]) &#123;</span><br><span class="line">            right = mid - <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &gt; arr[mid + <span class="number">1</span>]) &#123;</span><br><span class="line">            <span class="comment">// 右边</span></span><br><span class="line">            left = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 找到局部最小值</span></span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> left;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/03/DataStructuresAndAlgorithms/0%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%A4%A7%E7%BA%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -477,20 +1007,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

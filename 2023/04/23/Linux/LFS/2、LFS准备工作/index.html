@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="硬件要求4核8G，准备30G硬盘空间，软件要求  Bash-3.2 (&#x2F;bin&#x2F;sh 必须是到 bash 的符号链接或硬连接) Binutils-2.13.1 (比 2.40 更新的版本未经测试，不推荐使用) Bison-2.7 (&#x2F;usr&#x2F;bin&#x2F;yacc 必须是到 bison 的链接，或者是一个执行 bison 的小脚本) Coreutils-6.9 Diffutils-2.8.1 Fin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LFS准备工作">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="硬件要求4核8G，准备30G硬盘空间，软件要求  Bash-3.2 (&#x2F;bin&#x2F;sh 必须是到 bash 的符号链接或硬连接) Binutils-2.13.1 (比 2.40 更新的版本未经测试，不推荐使用) Bison-2.7 (&#x2F;usr&#x2F;bin&#x2F;yacc 必须是到 bison 的链接，或者是一个执行 bison 的小脚本) Coreutils-6.9 Diffutils-2.8.1 Fin">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-23T04:44:08.000Z">
+<meta property="article:modified_time" content="2023-04-23T14:54:46.715Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="lfs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>LFS准备工作 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LFS准备工作
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 12:44:08 / Modified: 22:54:46" itemprop="dateCreated datePublished" datetime="2023-04-23T12:44:08+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  硬件要求4核8G，准备30G硬盘空间，软件要求</p>
+<ul>
+<li>Bash-3.2 (/bin/sh 必须是到 bash 的符号链接或硬连接)</li>
+<li>Binutils-2.13.1 (比 2.40 更新的版本未经测试，不推荐使用)</li>
+<li>Bison-2.7 (/usr/bin/yacc 必须是到 bison 的链接，或者是一个执行 bison 的小脚本)</li>
+<li>Coreutils-6.9</li>
+<li>Diffutils-2.8.1</li>
+<li>Findutils-4.2.31</li>
+<li>Gawk-4.0.1 (/usr/bin/awk 必须是到 gawk 的链接)</li>
+<li>GCC-5.1，包括 C++ 编译器 g++ (比 12.2.0 更新的版本未经测试，不推荐使用)。C 和 C++ 标准库 (包括头文件) 也必须可用，这样 C++ 编译器才能构建宿主环境的程序</li>
+<li>Grep-2.5.1a</li>
+<li>Gzip-1.3.12</li>
+<li>Linux Kernel-3.2 内核版本的要求是为了符合第 5 章和第 8 章中编译 glibc 时开发者推荐的配置选项。</li>
+<li>M4-1.4.10</li>
+<li>Make-4.0</li>
+<li>Patch-2.5.4</li>
+<li>Perl-5.8.8</li>
+<li>Python-3.4</li>
+<li>Sed-4.1.5</li>
+<li>Tar-1.22</li>
+<li>Texinfo-4.7</li>
+<li>Xz-5.0.0</li>
+</ul>
+<p>  执行检查脚本<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span>，直接在命令行输入下面的命令，会生成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; version-check.sh &lt;&lt; &quot;EOF&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Simple script to list version numbers of critical development tools</span></span><br><span class="line">export LC_ALL=C</span><br><span class="line">bash --version | head -n1 | cut -d&quot; &quot; -f2-4</span><br><span class="line">MYSH=$(readlink -f /bin/sh)</span><br><span class="line">echo &quot;/bin/sh -&gt; $MYSH&quot;</span><br><span class="line">echo $MYSH | grep -q bash || echo &quot;ERROR: /bin/sh does not point to bash&quot;</span><br><span class="line">unset MYSH</span><br><span class="line"></span><br><span class="line">echo -n &quot;Binutils: &quot;; ld --version | head -n1 | cut -d&quot; &quot; -f3-</span><br><span class="line">bison --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/yacc ]; then</span><br><span class="line">  echo &quot;/usr/bin/yacc -&gt; `readlink -f /usr/bin/yacc`&quot;;</span><br><span class="line">elif [ -x /usr/bin/yacc ]; then</span><br><span class="line">  echo yacc is `/usr/bin/yacc --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;yacc not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo -n &quot;Coreutils: &quot;; chown --version | head -n1 | cut -d&quot;)&quot; -f2</span><br><span class="line">diff --version | head -n1</span><br><span class="line">find --version | head -n1</span><br><span class="line">gawk --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/awk ]; then</span><br><span class="line">  echo &quot;/usr/bin/awk -&gt; `readlink -f /usr/bin/awk`&quot;;</span><br><span class="line">elif [ -x /usr/bin/awk ]; then</span><br><span class="line">  echo awk is `/usr/bin/awk --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;awk not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">gcc --version | head -n1</span><br><span class="line">g++ --version | head -n1</span><br><span class="line">grep --version | head -n1</span><br><span class="line">gzip --version | head -n1</span><br><span class="line">cat /proc/version</span><br><span class="line">m4 --version | head -n1</span><br><span class="line">make --version | head -n1</span><br><span class="line">patch --version | head -n1</span><br><span class="line">echo Perl `perl -V:version`</span><br><span class="line">python3 --version</span><br><span class="line">sed --version | head -n1</span><br><span class="line">tar --version | head -n1</span><br><span class="line">makeinfo --version | head -n1  # texinfo version</span><br><span class="line">xz --version | head -n1</span><br><span class="line"></span><br><span class="line">echo &#x27;int main()&#123;&#125;&#x27; &gt; dummy.c &amp;&amp; g++ -o dummy dummy.c</span><br><span class="line">if [ -x dummy ]</span><br><span class="line">  then echo &quot;g++ compilation OK&quot;;</span><br><span class="line">  else echo &quot;g++ compilation failed&quot;; fi</span><br><span class="line">rm -f dummy.c dummy</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>  Debian 10极简安装后，部分软件是缺失的，比如makeinfo(texinfo)、gcc、g++、m4、make、patch等，使用apt-get install安装即可。Debian 10使用的是dash，需要将/bin/sh 重新指向/bin/bash。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换到root</span></span><br><span class="line">su</span><br><span class="line">cd /bin</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份/bin/sh</span></span><br><span class="line">mv sh shbak</span><br><span class="line">ln -s bash sh</span><br><span class="line">ls -la sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除备份</span></span><br><span class="line">rm -rf shbak</span><br></pre></td></tr></table></figure>
+<p>  设置root和lfs用户的环境变量$LFS，每一步操作必须使用正确的用户，避免破坏宿主机或者没有构建到LFS系统上。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/lfs/" rel="tag"># lfs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/23/Linux/LFS/1%E3%80%81Linux%20From%20Scratch%E6%A6%82%E8%BF%B0/" rel="prev" title="Linux From Scratch">
+      <i class="fa fa-chevron-left"></i> Linux From Scratch
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

@@ -165,6 +165,543 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/" class="post-title-link" itemprop="url">LFS准备工作</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 12:44:08 / Modified: 22:54:46" itemprop="dateCreated datePublished" datetime="2023-04-23T12:44:08+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  硬件要求4核8G，准备30G硬盘空间，软件要求</p>
+<ul>
+<li>Bash-3.2 (/bin/sh 必须是到 bash 的符号链接或硬连接)</li>
+<li>Binutils-2.13.1 (比 2.40 更新的版本未经测试，不推荐使用)</li>
+<li>Bison-2.7 (/usr/bin/yacc 必须是到 bison 的链接，或者是一个执行 bison 的小脚本)</li>
+<li>Coreutils-6.9</li>
+<li>Diffutils-2.8.1</li>
+<li>Findutils-4.2.31</li>
+<li>Gawk-4.0.1 (/usr/bin/awk 必须是到 gawk 的链接)</li>
+<li>GCC-5.1，包括 C++ 编译器 g++ (比 12.2.0 更新的版本未经测试，不推荐使用)。C 和 C++ 标准库 (包括头文件) 也必须可用，这样 C++ 编译器才能构建宿主环境的程序</li>
+<li>Grep-2.5.1a</li>
+<li>Gzip-1.3.12</li>
+<li>Linux Kernel-3.2 内核版本的要求是为了符合第 5 章和第 8 章中编译 glibc 时开发者推荐的配置选项。</li>
+<li>M4-1.4.10</li>
+<li>Make-4.0</li>
+<li>Patch-2.5.4</li>
+<li>Perl-5.8.8</li>
+<li>Python-3.4</li>
+<li>Sed-4.1.5</li>
+<li>Tar-1.22</li>
+<li>Texinfo-4.7</li>
+<li>Xz-5.0.0</li>
+</ul>
+<p>  执行检查脚本<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span>，直接在命令行输入下面的命令，会生成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; version-check.sh &lt;&lt; &quot;EOF&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Simple script to list version numbers of critical development tools</span></span><br><span class="line">export LC_ALL=C</span><br><span class="line">bash --version | head -n1 | cut -d&quot; &quot; -f2-4</span><br><span class="line">MYSH=$(readlink -f /bin/sh)</span><br><span class="line">echo &quot;/bin/sh -&gt; $MYSH&quot;</span><br><span class="line">echo $MYSH | grep -q bash || echo &quot;ERROR: /bin/sh does not point to bash&quot;</span><br><span class="line">unset MYSH</span><br><span class="line"></span><br><span class="line">echo -n &quot;Binutils: &quot;; ld --version | head -n1 | cut -d&quot; &quot; -f3-</span><br><span class="line">bison --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/yacc ]; then</span><br><span class="line">  echo &quot;/usr/bin/yacc -&gt; `readlink -f /usr/bin/yacc`&quot;;</span><br><span class="line">elif [ -x /usr/bin/yacc ]; then</span><br><span class="line">  echo yacc is `/usr/bin/yacc --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;yacc not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo -n &quot;Coreutils: &quot;; chown --version | head -n1 | cut -d&quot;)&quot; -f2</span><br><span class="line">diff --version | head -n1</span><br><span class="line">find --version | head -n1</span><br><span class="line">gawk --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/awk ]; then</span><br><span class="line">  echo &quot;/usr/bin/awk -&gt; `readlink -f /usr/bin/awk`&quot;;</span><br><span class="line">elif [ -x /usr/bin/awk ]; then</span><br><span class="line">  echo awk is `/usr/bin/awk --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;awk not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">gcc --version | head -n1</span><br><span class="line">g++ --version | head -n1</span><br><span class="line">grep --version | head -n1</span><br><span class="line">gzip --version | head -n1</span><br><span class="line">cat /proc/version</span><br><span class="line">m4 --version | head -n1</span><br><span class="line">make --version | head -n1</span><br><span class="line">patch --version | head -n1</span><br><span class="line">echo Perl `perl -V:version`</span><br><span class="line">python3 --version</span><br><span class="line">sed --version | head -n1</span><br><span class="line">tar --version | head -n1</span><br><span class="line">makeinfo --version | head -n1  # texinfo version</span><br><span class="line">xz --version | head -n1</span><br><span class="line"></span><br><span class="line">echo &#x27;int main()&#123;&#125;&#x27; &gt; dummy.c &amp;&amp; g++ -o dummy dummy.c</span><br><span class="line">if [ -x dummy ]</span><br><span class="line">  then echo &quot;g++ compilation OK&quot;;</span><br><span class="line">  else echo &quot;g++ compilation failed&quot;; fi</span><br><span class="line">rm -f dummy.c dummy</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>  Debian 10极简安装后，部分软件是缺失的，比如makeinfo(texinfo)、gcc、g++、m4、make、patch等，使用apt-get install安装即可。Debian 10使用的是dash，需要将/bin/sh 重新指向/bin/bash。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换到root</span></span><br><span class="line">su</span><br><span class="line">cd /bin</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份/bin/sh</span></span><br><span class="line">mv sh shbak</span><br><span class="line">ln -s bash sh</span><br><span class="line">ls -la sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除备份</span></span><br><span class="line">rm -rf shbak</span><br></pre></td></tr></table></figure>
+<p>  设置root和lfs用户的环境变量$LFS，每一步操作必须使用正确的用户，避免破坏宿主机或者没有构建到LFS系统上。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/1%E3%80%81Linux%20From%20Scratch%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/1%E3%80%81Linux%20From%20Scratch%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">Linux From Scratch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 08:11:05 / Modified: 12:41:24" itemprop="dateCreated datePublished" datetime="2023-04-23T08:11:05+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://www.linuxfromscratch.org/">Linux From Scratch</a>从零开始编译Linux。文章参考LFS book 11.3，宿主系统为虚拟机安装的Debian。LFS systemd book、开发版、安全漏洞等暂时忽略，仅关注编译LFS系统。LFS book主要内容是准备工作、构建LFS交叉工具链和临时工具、构建LFS系统。准备工作，包括分区、下载软件包、编译临时工具链等。LFS系统的构建需要逐个安装和编译所有需要的软件包，设定引导脚本，以及安装内核。得到的 Linux 系统是一个基本系统，在它之上可以继续编译其他软件，以扩展系统，更好地满足需求。附录给出了一个便于使用的引用列表，包括本书中安装的所有软件、库和其他重要文件。<br />
+<img src="https://www.goodserendipity.com/asserts/linux/lfs/LFSbook.png" alt="LFS book 目录" /></p>
+<p>  <a target="_blank" rel="noopener" href="https://tldp.org/HOWTO/Software-Building-HOWTO.html">Software-Building-HOWTO</a>是一份关于在Linux环境编译和安装常规的Unix软件包的详细指南，虽然这份文档比较老，但是它较好的总结了编译和安装软件的基本技巧。<a target="_blank" rel="noopener" href="https://moi.vonos.net/linux/beginners-installing-from-source/">Beginner’s Guide to Installing from Source</a>很好地总结了从源代码编译软件的基本技能和技巧。<a target="_blank" rel="noopener" href="http://catb.org/~esr/faqs/smart-questions.html">How To Ask Questions The Smart Way</a>。<br />
+  LFS的结构尽可能遵循Linux的各项标准，比如<a target="_blank" rel="noopener" href="https://pubs.opengroup.org/onlinepubs/9699919799/">POSIX.1-2008.</a>、<a target="_blank" rel="noopener" href="https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html">Filesystem Hierarchy Standard (FHS) Version 3.0</a>、<a target="_blank" rel="noopener" href="https://refspecs.linuxfoundation.org/lsb.shtml">Linux Standard Base (LSB) Version 5.0 (2015)</a>等。但LSB并不被广泛接受，搭建一个通过LSB认证测试的完整系统是可行的，但是需要安装大量超过LFS的额外软件包，在BLFS中可以找到这些软件包。<br />
+  LFS要求安装的一些软件包的作用</p>
+<ul>
+<li>
+<p>Acl<br />
+这个软件包包含管理访问控制列表 (ACL) 的工具，用来对文件和目录提供细粒度的访问权限控制。</p>
+</li>
+<li>
+<p>Attr<br />
+这个软件包包含管理文件系统对象的扩展属性的程序。</p>
+</li>
+<li>
+<p>Autoconf<br />
+这个软件包提供能根据软件开发者提供的模板，自动生成配置源代码的 shell 脚本的程序。如果修改了软件包的构建过程，一般需要该软件包的支持才能重新构建被修改的软件包。</p>
+</li>
+<li>
+<p>Automake<br />
+这个软件包包含能根据软件开发者提供的模板，自动生成 Makefile 的程序。如果修改了软件包的构建过程，一般需要该软件包的支持才能重新构建被修改的软件包。</p>
+</li>
+<li>
+<p>Bash<br />
+这个软件包为系统提供一个 LSB core 要求的 Bourne Shell 接口。它是较为常用的 shell 软件包，且具有一定的的扩展能力，因此在各种 shell 软件包中选择了它。</p>
+</li>
+<li>
+<p>Bc<br />
+这个软件包提供了一个任意精度数值处理语言。在编译 Linux 内核时需要该软件包。</p>
+</li>
+<li>
+<p>Binutils<br />
+该软件包提供链接器、汇编器，以及其他处理目标文件的工具。编译 LFS 系统中的大多数软件包都需要这些程序。</p>
+</li>
+<li>
+<p>Bison<br />
+这个软件包包含 yacc (Yet Another Compiler Compiler) 的 GNU 版本。一些 LFS 程序的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Bzip2<br />
+这个软件包包含用于压缩和解压缩文件的程序。许多 LFS 软件包的解压需要该软件包。</p>
+</li>
+<li>
+<p>Check<br />
+这个软件包提供其他程序使用的测试环境。</p>
+</li>
+<li>
+<p>Coreutils<br />
+这个软件包包含一些用于查看和操作文件和目录的基本程序。这些程序被用于在命令行下管理文件，以及每个 LFS 软件包的安装过程。</p>
+</li>
+<li>
+<p>DejaGNU<br />
+这个软件包提供用于测试其他程序的框架。</p>
+</li>
+<li>
+<p>Diffutils<br />
+这个软件包包含用于显示文件或目录之间的差异的程序。这些程序可以被用于创建补丁，很多软件包的编译过程也需要该软件包。</p>
+</li>
+<li>
+<p>E2fsprogs<br />
+这个软件包提供用于处理 ext2, ext3 和 ext4 文件系统的工具。它们是 Linux 支持的最常用且久经考验的文件系统。</p>
+</li>
+<li>
+<p>Eudev<br />
+这个软件包是一个设备管理器，它随着系统中硬件设备的增加或移除，动态地控制 /dev 目录中设备节点的所有权，访问权限，文件名，以及符号链接。</p>
+</li>
+<li>
+<p>Expat<br />
+这个软件包提供一个相对轻量级的 XML 解析库。Perl 模块 XML::Parser 需要该软件包。</p>
+</li>
+<li>
+<p>Expect<br />
+这个软件包包含一个自动和其他交互程序交互的脚本执行程序。一般用它测试其他程序。</p>
+</li>
+<li>
+<p>File<br />
+这个软件包包含用于判定给定文件类型的工具。一些软件包的构建脚本需要它。</p>
+</li>
+<li>
+<p>Findutils<br />
+这个软件包提供用于在文件系统中寻找文件的程序。它被许多软件包的编译脚本使用。</p>
+</li>
+<li>
+<p>Flex<br />
+这个软件包包含用于生成词法分析器的程序。它是 lex (lexical analyzer) 程序的 GNU 版本。许多 LFS 软件包的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Gawk<br />
+这个软件包提供用于操作文本文件的程序。它是 awk (Aho-Weinberg-Kernighan) 的 GNU 版本。它被许多其他软件包的构建脚本使用。</p>
+</li>
+<li>
+<p>GCC<br />
+这是 GNU 编译器的集合。它包含 C 和 C++ 编译器，以及其他一些在 LFS 中不会涉及的编译器。</p>
+</li>
+<li>
+<p>GDBM<br />
+这个软件包包含 GNU 数据库管理库。LFS 的另一个软件包 Man-DB 需要该软件包。</p>
+</li>
+<li>
+<p>Gettext<br />
+这个软件包提供用于许多其他软件包的国际化和本地化的工具和库。</p>
+</li>
+<li>
+<p>Glibc<br />
+这个软件包包含主要的 C 语言库。Linux 程序没有该软件包的支持根本无法运行。</p>
+</li>
+<li>
+<p>GMP<br />
+这个软件包提供数学库，这些库支持用于任意精度算术的函数。编译 GCC 需要该软件包。</p>
+</li>
+<li>
+<p>Gperf<br />
+这个软件包提供一个能够根据键值集合生成完美散列函数的程序。Eudev 需要该软件包。</p>
+</li>
+<li>
+<p>Grep<br />
+这个软件包包含在文本中搜索指定模式的程序。它被多数软件包的编译脚本所使用。</p>
+</li>
+<li>
+<p>Groff<br />
+这个软件包提供用于处理和格式化文本的程序。它们的一项重要功能是格式化 man 页面。</p>
+</li>
+<li>
+<p>GRUB<br />
+这个软件包是 Grand Unified Boot Loader。Linux 可以使用其他引导加载器，但 GRUB 最灵活。</p>
+</li>
+<li>
+<p>Gzip<br />
+这个软件包包含用于压缩和解压缩文件的程序。许多 LFS 软件包的解压需要该软件包。</p>
+</li>
+<li>
+<p>Iana-etc<br />
+这个软件包包含网络服务和协议的描述数据。网络功能的正确运作需要该软件包。</p>
+</li>
+<li>
+<p>Inetutils<br />
+这个软件包提供基本网络管理程序。</p>
+</li>
+<li>
+<p>Intltool<br />
+这个软件包提供能够从源代码中提取可翻译字符串的工具。</p>
+</li>
+<li>
+<p>IProute2<br />
+这个软件包提供了用于 IPv4 和 IPv6 网络的基础和高级管理程序。和另一个常见的网络工具包 net-tools 相比，它具有管理 IPv6 网络的能力。</p>
+</li>
+<li>
+<p>Kbd<br />
+这个软件包提供键盘映射文件，用于非美式键盘的键盘工具，以及一些控制台字体。</p>
+</li>
+<li>
+<p>Kmod<br />
+这个软件包提供用于管理 Linux 内核模块的程序。</p>
+</li>
+<li>
+<p>Less<br />
+这个软件包包含一个很好的文本文件查看器，它支持在查看文件时上下滚动。许多软件包使用它对输出进行分页。</p>
+</li>
+<li>
+<p>Libcap<br />
+这个软件包实现了用于访问 Linux 内核中 POSIX 1003.1e 权能字功能的用户空间接口。</p>
+</li>
+<li>
+<p>Libelf<br />
+Elfutils 项目提供了用于 ELF 文件和 DWARF 数据的工具和库。该软件包的大多数工具已经由其他软件包提供，但使用默认 (也是最高效的) 配置构建 Linux 内核时，需要使用该软件包的库。</p>
+</li>
+<li>
+<p>Libffi<br />
+这个软件包实现了一个可移植的高级编程接口，用于处理不同的调用惯例。某些程序在编译时并不知道如何向函数传递参数，例如解释器在运行时才得到函数的参数个数和类型信息。它们可以使用 libffi 作为解释语言和编译语言之间的桥梁。</p>
+</li>
+<li>
+<p>Libpipeline<br />
+Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库。Man-DB 软件包需要这个库。</p>
+</li>
+<li>
+<p>Libtool<br />
+这个软件包包含 GNU 通用库支持脚本。它将共享库的使用封装成一个一致、可移植的接口。在其他 LFS 软件包的测试套件中需要该软件包。</p>
+</li>
+<li>
+<p>Linux Kernel<br />
+这个软件包就是操作系统。我们平常说的 “GNU/Linux” 环境中的 “Linux” 就指的是它。</p>
+</li>
+<li>
+<p>M4<br />
+这个软件包提供通用的文本宏处理器。它被其他程序用作构建工具。</p>
+</li>
+<li>
+<p>Make<br />
+这个软件包包含用于指导软件包编译过程的程序。LFS 中几乎每个软件包都需要它。</p>
+</li>
+<li>
+<p>Man-DB<br />
+这个软件包包含用于查找和浏览 man 页面的程序。与 man 软件包相比，该软件包的国际化功能更为强大。该软件包提供了 man 程序。</p>
+</li>
+<li>
+<p>Man-pages<br />
+这个软件包提供基本的 Linux man 页面的实际内容。</p>
+</li>
+<li>
+<p>Meson<br />
+这个软件包一个自动化软件构建过程的工具。它的设计目标是最小化软件开发者不得不用于配置构建系统的时间。该软件包在构建 Systemd 和很多 BLFS 软件包时是必要的。</p>
+</li>
+<li>
+<p>MPC<br />
+这个软件包提供用于复数算术的函数。GCC 需要该软件包。</p>
+</li>
+<li>
+<p>MPFR<br />
+这个软件包包含用于多精度算术的函数。GCC 需要该软件包。</p>
+</li>
+<li>
+<p>Ninja<br />
+这个软件包提供一个注重执行速度的小型构建系统。它被设计为读取高级构建系统生成的输入文件，并以尽量高的速度运行。Meson 需要该软件包。</p>
+</li>
+<li>
+<p>Ncurses<br />
+这个软件包包含用于处理字符界面的不依赖特定终端的库。它一般被用于为菜单系统提供光标控制。一些 LFS 软件包需要该软件包。</p>
+</li>
+<li>
+<p>Openssl<br />
+这个软件包包含关于密码学的管理工具和库，它们为 Linux 内核等其他软件包提供密码学功能。</p>
+</li>
+<li>
+<p>Patch<br />
+这个软件包包含一个通过 补丁 文件修改或创建文件的程序。补丁文件通常由 diff 程序创建。一些 LFS 软件包的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Perl<br />
+这个软件包是运行时语言 PERL 的解释器。几个 LFS 软件包的安装和测试过程需要该软件包。</p>
+</li>
+<li>
+<p>Pkg-config<br />
+这个软件包提供一个查询已经安装的库和软件包的元数据信息的程序。</p>
+</li>
+<li>
+<p>Procps-NG<br />
+这个软件包包含用于监控系统进程的程序，对系统管理非常有用。另外 LFS 引导脚本也需要该软件包。</p>
+</li>
+<li>
+<p>Psmisc<br />
+这个软件包提供一些显示当前运行的系统进程信息的程序。这些程序对系统管理非常有用。</p>
+</li>
+<li>
+<p>Python 3<br />
+这个软件包提供了一种在设计时强调代码可读性的解释性语言支持。</p>
+</li>
+<li>
+<p>Readline<br />
+这个软件包是一组库，提供命令行编辑和历史记录支持。Bash 需要该软件包。</p>
+</li>
+<li>
+<p>Sed<br />
+这个软件包可以在没有文本编辑器的情况下编辑文本文件。另外，许多 LFS 软件包的配置脚本需要该软件包。</p>
+</li>
+<li>
+<p>Shadow<br />
+这个软件包包含用于安全地处理密码的程序。</p>
+</li>
+<li>
+<p>Sysklogd<br />
+这个软件包提供用于记录系统消息的程序，这些消息包括内核或者守护进程在异常事件发生时的提示。</p>
+</li>
+<li>
+<p>Sysvinit<br />
+这个软件包提供init程序，在 Linux 系统中它是其他所有进程的祖先。</p>
+</li>
+<li>
+<p>Tar<br />
+这个软件包提供存档和提取功能，几乎每个 LFS 软件包都需要它才能被提取。</p>
+</li>
+<li>
+<p>Tcl<br />
+这个软件包包含在测试套件中广泛使用的工具控制语言 (Tool Command Language)。</p>
+</li>
+<li>
+<p>Texinfo<br />
+这个软件包提供用于阅读、编写和转换 info 页面的程序。许多 LFS 软件包的安装过程需要使用它。</p>
+</li>
+<li>
+<p>Util-linux<br />
+这个软件包包含许多工具程序，其中有处理文件系统、终端、分区和消息的工具。</p>
+</li>
+<li>
+<p>Vim<br />
+这个软件包提供一个编辑器。由于它与经典的 vi 编辑器相兼容，且拥有许多强大的功能，我们选择这个编辑器。编辑器的选择是非常主观的。如果希望的话，读者可以用其他编辑器替代它。</p>
+</li>
+<li>
+<p>Wheel<br />
+该软件包提供一个 Python 模块，该模块是 Python wheel 软件包标准格式的参考实现。</p>
+</li>
+<li>
+<p>XML::Parser<br />
+这个软件包是和 Expat 交互的 Perl 模块。</p>
+</li>
+<li>
+<p>XZ Utils<br />
+这个软件包包含用于压缩和解压缩文件的程序。在所有这类程序中，该软件包提供了最高的压缩率。该软件包被用于解压 XZ 或 LZMA 格式的压缩文件。</p>
+</li>
+<li>
+<p>Zlib<br />
+这个软件包包含一些程序使用的压缩和解压缩子程序。</p>
+</li>
+<li>
+<p>Zstd<br />
+这个软件包提供一些程序使用的压缩和解压缩子程序。它具有较高的压缩比，以及很宽的压缩比/速度权衡范围。</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/LFS%20systemd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/LFS%20systemd/" class="post-title-link" itemprop="url">Linux From Scratch Systemd</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 08:11:05 / Modified: 12:42:05" itemprop="dateCreated datePublished" datetime="2023-04-23T08:11:05+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>LFS systemd book和LFS book有啥区别？</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/20%E3%80%81segmenttree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -430,7 +967,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-22 01:06:46" itemprop="dateModified" datetime="2023-04-22T01:06:46+08:00">2023-04-22</time>
+                <time title="Modified: 2023-04-23 07:19:14" itemprop="dateModified" datetime="2023-04-23T07:19:14+08:00">2023-04-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -453,15 +990,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/manacher/">manacher</a>算法，给定一个长度为 n 的字符串 s，请找到所有对 (i, j) 使得子串 s[i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>…</mo></mrow><annotation encoding="application/x-tex">\dots</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="minner">…</span></span></span></span> j] 为一个回文串。当 t = t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 时，字符串 t 是一个回文串（t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 是 t 的反转字符串）。时间复杂度O(N)。</p>
-<p>Manacher算法核心</p>
-<p>1）理解回文半径数组</p>
-<p>2）理解所有中心的回文最右边界R，和取得R时的中心点C</p>
-<p>3）理解   L…(i`)…C…(i)…R  的结构，以及根据i’回文长度进行的状况划分</p>
-<p>4）每一种情况划分，都可以加速求解i回文半径的过程</p>
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/manacher/">manacher</a>算法，给定一个长度为 n 的字符串 s，请找到所有对 (i, j) 使得子串 s[i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>…</mo></mrow><annotation encoding="application/x-tex">\dots</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="minner">…</span></span></span></span> j] 为一个回文串。当 t = t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 时，字符串 t 是一个回文串（t<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mtext>rev</mtext></msub></mrow><annotation encoding="application/x-tex">_{\text{rev}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.301392em;vertical-align:-0.15em;"></span><span class="mord"><span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">rev</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 是 t 的反转字符串），时间复杂度O(N)。</p>
+<h4 id="manacher算法"><a class="markdownIt-Anchor" href="#manacher算法"></a> Manacher算法</h4>
+<ol>
+<li>回文半径数组</li>
+<li>所有中心的回文最右边界right，和取得right时的中心点middle</li>
+<li>left $ \dots <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mi mathvariant="normal">‘</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i`)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mord">‘</span><span class="mclose">)</span></span></span></span> \dots $ middle $ \dots <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mclose">)</span></span></span></span> \dots $ right  的结构，以及根据i’回文长度进行的状况划分</li>
+<li>每一种情况划分，都可以加速求解i回文半径的过程</li>
+</ol>
 <hr />
-<h5 id="判断head1是否包含head2"><a class="markdownIt-Anchor" href="#判断head1是否包含head2"></a> 判断head1是否包含head2</h5>
-<p>  给定两棵二叉树的头节点head1和head2，想知道head1中是否有某个子树的结构和head2完全一样。</p>
+<h5 id="拼接最少字符变成回文字符串"><a class="markdownIt-Anchor" href="#拼接最少字符变成回文字符串"></a> 拼接最少字符变成回文字符串</h5>
+<p>  在指定字符串后面拼接最少的字符，使整个字符串变成回文字符串。</p>
 
       
     </div>
@@ -831,351 +1370,6 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/17/DataStructuresAndAlgorithms/13%E3%80%81%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/17/DataStructuresAndAlgorithms/13%E3%80%81%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" class="post-title-link" itemprop="url">滑动窗口</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-04-17 21:43:27 / Modified: 22:04:38" itemprop="dateCreated datePublished" datetime="2023-04-17T21:43:27+08:00">2023-04-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="滑动窗口的定义"><a class="markdownIt-Anchor" href="#滑动窗口的定义"></a> 滑动窗口的定义</h4>
-<p>  滑动窗口有左边界left和有边界right，在数组或者字符串或者一个序列上，记为S，窗口就是S[left…right]这一部分。left往右滑意味着一个样本出了窗口，right往右滑意味着一个样本进了窗口，left和right都只能往右滑。</p>
-<p>滑动内最大值和最小值的更新结构<br />
-  窗口不管left还是right滑动之后，都会让窗口呈现新状况。单调双端队列可以快速得到窗口当前状况下的最大值和最小值，最好平均下来复杂度能做到O(1)。</p>
-<hr />
-<h5 id="滑动窗口的最大值"><a class="markdownIt-Anchor" href="#滑动窗口的最大值"></a> 滑动窗口的最大值</h5>
-<p>  假设一个固定大小为W的窗口，依次划过arr，返回每一次滑出状况的最大值。例如，arr = [4,3,5,4,3,3,6,7], W = 3，返回[5,5,5,4,6,7]。</p>
-<h5 id="滑动窗口达标子数组数量"><a class="markdownIt-Anchor" href="#滑动窗口达标子数组数量"></a> 滑动窗口达标子数组数量</h5>
-<p>  给定一个整型数组arr，和一个整数num，某个arr中的子数组sub，如果想达标，必须满足：sub中最大值 – sub中最小值 &lt;= num，返回arr中达标子数组的数量。</p>
-<h5 id="加油站的良好出发点问题"><a class="markdownIt-Anchor" href="#加油站的良好出发点问题"></a> 加油站的良好出发点问题</h5>
-<p>  在一条环路上有 n 个加油站，其中第 i 个加油站有汽油 gas[i] 升。你有一辆油箱容量无限的的汽车，从第 i 个加油站开往第 i+1 个加油站需要消耗汽油 cost[i] 升。你从其中的一个加油站出发，开始时油箱为空。给定两个整数数组 gas 和 cost ，如果你可以绕环路行驶一周，则返回出发时加油站的编号，否则返回 -1 。如果存在解，则保证它是唯一的。</p>
-<h5 id="货币数组组成aim最少张数"><a class="markdownIt-Anchor" href="#货币数组组成aim最少张数"></a> 货币数组组成aim最少张数</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，<br />
-返回组成aim的最少货币数。因为是求最少货币数，所以每一张货币认为是相同或者不同就不重要了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" class="post-title-link" itemprop="url">动态规划</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-14 23:03:50" itemprop="dateCreated datePublished" datetime="2023-04-14T23:03:50+08:00">2023-04-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-17 21:53:28" itemprop="dateModified" datetime="2023-04-17T21:53:28+08:00">2023-04-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="暴力递归和动态规划的关系"><a class="markdownIt-Anchor" href="#暴力递归和动态规划的关系"></a> 暴力递归和动态规划的关系</h4>
-<ul>
-<li>某一个暴力递归，有解的重复调用，就可以把这个暴力递归优化成动态规划</li>
-<li>任何动态规划问题，都一定对应着某一个有重复过程的暴力递归</li>
-<li>但不是所有的暴力递归，都一定对应着动态规划</li>
-</ul>
-<h4 id="暴力递归的优化"><a class="markdownIt-Anchor" href="#暴力递归的优化"></a> 暴力递归的优化</h4>
-<ul>
-<li>有重复调用同一个子问题的解，这种递归可以优化</li>
-<li>如果每一个子问题都是不同的解，无法优化也不用优化</li>
-</ul>
-<p>  解决一个问题，可能有很多尝试方法，可能在很多尝试方法中，又有若干个尝试方法有动态规划的方式，一个问题可能有若干种动态规划的解法。</p>
-<h4 id="如何找到某个问题的动态规划方式"><a class="markdownIt-Anchor" href="#如何找到某个问题的动态规划方式"></a> 如何找到某个问题的动态规划方式</h4>
-<ol>
-<li>设计暴力递归：重要原则+4种常见尝试模型</li>
-<li>分析有没有重复解：列出调用过程的前几层就能发现是否有重复解</li>
-<li>用记忆化搜索 -&gt; 用严格表结构实现动态规划：套路解决</li>
-<li>看看能否继续优化：套路解决</li>
-</ol>
-<h5 id="暴力递归过程的原则"><a class="markdownIt-Anchor" href="#暴力递归过程的原则"></a> 暴力递归过程的原则</h5>
-<ol>
-<li>每一个可变参数的类型，一定不要比int类型更加复杂</li>
-<li>原则1）可以违反，让类型突破到一维线性结构，那必须是单一可变参数</li>
-<li>如果发现原则1）被违反，但不违反原则2），只需要做到记忆化搜索即可</li>
-<li>可变参数的个数，能少则少</li>
-<li>面试中违反以上原则的概率很小</li>
-</ol>
-<h5 id="常见的4种尝试模型"><a class="markdownIt-Anchor" href="#常见的4种尝试模型"></a> 常见的4种尝试模型</h5>
-<ul>
-<li>从左往右的尝试模型</li>
-<li>范围上的尝试模型</li>
-<li>多样本位置全对应的尝试模型</li>
-<li>寻找业务限制的尝试模型</li>
-</ul>
-<h4 id="暴力递归到动态规划的套路"><a class="markdownIt-Anchor" href="#暴力递归到动态规划的套路"></a> 暴力递归到动态规划的套路</h4>
-<ul>
-<li>你已经有了一个不违反原则的暴力递归，而且的确存在解的重复调用</li>
-<li>找到哪些参数的变化会影响返回值，对每一个列出变化范围</li>
-<li>参数间的所有的组合数量，意味着表大小</li>
-<li>记忆化搜索的方法就是缓存，非常容易得到</li>
-<li>规定好严格表的大小，分析位置的依赖顺序，然后从基础填写到最终解</li>
-<li>对于有枚举行为的决策过程，进一步优化</li>
-</ul>
-<h4 id="动态规划的优化技巧"><a class="markdownIt-Anchor" href="#动态规划的优化技巧"></a> 动态规划的优化技巧</h4>
-<ul>
-<li>空间压缩</li>
-<li>状态化简</li>
-<li>四边形不等式</li>
-<li>其他优化技巧</li>
-</ul>
-<h5 id="1-机器人问题"><a class="markdownIt-Anchor" href="#1-机器人问题"></a> 1、机器人问题</h5>
-<p>  假设有排成一行的N个位置，记为1~N，N 一定大于或等于2。开始时机器人在其中的M位置上(M一定是 1~N 中的一个)，如果机器人来到1位置，那么下一步只能往右来到2位置；如果机器人来到N位置，那么下一步只能往左来到 N-1 位置；如果机器人来到中间位置，那么下一步可以往左走或者往右走；规定机器人必须走 K 步，最终能来到P位置(P也是1~N中的一个)的方法有多少种？<br />
-  给定四个参数 N、M、K、P，返回方法数。</p>
-<h5 id="2-扑克问题"><a class="markdownIt-Anchor" href="#2-扑克问题"></a> 2、扑克问题</h5>
-<p>  给定一个整型数组arr，代表数值不同的纸牌排成一条线。玩家A和玩家B依次拿走每张纸牌，规定玩家A先拿，玩家B后拿。但是每个玩家每次只能拿走最左或最右的纸牌，玩家A和玩家B都绝顶聪明。请返回最后获胜者的分数。</p>
-<h5 id="3-背包问题"><a class="markdownIt-Anchor" href="#3-背包问题"></a> 3、背包问题</h5>
-<p>  给定两个长度都为N的数组weights和values，weights[i]和values[i]分别代表 i号物品的重量和价值。给定一个正数bag，表示一个载重bag的袋子，你装的物品不能超过这个重量。返回你能装下最多的价值是多少?</p>
-<h5 id="4-数字和字符转化问题"><a class="markdownIt-Anchor" href="#4-数字和字符转化问题"></a> 4、数字和字符转化问题</h5>
-<p>  规定1和A对应、2和B对应、3和C对应…26和Z对应。那么一个数字字符串比如&quot;111”就可以转化为:“AAA”、“KA&quot;和&quot;AK”。给定一个只有数字字符组成的字符串str，返回有多少种转化结果？</p>
-<h5 id="5-剪裁贴纸"><a class="markdownIt-Anchor" href="#5-剪裁贴纸"></a> 5、剪裁贴纸</h5>
-<p>  给定一个字符串str，给定一个字符串类型的数组arr，出现的字符都是小写英文。arr每一个字符串，代表一张贴纸，你可以把单个字符剪开使用，目的是拼出str来。返回需要至少多少张贴纸可以完成这个任务。<br />
-  例子：str= “babac”，arr = {“ba”,“c”,“abcd”} ba + ba + c  3  abcd + abcd 2  abcd+ba 2 所以返回2</p>
-<h5 id="6-最长公共子串"><a class="markdownIt-Anchor" href="#6-最长公共子串"></a> 6、最长公共子串</h5>
-<p>  给定两个字符串str1和str2，返回这两个字符串的最长公共子序列长度。<br />
-  比如 ： str1 = “a12b3c456d”,str2 = “1ef23ghi4j56k”。最长公共子序列是“123456”，所以返回长度6</p>
-<h5 id="7-最长回文子序列"><a class="markdownIt-Anchor" href="#7-最长回文子序列"></a> 7、最长回文子序列</h5>
-<p>  给定一个字符串str，返回这个字符串的最长回文子序列长度。比如 ： str =“a12b3c43def2ghi1kpm”，最长回文子序列是“1234321”或者“123c321”，返回长度7</p>
-<h5 id="8-象棋跳马"><a class="markdownIt-Anchor" href="#8-象棋跳马"></a> 8、象棋跳马</h5>
-<p>  想象一个象棋的棋盘，然后把整个棋盘放入第一象限，棋盘的最左下角是(0,0)位置。那么整个棋盘就是横坐标上9条线、纵坐标上10条线的区域。给你三个参数 x，y，k，返回“马”从(0,0)位置出发，必须走k步，最后落在(x,y)上的方法数有多少种?</p>
-<h5 id="9-泡咖啡"><a class="markdownIt-Anchor" href="#9-泡咖啡"></a> 9、泡咖啡</h5>
-<p>  给定一个数组arr，arr[i]代表第i号咖啡机泡一杯咖啡的时间，给定一个正数N，表示N个人等着咖啡机泡咖啡，每台咖啡机只能轮流泡咖啡。只有一台咖啡机，一次只能洗一个杯子，时间耗费a，洗完才能洗下一杯。每个咖啡杯也可以自己挥发干净，时间耗费b，咖啡杯可以并行挥发。假设所有人拿到咖啡之后立刻喝干净，返回从开始等到所有咖啡机变干净的最短时间。参数：int[] arr、int N，int a、int b</p>
-<h5 id="10-最小距离累加和"><a class="markdownIt-Anchor" href="#10-最小距离累加和"></a> 10、最小距离累加和</h5>
-<p>  给定一个二维数组matrix，一个人必须从左上角出发，最后到达右下角。沿途只可以向下或者向右走，沿途的数字都累加就是距离累加和。返回最小距离累加和。</p>
-<h5 id="11-计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#11-计算重复货币数组组成aim"></a> 11、计算重复货币数组组成aim</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，即便是值相同的货币也认为每一张都是不同的，返回组成aim的方法数。<br />
-  例如：arr = {1,1,1}，aim = 2，第0个和第1个能组成2，第1个和第2个能组成2，第0个和第2个能组成2。一共就3种方法，所以返回3</p>
-<h5 id="12-无限张货币数组组成aim"><a class="markdownIt-Anchor" href="#12-无限张货币数组组成aim"></a> 12、无限张货币数组组成aim</h5>
-<p>  arr是面值数组，其中的值都是正数且没有重复。再给定一个正数aim。每个值都认为是一种面值，且认为张数是无限的。返回组成aim的方法数<br />
-  例如：arr = {1,2}，aim = 4。方法如下：1+1+1+1、1+1+2、2+2，一共就3种方法，所以返回3。</p>
-<h5 id="13-不计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#13-不计算重复货币数组组成aim"></a> 13、不计算重复货币数组组成aim</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，认为值相同的货币没有任何不同，返回组成aim的方法数。<br />
-  例如：arr = {1,2,1,1,2,1,2}，aim = 4。方法：1+1+1+1、1+1+2、2+2。一共就3种方法，所以返回3。</p>
-<h5 id="14-醉汉bob"><a class="markdownIt-Anchor" href="#14-醉汉bob"></a> 14、醉汉Bob</h5>
-<p>  给定5个参数，N，M，row，col，k，表示在N<em>M的区域上，醉汉Bob初始在(row,col)位置。Bob一共要迈出k步，且每步都会等概率向上下左右四个方向走一个单位。任何时候Bob只要离开N</em>M的区域，就直接死亡。返回k步之后，Bob还在N*M的区域的概率。</p>
-<h5 id="15-杀死怪物"><a class="markdownIt-Anchor" href="#15-杀死怪物"></a> 15、杀死怪物</h5>
-<p>  给定3个参数，N，M，K，怪兽有N滴血，等着英雄来砍自己。英雄每一次打击，都会让怪兽流失[0<sub>M]的血量。每一次在[0</sub>M]上等概率的获得一个值，求K次打击之后，英雄把怪兽砍死的概率。</p>
-<h5 id="16-无重复无限张货币数组组成aim"><a class="markdownIt-Anchor" href="#16-无重复无限张货币数组组成aim"></a> 16、无重复无限张货币数组组成aim</h5>
-<p>  arr是面值数组，其中的值都是正数且没有重复。再给定一个正数aim。每个值都认为是一种面值，且认为张数是无限的。返回组成aim的最少货币数。</p>
-<h5 id="17-裂开正数"><a class="markdownIt-Anchor" href="#17-裂开正数"></a> 17、裂开正数</h5>
-<p>  给定一个正数n，求n的裂开方法数。规定：后面的数不能比前面的数小。比如4的裂开方法有：<br />
-1+1+1+1、1+1+2、1+3、2+2、4，一共5种，所以返回5。</p>
-<h5 id="18-拆分数组"><a class="markdownIt-Anchor" href="#18-拆分数组"></a> 18、拆分数组</h5>
-<p>  给定一个正数数组arr，请把arr中所有的数分成两个集合，尽量让两个集合的累加和接近。返回最接近的情况下，较小集合的累加和。</p>
-<h5 id="19-等长度拆分数组"><a class="markdownIt-Anchor" href="#19-等长度拆分数组"></a> 19、等长度拆分数组</h5>
-<p>  给定一个正数数组arr，请把arr中所有的数分成两个集合。如果arr长度为偶数，两个集合包含数的个数要一样多，如果arr长度为奇数，两个集合包含数的个数必须只差一个。请尽量让两个集合的累加和接近，返回最接近的情况下，较小集合的累加和。</p>
-<h5 id="20-n皇后问题"><a class="markdownIt-Anchor" href="#20-n皇后问题"></a> 20、N皇后问题</h5>
-<p>  N皇后问题是指在N*N的棋盘上要摆N个皇后，要求任何两个皇后不同行、不同列， 也不在同一条斜线上，给定一个整数n，返回n皇后的摆法有多少种。n=1，返回1，n=2或3，2皇后和3皇后问题无论怎么摆都不行，返回0。n=8，返回92。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/11%E3%80%81%E9%80%92%E5%BD%92/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/14/DataStructuresAndAlgorithms/11%E3%80%81%E9%80%92%E5%BD%92/" class="post-title-link" itemprop="url">递归</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-04-14 03:40:35 / Modified: 23:05:13" itemprop="dateCreated datePublished" datetime="2023-04-14T03:40:35+08:00">2023-04-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  暴力递归就是尝试，暴力递归是动态规划的基础，暴力递归加上合理的剪枝和缓存就是动态规划。</p>
-<h4 id="暴力递归的步骤"><a class="markdownIt-Anchor" href="#暴力递归的步骤"></a> 暴力递归的步骤</h4>
-<ul>
-<li>把问题转化为规模缩小了的同类问题的子问题</li>
-<li>有明确的不需要继续进行递归的条件(base case，递归终止条件)</li>
-<li>有当得到了子问题的结果之后的决策过程</li>
-<li>不记录每一个子问题的解</li>
-</ul>
-<hr />
-<h4 id="暴力递归的几个常见问题"><a class="markdownIt-Anchor" href="#暴力递归的几个常见问题"></a> 暴力递归的几个常见问题</h4>
-<h5 id="汉诺塔问题"><a class="markdownIt-Anchor" href="#汉诺塔问题"></a> 汉诺塔问题</h5>
-<p>  打印n层汉诺，塔从最左边移动到最右边的全部过程，每次只能移动一个圆盘，不能出现大盘叠在小盘上面的情况。可以分为3个步骤。</p>
-<ul>
-<li>将1-&gt; n-1 移动到中间</li>
-<li>将n移动到右边</li>
-<li>将1-&gt; n-1移动到右边</li>
-</ul>
-<h5 id="打印一个字符串的全部子序列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部子序列"></a> 打印一个字符串的全部子序列</h5>
-<p>  依次考察每一个字符是否被选中，递归逻辑可以画成整颗二叉树。每次递归前移除当前字符，递归完以后恢复当前字符。</p>
-<h5 id="打印一个字符串的全部子序列要求不要出现重复字面值的子序列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部子序列要求不要出现重复字面值的子序列"></a> 打印一个字符串的全部子序列，要求不要出现重复字面值的子序列</h5>
-<p>  同上，加上set去重</p>
-<h5 id="打印一个字符串的全部排列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部排列"></a> 打印一个字符串的全部排列</h5>
-<p>  使用index和index后面的字符交换位置，index递增达到递归目的，index=str.length为递归终止条件。</p>
-<h5 id="打印一个字符串的全部排列要求不要出现重复的排列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部排列要求不要出现重复的排列"></a> 打印一个字符串的全部排列，要求不要出现重复的排列</h5>
-<p>  加上visited数组去重，避免重复的字符进行交换。</p>
-<h5 id="反转栈不能使用额外集合只能使用递归函数"><a class="markdownIt-Anchor" href="#反转栈不能使用额外集合只能使用递归函数"></a> 反转栈，不能使用额外集合，只能使用递归函数</h5>
-<p>  两个递归函数，reverse使用f函数拿到栈底元素，然后递归，将栈底元素压栈。利用局部变量保存栈底元素，系统函数调用栈保证所有元素逆序。f函数拿到栈底元素，并保证其他元素顺序不变</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1245,20 +1439,20 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
