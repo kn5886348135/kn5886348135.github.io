@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="nginx官方博客，避免10大nginx配置错误指出nginx使用中10个最常见的配置错误。  没有足够的文件描述符   worker_connections指令限制每个worker进程最大的连接数，最大连接数也受操作系统的文件描述符限制。通常的配置错误是将文件描述符增加到worker_connections的两倍，正确的操作是在主上下文配置worker_rlimit_nofile。每个wor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="避免10大nginx配置错误">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="nginx官方博客，避免10大nginx配置错误指出nginx使用中10个最常见的配置错误。  没有足够的文件描述符   worker_connections指令限制每个worker进程最大的连接数，最大连接数也受操作系统的文件描述符限制。通常的配置错误是将文件描述符增加到worker_connections的两倍，正确的操作是在主上下文配置worker_rlimit_nofile。每个wor">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-05-06T09:59:31.000Z">
+<meta property="article:modified_time" content="2023-05-07T07:00:13.412Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="nginx配置">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>避免10大nginx配置错误 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          避免10大nginx配置错误
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-05-06 17:59:31" itemprop="dateCreated datePublished" datetime="2023-05-06T17:59:31+08:00">2023-05-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-05-07 15:00:13" itemprop="dateModified" datetime="2023-05-07T15:00:13+08:00">2023-05-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  nginx官方博客，<a target="_blank" rel="noopener" href="https://www.nginx.com/blog/avoiding-top-10-nginx-configuration-mistakes/">避免10大nginx配置错误</a>指出nginx使用中10个最常见的配置错误。</p>
+<h3 id="没有足够的文件描述符"><a class="markdownIt-Anchor" href="#没有足够的文件描述符"></a> 没有足够的文件描述符</h3>
+<p>  worker_connections指令限制每个worker进程最大的连接数，最大连接数也受操作系统的文件描述符限制。通常的配置错误是将文件描述符增加到worker_connections的两倍，正确的操作是在主上下文配置<a target="_blank" rel="noopener" href="https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile">worker_rlimit_nofile</a>。每个worker进程对客户端连接或者upstream消耗一个文件描述符、代理文件消耗若干个文件描述符，另外有保存临时响应的文件、写日志、和主进程交流等。根据nginx的启动方式可以使用不同的方式设置文件描述符，但是worker_connections指令不关心nginx的启动方式。</p>
+<ul>
+<li>如果nginx使用shell启动，使用ulimit指令，</li>
+<li>如果nginx作为系统服务启动，使用init脚本或者systemd服务列表变量</li>
+<li>使用/etc/security/limits.conf文件</li>
+</ul>
+<p>  可以使用sysctl fs.file-max指令临时修改系统的最大文件描述符，修改Debian系统的/proc/sys/fs/file-max文件可以永久修改系统的文件描述符数量。系统的文件描述符一般很大，但还是要确保worker_rlimit_nofile <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> worker_processes明显小于fs.file-max，避免服务器被DDOS攻击的时候用完所有的文件描述符而无法登陆。</p>
+<h3 id="关闭error_log指令"><a class="markdownIt-Anchor" href="#关闭error_log指令"></a> 关闭error_log指令</h3>
+<p>  error_log不接受off参数，error_log off指令会在默认目录/etc/nginx创建一个名为off的日志文件。nginx不建议关闭error_log，因为它是nginx调试问题的重要信息。</p>
+<h3 id="没有启用upstream的keepalive"><a class="markdownIt-Anchor" href="#没有启用upstream的keepalive"></a> 没有启用upstream的keepalive</h3>
+<p>  默认情况下，nginx为每一个新进来的请求打开一个新的到upstream的连接。这是安全的，但效率低下，因为nginx和服务器必须经过3次握手建立连接，3次或者4次握手断开连接。<br />
+  在高流量下，为每一个请求打开一个新的连接会耗尽系统资源并导致根本无法打开连接。每个连接的4元组，源ip、源端口、目标ip、目标端口都是唯一的，从nginx到upstream服务器的每个连接，源ip、目标ip、目标端口都是固定的，只有源端口是变量。当连接关闭的时候，Linux的socket保持TIME-WAIT状态并持续2分钟，在高流量的时候增加了耗尽可用源端口池的可能。发生这种情况后，nginx就不能打开到upstream的新链接。<br />
+  解决方案就是开启nginx到upstream的keepalive，而不是请求完成时关闭连接，让连接保持建立状态用于额外的请求。这样既能减少耗尽源端口的可能，也能提升性能。<br />
+  在每个upstream块中添加keepalive指令，设置保留在每个worker进程缓存中的与upstream服务器的空闲的、活跃的连接数。keepalive不限制nginx的每个worker进程可以打开的总的连接数，所以keepalive不必设置成很大的值。nginx官方建议设置为upstream块中服务器数量的2倍。如果在upstream块中指定了负载均衡策略，比如hash、ip_hash、least_conn、least_time、random等，则keepalive必须在负载均衡策略下面。<br />
+  转发请求到upstream服务器的location块，包含proxy_pass、proxy_http_version、proxy_set_header指令。nginx默认为每个到upstream的连接使用HTTP/1.0，并且对应地添加请求头Connection: close。结果就是每个请求完成后都会关闭，尽管upstream块中有keepalive指令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">告诉nginx使用HTTP/1.1</span></span><br><span class="line">proxy_http_version 1.1;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">移除Connection请求头的close值</span></span><br><span class="line">proxy_set_header   &quot;Connection&quot; &quot;&quot;;</span><br></pre></td></tr></table></figure>
+<h3 id="忘记指令继承工作原理"><a class="markdownIt-Anchor" href="#忘记指令继承工作原理"></a> 忘记指令继承工作原理</h3>
+<p>  nginx指令是向下继承的，比如http{}中的server{}、location{}会继承http{}的指令值，server{}中的指令会完全被location{}继承，相同的指令值会被内层块覆盖。数组指令不仅在多个上下文中被替换，在指定的上下文中也会被替换多次，比如proxy_set_header、add_header。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    add_header X-HTTP-LEVEL-HEADER 1;</span><br><span class="line">    add_header X-ANOTHER-HTTP-LEVEL-HEADER 1;</span><br><span class="line"></span><br><span class="line">    # 继承http块的X-HTTP-LEVEL-HEADER和X-ANOTHER-HTTP-LEVEL-HEADER</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8080;</span><br><span class="line">        location / &#123;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8081;</span><br><span class="line">        add_header X-SERVER-LEVEL-HEADER 1;</span><br><span class="line">        </span><br><span class="line">        # 覆盖http块的header，只剩下X-SERVER-LEVEL-HEADER</span><br><span class="line">        location / &#123;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        # 覆盖server块的header，只剩下X-LOCATION-LEVEL-HEADER</span><br><span class="line">        location /test &#123;</span><br><span class="line">            add_header X-LOCATION-LEVEL-HEADER 1;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        # 覆盖server块的header，要显示4个header，必须全部添加</span><br><span class="line">        location /correct &#123;</span><br><span class="line">            add_header X-HTTP-LEVEL-HEADER 1;</span><br><span class="line">            add_header X-ANOTHER-HTTP-LEVEL-HEADER 1;</span><br><span class="line"></span><br><span class="line">            add_header X-SERVER-LEVEL-HEADER 1;</span><br><span class="line">            add_header X-LOCATION-LEVEL-HEADER 1;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="关闭proxy_buffering指令"><a class="markdownIt-Anchor" href="#关闭proxy_buffering指令"></a> 关闭proxy_buffering指令</h3>
+<p>  nginx默认开启proxy_buffering指令，开启proxy_buffering表示nginx会将服务器的响应保存在内部缓冲区，直到整个响应缓冲完才向客户端发送数据。缓冲区帮助优化慢客户端，nginx尽可能长时间地缓存响应直到客户端获取所有响应，被代理的服务器可以尽快返回响应并处理其他请求。当关闭proxy_buffering后，nginx仅在发送数据到客户端前缓冲第一部分响应，通常是一个内存页的大小(根据操作系统可能是4KB或者8KB)。这通常只够响应头的空间，nginx同步将收到的数据发送响应到客户端，强制服务器保持空闲，直到nginx可以接收下一个响应片段。<br />
+  关闭proxy_buffering对客户端的响应延迟提升效果微乎其微，但是副作用却很明显，比如即使配置了速率限制和缓存也不会生效，影响性能等。只有很少场景关闭proxy_buffering是有意义的，比如长轮询。nginx官方强烈反对修改默认值。</p>
+<h3 id="错误使用if指令"><a class="markdownIt-Anchor" href="#错误使用if指令"></a> 错误使用if指令</h3>
+<p>  if指令很难使用，尤其是在location块中。它通常不会实现你所期望的功能，并且还会引起段错误。实际上因为if特别难使用，nginx wiki上有一篇文章<a target="_blank" rel="noopener" href="https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/">if是恶魔</a>。通常可以在if块中安全使用的指令是return和rewrite。</p>
+<h3 id="太多健康检查"><a class="markdownIt-Anchor" href="#太多健康检查"></a> 太多健康检查</h3>
+<p>  配置多个虚拟服务器以将请求代理到同一个上游组是很常见的（换句话说，在多个 server{} 块中包含相同的 proxy_pass 指令）。 这种情况下的错误是在每个 server{} 块中包含一个 health_check 指令。这只会在上游服务器上增加负载，而不会产生任何额外信息。解决方法是为每个上游{} 块定义一次健康检查。可以参考<a target="_blank" rel="noopener" href="https://docs.nginx.com/nginx/admin-guide/load-balancer/">nginx负载均衡</a>。</p>
+<h3 id="不安全地访问统计指标"><a class="markdownIt-Anchor" href="#不安全地访问统计指标"></a> 不安全地访问统计指标</h3>
+<p>  nginx操作的基础统计指标可以通过Stub Status模块获取，NGINX plus可以通过NGINX Plus API收集更多监控信息。在server{}或者location{}块中添加stub_status或者api指令可以开启监控信息收集功能。某些监控信息包含敏感数据，可能被用来攻击网站或者App，通常用户配置并没有限制对应的URL访问。</p>
+<ul>
+<li>使用HTTP Basic Authentication</li>
+<li>使用allow和deny指令</li>
+<li>结合上面两种方式</li>
+</ul>
+<h3 id="当所有流量都来自同一24-cidr子网段时使用ip_hash"><a class="markdownIt-Anchor" href="#当所有流量都来自同一24-cidr子网段时使用ip_hash"></a> 当所有流量都来自同一/24 CIDR子网段时使用ip_hash</h3>
+<p>  ip_hash负载均衡基于客户端的IP地址，hash key是IPv4地址的前3个8位字节或者整个IPv6地址。该方法会建立持久性会话，同一个客户端ip会被转发到同一个服务器，直到服务器不可用。假设nginx前有各种防火墙、路由器、4层负载均衡、网关等，并且在同一个子网(10.10.0.0/24)，客户端来源于内部网络、合作方网络、互联网等，那么nginx会认为所有请求都来自10.10.0.0/24这个子网。ip_hash会将所有请求分发到同一个服务器。<br />
+  解决方案是使用带$binary_remote_addr 的hash，将完整的客户端IP作为散列键，用consistent参数使用<a target="_blank" rel="noopener" href="https://www.metabrew.com/article/libketama-consistent-hashing-algo-memcached-clients">ketama</a>替代默认的哈希算法，在服务器列表发生变化时，这会大幅度减少重新映射到不同upstream服务器的key的数量，这会提高缓存命中率。</p>
+<h3 id="没有使用upstream"><a class="markdownIt-Anchor" href="#没有使用upstream"></a> 没有使用Upstream</h3>
+<p>  upstream块不仅提供负载均衡功能，还解锁了很多其他的功能，比如提升性能等。<br />
+  zone指令建立了一个共享内存区域，主机上的所有 NGINX worker进程都可以访问upstream服务器的配置和状态信息，几个upstream组可以共享该区域。<br />
+  server指令有几个参数可用于调整服务器行为。比如max_fails=1，fail_timeout=2s表示每 2 秒内失败一次（而不是默认的每10 秒一次），就认为服务器不健康，并因此没有资格接受请求。<br />
+  proxy_next_upstream表示NGINX认为失败的通信尝试，把请求转发给upstream组的下一个服务器。在默认的错误和超时条件中，添加http_500，以便NGINX认为来自upstream服务器的HTTP 500（内部服务器错误）代码代表一个失败的尝试。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">    upstream node_backend &#123;</span><br><span class="line">        zone upstreams 64K;</span><br><span class="line">        server 127.0.0.1:3000 max_fails=1 fail_timeout=2s;</span><br><span class="line">        keepalive 2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name example.com;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_pass http://node_backend/;</span><br><span class="line">            proxy_next_upstream error timeout http_500;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nginx%E9%85%8D%E7%BD%AE/" rel="tag"># nginx配置</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/" rel="prev" title="hash">
+      <i class="fa fa-chevron-left"></i> hash
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/" rel="next" title="Linux服务器安全">
+      Linux服务器安全 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E8%B6%B3%E5%A4%9F%E7%9A%84%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">1.</span> <span class="nav-text"> 没有足够的文件描述符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%97%ADerror_log%E6%8C%87%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text"> 关闭error_log指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E5%90%AF%E7%94%A8upstream%E7%9A%84keepalive"><span class="nav-number">3.</span> <span class="nav-text"> 没有启用upstream的keepalive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%98%E8%AE%B0%E6%8C%87%E4%BB%A4%E7%BB%A7%E6%89%BF%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text"> 忘记指令继承工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%97%ADproxy_buffering%E6%8C%87%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text"> 关闭proxy_buffering指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E4%BD%BF%E7%94%A8if%E6%8C%87%E4%BB%A4"><span class="nav-number">6.</span> <span class="nav-text"> 错误使用if指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%AA%E5%A4%9A%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5"><span class="nav-number">7.</span> <span class="nav-text"> 太多健康检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%AE%89%E5%85%A8%E5%9C%B0%E8%AE%BF%E9%97%AE%E7%BB%9F%E8%AE%A1%E6%8C%87%E6%A0%87"><span class="nav-number">8.</span> <span class="nav-text"> 不安全地访问统计指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%93%E6%89%80%E6%9C%89%E6%B5%81%E9%87%8F%E9%83%BD%E6%9D%A5%E8%87%AA%E5%90%8C%E4%B8%8024-cidr%E5%AD%90%E7%BD%91%E6%AE%B5%E6%97%B6%E4%BD%BF%E7%94%A8ip_hash"><span class="nav-number">9.</span> <span class="nav-text"> 当所有流量都来自同一&#x2F;24 CIDR子网段时使用ip_hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E4%BD%BF%E7%94%A8upstream"><span class="nav-number">10.</span> <span class="nav-text"> 没有使用Upstream</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/17/DataStructuresAndAlgorithms/13%E3%80%81%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/29%E3%80%81Suffix%20array/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,7 +179,64 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/17/DataStructuresAndAlgorithms/13%E3%80%81%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" class="post-title-link" itemprop="url">滑动窗口</a>
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/29%E3%80%81Suffix%20array/" class="post-title-link" itemprop="url">Suffix Array</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-06-03 01:43:52" itemprop="dateCreated datePublished" datetime="2023-06-03T01:43:52+08:00">2023-06-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/28%E3%80%81Skip%20List/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/28%E3%80%81Skip%20List/" class="post-title-link" itemprop="url">Skip List</a>
         </h2>
 
         <div class="post-meta">
@@ -190,7 +247,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-04-17 21:43:27 / Modified: 22:04:38" itemprop="dateCreated datePublished" datetime="2023-04-17T21:43:27+08:00">2023-04-17</time>
+              <time title="Created: 2023-06-03 01:40:13 / Modified: 01:41:00" itemprop="dateCreated datePublished" datetime="2023-06-03T01:40:13+08:00">2023-06-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -213,20 +270,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h4 id="滑动窗口的定义"><a class="markdownIt-Anchor" href="#滑动窗口的定义"></a> 滑动窗口的定义</h4>
-<p>  滑动窗口有左边界left和有边界right，在数组或者字符串或者一个序列上，记为S，窗口就是S[left…right]这一部分。left往右滑意味着一个样本出了窗口，right往右滑意味着一个样本进了窗口，left和right都只能往右滑。</p>
-<p>滑动内最大值和最小值的更新结构<br />
-  窗口不管left还是right滑动之后，都会让窗口呈现新状况。单调双端队列可以快速得到窗口当前状况下的最大值和最小值，最好平均下来复杂度能做到O(1)。</p>
-<hr />
-<h5 id="滑动窗口的最大值"><a class="markdownIt-Anchor" href="#滑动窗口的最大值"></a> 滑动窗口的最大值</h5>
-<p>  假设一个固定大小为W的窗口，依次划过arr，返回每一次滑出状况的最大值。例如，arr = [4,3,5,4,3,3,6,7], W = 3，返回[5,5,5,4,6,7]。</p>
-<h5 id="滑动窗口达标子数组数量"><a class="markdownIt-Anchor" href="#滑动窗口达标子数组数量"></a> 滑动窗口达标子数组数量</h5>
-<p>  给定一个整型数组arr，和一个整数num，某个arr中的子数组sub，如果想达标，必须满足：sub中最大值 – sub中最小值 &lt;= num，返回arr中达标子数组的数量。</p>
-<h5 id="加油站的良好出发点问题"><a class="markdownIt-Anchor" href="#加油站的良好出发点问题"></a> 加油站的良好出发点问题</h5>
-<p>  在一条环路上有 n 个加油站，其中第 i 个加油站有汽油 gas[i] 升。你有一辆油箱容量无限的的汽车，从第 i 个加油站开往第 i+1 个加油站需要消耗汽油 cost[i] 升。你从其中的一个加油站出发，开始时油箱为空。给定两个整数数组 gas 和 cost ，如果你可以绕环路行驶一周，则返回出发时加油站的编号，否则返回 -1 。如果存在解，则保证它是唯一的。</p>
-<h5 id="货币数组组成aim最少张数"><a class="markdownIt-Anchor" href="#货币数组组成aim最少张数"></a> 货币数组组成aim最少张数</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，<br />
-返回组成aim的最少货币数。因为是求最少货币数，所以每一张货币认为是相同或者不同就不重要了。</p>
+          <p>跳表（skiplist）<br />
+1）结构上根本和搜索二叉树无关<br />
+2）利用随机概率分布来使得高层索引可以无视数据规律，做到整体性能优良<br />
+3）思想是所有有序表中最先进的<br />
+4）结构简单就是多级单链表</p>
+<p>聊聊红黑树<br />
+1）平衡性规定非常诡异<br />
+2）平衡性调整最为复杂<br />
+3）优点在于每次插入删除扰动较好，但是在今天看来这个优势也极其微弱了<br />
+原因：贪图扰动小的话，B+树、2-3-4树可能更好，还是那句话，到底图什么<br />
+4）除此之外，红黑树并不比AVL树、SB树、跳表更加优秀<br />
+5）面试上遇到，说清楚道理，不行就举报</p>
+<p>数组、hashmap等扩容的时间复杂度均摊下来就是O(1)<br />
+234树、B树、B+树、红黑树等平衡性相对不严格，只需要在调整平衡性的时候进行磁盘IO，用于硬盘相关，主要减少磁盘IO，而AVL Tree平衡性好，但是对磁盘IO比较敏感</p>
+<p>插入删除、查询的时间复杂度都是O(logN)，严格证明涉及概率。</p>
+<p>题目一<br />
+给定一个数组arr，和两个整数a和b（a&lt;=b）<br />
+求arr中有多少个子数组，累加和在[a,b]这个范围上<br />
+返回达标的子数组数量<br />
+归并排序、前缀和数组、暴力O(N<sup>3</sup>)、改写SBT</p>
+<p>题目二<br />
+有一个滑动窗口（讲过的）：<br />
+1）L是滑动窗口最左位置、R是滑动窗口最右位置，一开始LR都在数组左侧<br />
+2）任何一步都可能R往右动，表示某个数进了窗口<br />
+3）任何一步都可能L往右动，表示某个数出了窗口</p>
+<p>想知道每一个窗口状态的中位数</p>
+<p>题目三</p>
+<p>设计一个结构包含如下两个方法：<br />
+void add(int index, int num)：把num加入到index位置<br />
+int get(int index) ：取出index位置的值<br />
+void remove(int index) ：把index位置上的值删除<br />
+要求三个方法时间复杂度O(logN)</p>
+<p>改写有序表的题目核心点<br />
+1）分析增加什么数据项可以支持题目<br />
+2）有序表一定要保持内部参与排序的key不重复<br />
+3）增加这个数据项了，在平衡性调整时，保证这个数据项也能更新正确<br />
+4）做到上面3点，剩下就是搜索二叉树怎么实现你想要的接口的问题了</p>
+<p>红黑树的定义<br />
+1、头结点黑<br />
+2、叶子节点黑<br />
+3、紅色节点不能相连</p>
+<p>最长链红黑相间，最短链都是黑长度相差不超过两倍<br />
+增加节点5中违规、删除节点8中违规</p>
 
       
     </div>
@@ -246,7 +332,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/27%E3%80%81Size%20Balanced%20Tree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -260,177 +346,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/14/DataStructuresAndAlgorithms/12%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" class="post-title-link" itemprop="url">动态规划</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-14 23:03:50" itemprop="dateCreated datePublished" datetime="2023-04-14T23:03:50+08:00">2023-04-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-17 21:53:28" itemprop="dateModified" datetime="2023-04-17T21:53:28+08:00">2023-04-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="暴力递归和动态规划的关系"><a class="markdownIt-Anchor" href="#暴力递归和动态规划的关系"></a> 暴力递归和动态规划的关系</h4>
-<ul>
-<li>某一个暴力递归，有解的重复调用，就可以把这个暴力递归优化成动态规划</li>
-<li>任何动态规划问题，都一定对应着某一个有重复过程的暴力递归</li>
-<li>但不是所有的暴力递归，都一定对应着动态规划</li>
-</ul>
-<h4 id="暴力递归的优化"><a class="markdownIt-Anchor" href="#暴力递归的优化"></a> 暴力递归的优化</h4>
-<ul>
-<li>有重复调用同一个子问题的解，这种递归可以优化</li>
-<li>如果每一个子问题都是不同的解，无法优化也不用优化</li>
-</ul>
-<p>  解决一个问题，可能有很多尝试方法，可能在很多尝试方法中，又有若干个尝试方法有动态规划的方式，一个问题可能有若干种动态规划的解法。</p>
-<h4 id="如何找到某个问题的动态规划方式"><a class="markdownIt-Anchor" href="#如何找到某个问题的动态规划方式"></a> 如何找到某个问题的动态规划方式</h4>
-<ol>
-<li>设计暴力递归：重要原则+4种常见尝试模型</li>
-<li>分析有没有重复解：列出调用过程的前几层就能发现是否有重复解</li>
-<li>用记忆化搜索 -&gt; 用严格表结构实现动态规划：套路解决</li>
-<li>看看能否继续优化：套路解决</li>
-</ol>
-<h5 id="暴力递归过程的原则"><a class="markdownIt-Anchor" href="#暴力递归过程的原则"></a> 暴力递归过程的原则</h5>
-<ol>
-<li>每一个可变参数的类型，一定不要比int类型更加复杂</li>
-<li>原则1）可以违反，让类型突破到一维线性结构，那必须是单一可变参数</li>
-<li>如果发现原则1）被违反，但不违反原则2），只需要做到记忆化搜索即可</li>
-<li>可变参数的个数，能少则少</li>
-<li>面试中违反以上原则的概率很小</li>
-</ol>
-<h5 id="常见的4种尝试模型"><a class="markdownIt-Anchor" href="#常见的4种尝试模型"></a> 常见的4种尝试模型</h5>
-<ul>
-<li>从左往右的尝试模型</li>
-<li>范围上的尝试模型</li>
-<li>多样本位置全对应的尝试模型</li>
-<li>寻找业务限制的尝试模型</li>
-</ul>
-<h4 id="暴力递归到动态规划的套路"><a class="markdownIt-Anchor" href="#暴力递归到动态规划的套路"></a> 暴力递归到动态规划的套路</h4>
-<ul>
-<li>你已经有了一个不违反原则的暴力递归，而且的确存在解的重复调用</li>
-<li>找到哪些参数的变化会影响返回值，对每一个列出变化范围</li>
-<li>参数间的所有的组合数量，意味着表大小</li>
-<li>记忆化搜索的方法就是缓存，非常容易得到</li>
-<li>规定好严格表的大小，分析位置的依赖顺序，然后从基础填写到最终解</li>
-<li>对于有枚举行为的决策过程，进一步优化</li>
-</ul>
-<h4 id="动态规划的优化技巧"><a class="markdownIt-Anchor" href="#动态规划的优化技巧"></a> 动态规划的优化技巧</h4>
-<ul>
-<li>空间压缩</li>
-<li>状态化简</li>
-<li>四边形不等式</li>
-<li>其他优化技巧</li>
-</ul>
-<h5 id="1-机器人问题"><a class="markdownIt-Anchor" href="#1-机器人问题"></a> 1、机器人问题</h5>
-<p>  假设有排成一行的N个位置，记为1~N，N 一定大于或等于2。开始时机器人在其中的M位置上(M一定是 1~N 中的一个)，如果机器人来到1位置，那么下一步只能往右来到2位置；如果机器人来到N位置，那么下一步只能往左来到 N-1 位置；如果机器人来到中间位置，那么下一步可以往左走或者往右走；规定机器人必须走 K 步，最终能来到P位置(P也是1~N中的一个)的方法有多少种？<br />
-  给定四个参数 N、M、K、P，返回方法数。</p>
-<h5 id="2-扑克问题"><a class="markdownIt-Anchor" href="#2-扑克问题"></a> 2、扑克问题</h5>
-<p>  给定一个整型数组arr，代表数值不同的纸牌排成一条线。玩家A和玩家B依次拿走每张纸牌，规定玩家A先拿，玩家B后拿。但是每个玩家每次只能拿走最左或最右的纸牌，玩家A和玩家B都绝顶聪明。请返回最后获胜者的分数。</p>
-<h5 id="3-背包问题"><a class="markdownIt-Anchor" href="#3-背包问题"></a> 3、背包问题</h5>
-<p>  给定两个长度都为N的数组weights和values，weights[i]和values[i]分别代表 i号物品的重量和价值。给定一个正数bag，表示一个载重bag的袋子，你装的物品不能超过这个重量。返回你能装下最多的价值是多少?</p>
-<h5 id="4-数字和字符转化问题"><a class="markdownIt-Anchor" href="#4-数字和字符转化问题"></a> 4、数字和字符转化问题</h5>
-<p>  规定1和A对应、2和B对应、3和C对应…26和Z对应。那么一个数字字符串比如&quot;111”就可以转化为:“AAA”、“KA&quot;和&quot;AK”。给定一个只有数字字符组成的字符串str，返回有多少种转化结果？</p>
-<h5 id="5-剪裁贴纸"><a class="markdownIt-Anchor" href="#5-剪裁贴纸"></a> 5、剪裁贴纸</h5>
-<p>  给定一个字符串str，给定一个字符串类型的数组arr，出现的字符都是小写英文。arr每一个字符串，代表一张贴纸，你可以把单个字符剪开使用，目的是拼出str来。返回需要至少多少张贴纸可以完成这个任务。<br />
-  例子：str= “babac”，arr = {“ba”,“c”,“abcd”} ba + ba + c  3  abcd + abcd 2  abcd+ba 2 所以返回2</p>
-<h5 id="6-最长公共子串"><a class="markdownIt-Anchor" href="#6-最长公共子串"></a> 6、最长公共子串</h5>
-<p>  给定两个字符串str1和str2，返回这两个字符串的最长公共子序列长度。<br />
-  比如 ： str1 = “a12b3c456d”,str2 = “1ef23ghi4j56k”。最长公共子序列是“123456”，所以返回长度6</p>
-<h5 id="7-最长回文子序列"><a class="markdownIt-Anchor" href="#7-最长回文子序列"></a> 7、最长回文子序列</h5>
-<p>  给定一个字符串str，返回这个字符串的最长回文子序列长度。比如 ： str =“a12b3c43def2ghi1kpm”，最长回文子序列是“1234321”或者“123c321”，返回长度7</p>
-<h5 id="8-象棋跳马"><a class="markdownIt-Anchor" href="#8-象棋跳马"></a> 8、象棋跳马</h5>
-<p>  想象一个象棋的棋盘，然后把整个棋盘放入第一象限，棋盘的最左下角是(0,0)位置。那么整个棋盘就是横坐标上9条线、纵坐标上10条线的区域。给你三个参数 x，y，k，返回“马”从(0,0)位置出发，必须走k步，最后落在(x,y)上的方法数有多少种?</p>
-<h5 id="9-泡咖啡"><a class="markdownIt-Anchor" href="#9-泡咖啡"></a> 9、泡咖啡</h5>
-<p>  给定一个数组arr，arr[i]代表第i号咖啡机泡一杯咖啡的时间，给定一个正数N，表示N个人等着咖啡机泡咖啡，每台咖啡机只能轮流泡咖啡。只有一台咖啡机，一次只能洗一个杯子，时间耗费a，洗完才能洗下一杯。每个咖啡杯也可以自己挥发干净，时间耗费b，咖啡杯可以并行挥发。假设所有人拿到咖啡之后立刻喝干净，返回从开始等到所有咖啡机变干净的最短时间。参数：int[] arr、int N，int a、int b</p>
-<h5 id="10-最小距离累加和"><a class="markdownIt-Anchor" href="#10-最小距离累加和"></a> 10、最小距离累加和</h5>
-<p>  给定一个二维数组matrix，一个人必须从左上角出发，最后到达右下角。沿途只可以向下或者向右走，沿途的数字都累加就是距离累加和。返回最小距离累加和。</p>
-<h5 id="11-计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#11-计算重复货币数组组成aim"></a> 11、计算重复货币数组组成aim</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，即便是值相同的货币也认为每一张都是不同的，返回组成aim的方法数。<br />
-  例如：arr = {1,1,1}，aim = 2，第0个和第1个能组成2，第1个和第2个能组成2，第0个和第2个能组成2。一共就3种方法，所以返回3</p>
-<h5 id="12-无限张货币数组组成aim"><a class="markdownIt-Anchor" href="#12-无限张货币数组组成aim"></a> 12、无限张货币数组组成aim</h5>
-<p>  arr是面值数组，其中的值都是正数且没有重复。再给定一个正数aim。每个值都认为是一种面值，且认为张数是无限的。返回组成aim的方法数<br />
-  例如：arr = {1,2}，aim = 4。方法如下：1+1+1+1、1+1+2、2+2，一共就3种方法，所以返回3。</p>
-<h5 id="13-不计算重复货币数组组成aim"><a class="markdownIt-Anchor" href="#13-不计算重复货币数组组成aim"></a> 13、不计算重复货币数组组成aim</h5>
-<p>  arr是货币数组，其中的值都是正数。再给定一个正数aim。每个值都认为是一张货币，认为值相同的货币没有任何不同，返回组成aim的方法数。<br />
-  例如：arr = {1,2,1,1,2,1,2}，aim = 4。方法：1+1+1+1、1+1+2、2+2。一共就3种方法，所以返回3。</p>
-<h5 id="14-醉汉bob"><a class="markdownIt-Anchor" href="#14-醉汉bob"></a> 14、醉汉Bob</h5>
-<p>  给定5个参数，N，M，row，col，k，表示在N<em>M的区域上，醉汉Bob初始在(row,col)位置。Bob一共要迈出k步，且每步都会等概率向上下左右四个方向走一个单位。任何时候Bob只要离开N</em>M的区域，就直接死亡。返回k步之后，Bob还在N*M的区域的概率。</p>
-<h5 id="15-杀死怪物"><a class="markdownIt-Anchor" href="#15-杀死怪物"></a> 15、杀死怪物</h5>
-<p>  给定3个参数，N，M，K，怪兽有N滴血，等着英雄来砍自己。英雄每一次打击，都会让怪兽流失[0<sub>M]的血量。每一次在[0</sub>M]上等概率的获得一个值，求K次打击之后，英雄把怪兽砍死的概率。</p>
-<h5 id="16-无重复无限张货币数组组成aim"><a class="markdownIt-Anchor" href="#16-无重复无限张货币数组组成aim"></a> 16、无重复无限张货币数组组成aim</h5>
-<p>  arr是面值数组，其中的值都是正数且没有重复。再给定一个正数aim。每个值都认为是一种面值，且认为张数是无限的。返回组成aim的最少货币数。</p>
-<h5 id="17-裂开正数"><a class="markdownIt-Anchor" href="#17-裂开正数"></a> 17、裂开正数</h5>
-<p>  给定一个正数n，求n的裂开方法数。规定：后面的数不能比前面的数小。比如4的裂开方法有：<br />
-1+1+1+1、1+1+2、1+3、2+2、4，一共5种，所以返回5。</p>
-<h5 id="18-拆分数组"><a class="markdownIt-Anchor" href="#18-拆分数组"></a> 18、拆分数组</h5>
-<p>  给定一个正数数组arr，请把arr中所有的数分成两个集合，尽量让两个集合的累加和接近。返回最接近的情况下，较小集合的累加和。</p>
-<h5 id="19-等长度拆分数组"><a class="markdownIt-Anchor" href="#19-等长度拆分数组"></a> 19、等长度拆分数组</h5>
-<p>  给定一个正数数组arr，请把arr中所有的数分成两个集合。如果arr长度为偶数，两个集合包含数的个数要一样多，如果arr长度为奇数，两个集合包含数的个数必须只差一个。请尽量让两个集合的累加和接近，返回最接近的情况下，较小集合的累加和。</p>
-<h5 id="20-n皇后问题"><a class="markdownIt-Anchor" href="#20-n皇后问题"></a> 20、N皇后问题</h5>
-<p>  N皇后问题是指在N*N的棋盘上要摆N个皇后，要求任何两个皇后不同行、不同列， 也不在同一条斜线上，给定一个整数n，返回n皇后的摆法有多少种。n=1，返回1，n=2或3，2皇后和3皇后问题无论怎么摆都不行，返回0。n=8，返回92。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/14/DataStructuresAndAlgorithms/11%E3%80%81%E9%80%92%E5%BD%92/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/14/DataStructuresAndAlgorithms/11%E3%80%81%E9%80%92%E5%BD%92/" class="post-title-link" itemprop="url">递归</a>
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/27%E3%80%81Size%20Balanced%20Tree/" class="post-title-link" itemprop="url">Size Balanced Tree</a>
         </h2>
 
         <div class="post-meta">
@@ -441,7 +357,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-04-14 03:40:35 / Modified: 23:05:13" itemprop="dateCreated datePublished" datetime="2023-04-14T03:40:35+08:00">2023-04-14</time>
+              <time title="Created: 2023-06-03 01:36:47 / Modified: 01:38:31" itemprop="dateCreated datePublished" datetime="2023-06-03T01:36:47+08:00">2023-06-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -464,33 +380,48 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  暴力递归就是尝试，暴力递归是动态规划的基础，暴力递归加上合理的剪枝和缓存就是动态规划。</p>
-<h4 id="暴力递归的步骤"><a class="markdownIt-Anchor" href="#暴力递归的步骤"></a> 暴力递归的步骤</h4>
-<ul>
-<li>把问题转化为规模缩小了的同类问题的子问题</li>
-<li>有明确的不需要继续进行递归的条件(base case，递归终止条件)</li>
-<li>有当得到了子问题的结果之后的决策过程</li>
-<li>不记录每一个子问题的解</li>
-</ul>
-<hr />
-<h4 id="暴力递归的几个常见问题"><a class="markdownIt-Anchor" href="#暴力递归的几个常见问题"></a> 暴力递归的几个常见问题</h4>
-<h5 id="汉诺塔问题"><a class="markdownIt-Anchor" href="#汉诺塔问题"></a> 汉诺塔问题</h5>
-<p>  打印n层汉诺，塔从最左边移动到最右边的全部过程，每次只能移动一个圆盘，不能出现大盘叠在小盘上面的情况。可以分为3个步骤。</p>
-<ul>
-<li>将1-&gt; n-1 移动到中间</li>
-<li>将n移动到右边</li>
-<li>将1-&gt; n-1移动到右边</li>
-</ul>
-<h5 id="打印一个字符串的全部子序列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部子序列"></a> 打印一个字符串的全部子序列</h5>
-<p>  依次考察每一个字符是否被选中，递归逻辑可以画成整颗二叉树。每次递归前移除当前字符，递归完以后恢复当前字符。</p>
-<h5 id="打印一个字符串的全部子序列要求不要出现重复字面值的子序列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部子序列要求不要出现重复字面值的子序列"></a> 打印一个字符串的全部子序列，要求不要出现重复字面值的子序列</h5>
-<p>  同上，加上set去重</p>
-<h5 id="打印一个字符串的全部排列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部排列"></a> 打印一个字符串的全部排列</h5>
-<p>  使用index和index后面的字符交换位置，index递增达到递归目的，index=str.length为递归终止条件。</p>
-<h5 id="打印一个字符串的全部排列要求不要出现重复的排列"><a class="markdownIt-Anchor" href="#打印一个字符串的全部排列要求不要出现重复的排列"></a> 打印一个字符串的全部排列，要求不要出现重复的排列</h5>
-<p>  加上visited数组去重，避免重复的字符进行交换。</p>
-<h5 id="反转栈不能使用额外集合只能使用递归函数"><a class="markdownIt-Anchor" href="#反转栈不能使用额外集合只能使用递归函数"></a> 反转栈，不能使用额外集合，只能使用递归函数</h5>
-<p>  两个递归函数，reverse使用f函数拿到栈底元素，然后递归，将栈底元素压栈。利用局部变量保存栈底元素，系统函数调用栈保证所有元素逆序。f函数拿到栈底元素，并保证其他元素顺序不变</p>
+          <p>SB树（size-balance-tree）<br />
+1）让每一个叔叔节点为头的数，节点个数都不少于其任何一个侄子节点<br />
+2）也是从底层被影响节点开始向上做路径每个节点检查<br />
+3）与AVL树非常像，也是四种违规类型：LL、RR、LR、RL<br />
+4）与AVL树非常像，核心点是：<br />
+LL（做一次右旋）、RR（做一次左旋）<br />
+LR和RL（利用旋转让底层那个上到顶部）<br />
+5）与AVL树不同的是，每轮经过调整后，谁的孩子发生变化了，谁就再查</p>
+<p>SB树在使用时候的改进<br />
+1）删除时候可以不用检查<br />
+2）就把平衡性的调整放在插入的时候<br />
+3）因为这种只要变就递归的特性，别的树没有<br />
+4）可以在节点上封装别的数据项，来增加功能</p>
+<p>跳表（skiplist）</p>
+<p>1）结构上根本和搜索二叉树无关</p>
+<p>2）利用随机概率分布来使得高层索引可以无视数据规律，做到整体性能优良</p>
+<p>3）思想是所有有序表中最先进的</p>
+<p>4）结构简单就是多级单链表</p>
+<p>聊聊红黑树</p>
+<p>1）平衡性规定非常诡异<br />
+2）平衡性调整最为复杂<br />
+3）优点在于每次插入删除扰动较好，但是在今天看来这个优势也极其微弱了<br />
+原因：贪图扰动小的话，B+树、2-3-4树可能更好，还是那句话，到底图什么<br />
+4）除此之外，红黑树并不比AVL树、SB树、跳表更加优秀<br />
+5）面试上遇到，说清楚道理，不行就举报</p>
+<p></br></br></br></br><br />
+平衡性<br />
+size(T.left) ≥ size(T.right.left), size(T.right.right)<br />
+size(T.right) ≥ size(T.left.left), size(T.left.right)<br />
+假设size(A)=n，AB是左右两个子节点，则size(B)&lt;=2n。则整颗树的高度仍然是logN的水平，没有avl tree的平衡性好。<br />
+破坏平衡性的4种类型<br />
+当前节点cur<br />
+left、right都是指初始状态的左右节点，而不是调整以后的。<br />
+LL      size(cur.left.left)&gt;size(cur.right) cur右旋并递归检查cur,cur.left是否违规<br />
+LR      size(cur.left.right)&gt;size(cur.right) cur.left左旋，cur.left.right右旋，并递归检查cur、cur.left、cur.left.right<br />
+RL      size(cur.right.left)&gt;size(cur.left) cur.right右旋，cur.right.left左旋，并递归检查cur、cur.right、cur.right.left<br />
+RR      size(cur.right.right)&gt;size(cur.left) cur左旋并递归检查cur,cur.right</p>
+<p>avl tree的平衡性很严苛，每次添加、删除节点都会检查。<br />
+size-balanced tree只能保证两个子树的size不超过2倍，时间复杂度有严格的数学证明，O(logN)<br />
+size-balanced tree的优势<br />
+删除节点的时候不调整平衡性，只在增加节点的时候递归调整<br />
+假设size-balanced tree的节点数是N，删除所有的左节点或者右节点后退化成链表时，高度为logN，是最差时间复杂度。后续如果增加节点，马上递归调整成平衡状态。</p>
 
       
     </div>
@@ -510,7 +441,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/26%E3%80%81AVL%20tree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -524,134 +455,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/" class="post-title-link" itemprop="url">图</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-04-13 22:11:32 / Modified: 22:35:13" itemprop="dateCreated datePublished" datetime="2023-04-13T22:11:32+08:00">2023-04-13</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="图的概念"><a class="markdownIt-Anchor" href="#图的概念"></a> 图的概念</h4>
-<ul>
-<li>由点的集合和边的集合构成</li>
-<li>虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达</li>
-<li>边上可能带有权值</li>
-</ul>
-<p>  图的表示方法邻接表法、邻接矩阵法等。题目会以各种方式给出图的表达方式，可以将它转化为一种熟悉的表达方式，方便操作。可以将图表示为节点和边的集合，例如Graph。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Graph</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> Map&lt;Integer, Node&gt; nodes;</span><br><span class="line">    <span class="keyword">public</span> Set&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Graph</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.nodes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="built_in">this</span>.edges = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="comment">// 节点值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> value;</span><br><span class="line">    <span class="comment">// 入度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> in;</span><br><span class="line">    <span class="comment">// 出度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> out;</span><br><span class="line">    <span class="comment">// 相邻节点</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Node&gt; nexts;</span><br><span class="line">    <span class="comment">// 节点的边</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.value = value;</span><br><span class="line">        in = <span class="number">0</span>;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">        nexts = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        edges = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="comment">// 边的权重</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> weight;</span><br><span class="line">    <span class="comment">// 边的起始节点</span></span><br><span class="line">    <span class="keyword">public</span> Node from;</span><br><span class="line">    <span class="comment">// 边的结束节点</span></span><br><span class="line">    <span class="keyword">public</span> Node to;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Edge</span><span class="params">(<span class="type">int</span> weight, Node from, Node to)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.weight = weight;</span><br><span class="line">        <span class="built_in">this</span>.from = from;</span><br><span class="line">        <span class="built_in">this</span>.to = to;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="宽度优先遍历"><a class="markdownIt-Anchor" href="#宽度优先遍历"></a> 宽度优先遍历</h4>
-<ul>
-<li>利用队列实现(也可以使用栈实现)</li>
-<li>从源节点开始依次按照宽度进队列，然后弹出</li>
-<li>每弹出一个点，把该节点所有没有进过队列的邻接点放入队列</li>
-<li>直到队列变空</li>
-</ul>
-<h4 id="深度优先遍历"><a class="markdownIt-Anchor" href="#深度优先遍历"></a> 深度优先遍历</h4>
-<ul>
-<li>利用栈实现(也可以用队列实现)</li>
-<li>从源节点开始把节点按照深度放入栈，然后弹出</li>
-<li>每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</li>
-<li>直到栈变空</li>
-</ul>
-<h4 id="拓扑排序"><a class="markdownIt-Anchor" href="#拓扑排序"></a> 拓扑排序</h4>
-<p>  拓扑排序要求有向无环图，拓扑排序结果不唯一，可以用宽度优先遍历和深度优先遍历实现。应用场景有事件安排、编译顺序等</p>
-<ul>
-<li>在图中找到所有入度为0的点输出</li>
-<li>把所有入度为0的点在图中删掉，继续找入度为0的点输出，周而复始</li>
-<li>图的所有点都被删除后，依次输出的顺序就是拓扑排序</li>
-</ul>
-<h4 id="最小生成树无向图"><a class="markdownIt-Anchor" href="#最小生成树无向图"></a> 最小生成树(无向图)</h4>
-<p>  <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91">最小生成树</a>要求无向图，可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Kruskal</a>和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Prim</a>算法实现，Kruskal和Prim都是贪心算法。</p>
-<h4 id="kruskal算法使用并查集"><a class="markdownIt-Anchor" href="#kruskal算法使用并查集"></a> Kruskal算法使用并查集</h4>
-<ul>
-<li>总是从权值最小的边开始考虑，依次考察权值依次变大的边</li>
-<li>当前的边要么进入最小生成树的集合，要么丢弃</li>
-<li>如果当前的边进入最小生成树的集合中不会形成环，就要当前边</li>
-<li>如果当前的边进入最小生成树的集合中会形成环，就不要当前边</li>
-<li>考察完所有边之后，最小生成树的集合也得到了</li>
-</ul>
-<h4 id="prim算法"><a class="markdownIt-Anchor" href="#prim算法"></a> Prim算法</h4>
-<ol>
-<li>可以从任意节点出发来寻找最小生成树</li>
-<li>某个点加入到被选取的点中后，解锁这个点出发的所有新的边</li>
-<li>在所有解锁的边中选最小的边，然后看看这个边会不会形成环</li>
-<li>如果会，不要当前边，继续考察剩下解锁的边中最小的边，重复3</li>
-<li>如果不会，要当前边，将该边的指向点加入到被选取的点中，重复2</li>
-<li>当所有点都被选取，最小生成树就得到了</li>
-</ol>
-<h4 id="最短路径算法"><a class="markdownIt-Anchor" href="#最短路径算法"></a> 最短路径算法</h4>
-<p>  可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra</a>算法实现最短路径。</p>
-<h4 id="迪瑞克斯拉算法有向-无负权重-可以有环"><a class="markdownIt-Anchor" href="#迪瑞克斯拉算法有向-无负权重-可以有环"></a> 迪瑞克斯拉算法(有向、无负权重、可以有环)</h4>
-<ol>
-<li>Dijkstra算法必须指定一个源点</li>
-<li>生成一个源点到各个点的最小距离表，一开始只有一条记录，即原点到自己的最小距离为0，源点到其他所有点的最小距离都为正无穷大</li>
-<li>从距离表中拿出没拿过记录里的最小记录，通过这个点发出的边，更新源点到各个点的最小距离表，不断重复这一步</li>
-<li>源点到所有的点记录如果都被拿过一遍，过程停止，最小距离表得到了</li>
-</ol>
-<h4 id="dijkstral算法优化"><a class="markdownIt-Anchor" href="#dijkstral算法优化"></a> Dijkstral算法优化</h4>
-<p>  利用加强堆<br />
-  某个节点最短距离改变时做动态调整</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/12/DataStructuresAndAlgorithms/9%E3%80%81%E5%B9%B6%E6%9F%A5%E9%9B%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/12/DataStructuresAndAlgorithms/9%E3%80%81%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="post-title-link" itemprop="url">并查集</a>
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/26%E3%80%81AVL%20tree/" class="post-title-link" itemprop="url">AVL tree</a>
         </h2>
 
         <div class="post-meta">
@@ -661,14 +465,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2023-04-12 21:33:07" itemprop="dateCreated datePublished" datetime="2023-04-12T21:33:07+08:00">2023-04-12</time>
+              <time title="Created: 2023-06-03 01:33:10" itemprop="dateCreated datePublished" datetime="2023-06-03T01:33:10+08:00">2023-06-03</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-14 03:32:52" itemprop="dateModified" datetime="2023-04-14T03:32:52+08:00">2023-04-14</time>
+                <time title="Modified: 2023-07-24 00:48:45" itemprop="dateModified" datetime="2023-07-24T00:48:45+08:00">2023-07-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -691,42 +495,72 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  在计算机科学中，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">并查集</a>（英文：Disjoint-set data structure，直译为不交集数据结构）是一种数据结构，用于处理一些不交集（Disjoint sets，一系列没有重复元素的集合）的合并及查询问题。<br />
-  解决两大块区域的合并问题，常用在图等领域中。<br />
-<br /></p>
-<h4 id="并查集的模型"><a class="markdownIt-Anchor" href="#并查集的模型"></a> 并查集的模型</h4>
-<ul>
-<li>有若干个样本a、b、c、d…类型假设是V</li>
-<li>在并查集中一开始认为每个样本都在单独的集合里</li>
-<li>用户可以在任何时候调用如下两个方法：
-<ul>
-<li>boolean isSameSet(V x, V y) : 查询样本x和样本y是否属于一个集合</li>
-<li>void union(V x, V y) : 把x和y各自所在集合的所有样本合并成一个集合</li>
-</ul>
-</li>
-<li>isSameSet和union方法的代价越低越好</li>
-</ul>
-<h4 id="合并"><a class="markdownIt-Anchor" href="#合并"></a> 合并</h4>
-<p>  合并操作是将两个并查集指向同一个代表节点，而不是将两个集合放到一个新的集合中。可以使用map或者数组实现合并操作。数组实现的合并操作在常数项时间复杂度更有优势。小集合挂在大集合的下面，可以减少路径压缩操作。</p>
-<h4 id="查询"><a class="markdownIt-Anchor" href="#查询"></a> 查询</h4>
-<p>  从下往上递归查找代表节点，并处理路径压缩。可以借助Stack或者数组处理路径压缩。</p>
-<h4 id="并查集的特点"><a class="markdownIt-Anchor" href="#并查集的特点"></a> 并查集的特点</h4>
-<ul>
-<li>每个节点都有一条往上指的指针</li>
-<li>节点a往上找到的头节点，叫做a所在集合的代表节点</li>
-<li>查询x和y是否属于同一个集合，就是看看找到的代表节点是不是一个</li>
-<li>把x和y各自所在集合的所有点合并成一个集合，只需要小集合的代表点挂在大集合的代表点的下方</li>
-<li>如果方法调用很频繁，那么单次调用的时间复杂度为O(1)</li>
-</ul>
-<hr />
-<h5 id="leetcode547-friend-circles"><a class="markdownIt-Anchor" href="#leetcode547-friend-circles"></a> LeetCode547 Friend Circles</h5>
-<p>  使用并查集合并，最后返回子集的个数</p>
-<h5 id="leetcode200-number-of-islands"><a class="markdownIt-Anchor" href="#leetcode200-number-of-islands"></a> LeetCode200 Number of Islands</h5>
-<p>  给定一个二维数组matrix，里面的值不是1就是0，上、下、左、右相邻的1认为是一片岛，返回matrix中岛的数量。<br />
-  合并、查询，暴力循环(上下左右递归感染)、使用map实现并查集、使用数组实现并查集</p>
-<h5 id="leetcode305-number-of-islands-ii"><a class="markdownIt-Anchor" href="#leetcode305-number-of-islands-ii"></a> LeetCode305 Number of Islands II</h5>
-<h5 id="岛问题扩展"><a class="markdownIt-Anchor" href="#岛问题扩展"></a> 岛问题扩展</h5>
-<p>  如果matrix极大，设计一种可行的并行计算方案??</p>
+          <p>搜索二叉树<br />
+搜索二叉树一定要说明以什么标准来排序<br />
+经典的搜索二叉树，树上没有重复的用来排序的key值<br />
+如果有重复节点的需求，可以在一个节点内部增加数据项</p>
+<p>搜索二叉树查询key（查询某个key存在还是不存在）<br />
+1）如果当前节点的value==key，返回true<br />
+2）如果当前节点的value &lt; key，当前节点向左移动<br />
+3）如果当前节点的value &gt; key，当前节点向右移动<br />
+4）如果当前节点变成null，返回false</p>
+<p>搜索二叉树插入新的key<br />
+和查询过程一样，但当前节点滑到空的时候，就插入在这里</p>
+<p>搜索二叉树删除key<br />
+0）先找到key所在的节点<br />
+1）如果该节点没有左孩子、没有右孩子，直接删除即可<br />
+2）如果该节点有左孩子、没有右孩子，直接用左孩子顶替该节点<br />
+3）如果该节点没有左孩子、有右孩子，直接用右孩子顶替该节点<br />
+4）如果该节点有左孩子、有右孩子，用该节点后继节点顶替该节点</p>
+<p>搜索二叉树特别不讲究<br />
+1）基础的搜索二叉树，添加、删除时候不照顾平衡性<br />
+2）数据状况很差时，性能就很差<br />
+给搜索二叉树引入两个动作：左旋、右旋</p>
+<p>AVL树、SB树、红黑树的共性<br />
+1）都是搜索二叉树<br />
+2）插入、删除、查询（一切查询）搜索二叉树怎么做，这些结构都这么做<br />
+3）使用调整的基本动作都只有左旋、右旋<br />
+4）插入、删除时，从最底层被影响到的节点开始，对往上路径的节点做平衡性检查<br />
+5）因为只对一条向上路径的每个节点做O(1)的检查和调整，所以可以做到O(logN)</p>
+<p>AVL树、SB树、红黑树的不同<br />
+1）平衡性的约束不同<br />
+AVL树最严格、SB树稍宽松、红黑树最宽松<br />
+2）插入、删除和搜索二叉树一样，但是额外，做各自的平衡性调整。各自的平衡性调整所使用的动作都是左旋或者右旋</p>
+<p>AVL树<br />
+1）最严格的平衡性，任何节点左树高度和右树高度差不超过1<br />
+2）往上沿途检查每个节点时，都去检查四种违规情况：LL、RR、LR、RL<br />
+3）不同情况虽然看起来复杂，但是核心点是：<br />
+LL（做一次右旋）、RR（做一次左旋）<br />
+LR和RL（利用旋转让底层那个上到顶部）</p>
+<p>AVL Tree的定义<br />
+任何一个节点，左右子树的高度差小于2</p>
+<p>主席树、234树、SB树、红黑树、avl树的平衡性不一样，时间复杂度都是O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>2</mn></msub><mi>N</mi></mrow><annotation encoding="application/x-tex">log_2 N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)。</p>
+<p>搜索二叉树增加、删除节点后的操作？<br />
+增加节点<br />
+1、<br />
+2、</p>
+<p>删除节点<br />
+没有左右    父节点直接指向空<br />
+有左无右    父节点指向左节点<br />
+有右无左    父节点指向右节点<br />
+有左有右    右节点的最左节点替换当前节点或者左节点的最右节点替换当前节点</p>
+<p>avl树和搜索二叉树的区别？<br />
+加入节点<br />
+LL、LR、RR、RL四种破坏平衡性的类型<br />
+LL      左子树的左子树太长，当前节点右旋<br />
+LR      左子树的右子树太长，当前节点的左子树左旋，然后右旋，使左节点的右节点来到当前节点<br />
+RR      右子树的右子树太长，当前节点左旋<br />
+RL      右子树的左子树太长，当前节点的右子树右旋，然后左旋，使右节点的左节点来到当前节点<br />
+LL+LR   按照LL处理，直接右旋，按照LR处理可能高度差仍然大于2<br />
+RR+RL   按照RR处理，直接左旋<br />
+某一个节点不平衡都是上面4种类型之一，所有父节点全部检查一次</p>
+<p>删除节点<br />
+没有左右    父节点往上都检查<br />
+有左无右    父节点指向左节点X，X往上都检查<br />
+有右无左    父节点指向右节点X，X往上都检查<br />
+有左有右    右节点的最左节点X替换当前节点，X的父节点往上检查或者左节点的最右节点X替换当前节点，X的父节点往上检查</p>
+<p>mysql等关系数据库用到的有序表比如B+Tree无法拆分成分布式结构，所有都是单实例的。<br />
+mysql8的分布式功能怎么理解？</p>
 
       
     </div>
@@ -746,7 +580,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/12/DataStructuresAndAlgorithms/8%E3%80%81%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/02/DataStructuresAndAlgorithms/25%E3%80%81%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6%E7%B1%BB%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -760,7 +594,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/12/DataStructuresAndAlgorithms/8%E3%80%81%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">贪心算法</a>
+            <a href="/2023/06/02/DataStructuresAndAlgorithms/25%E3%80%81%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6%E7%B1%BB%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">资源限制类问题</a>
         </h2>
 
         <div class="post-meta">
@@ -770,14 +604,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2023-04-12 19:41:23" itemprop="dateCreated datePublished" datetime="2023-04-12T19:41:23+08:00">2023-04-12</time>
+              <time title="Created: 2023-06-02 22:04:53" itemprop="dateCreated datePublished" datetime="2023-06-02T22:04:53+08:00">2023-06-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-13 22:17:30" itemprop="dateModified" datetime="2023-04-13T22:17:30+08:00">2023-04-13</time>
+                <time title="Modified: 2023-06-03 01:30:44" itemprop="dateModified" datetime="2023-06-03T01:30:44+08:00">2023-06-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -800,773 +634,937 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h4 id="贪心算法"><a class="markdownIt-Anchor" href="#贪心算法"></a> 贪心算法</h4>
-<ul>
-<li>最自然智慧的算法</li>
-<li>用一种局部最功利的标准，总是做出在当前看来是最好的选择</li>
-<li>难点在于证明局部最优解可以得到全局最优解</li>
-<li>贪心算法主要靠经验</li>
-</ul>
-<h4 id="贪心求解的标准过程"><a class="markdownIt-Anchor" href="#贪心求解的标准过程"></a> 贪心求解的标准过程</h4>
+          <h3 id="资源限制类问题技巧"><a class="markdownIt-Anchor" href="#资源限制类问题技巧"></a> 资源限制类问题技巧</h3>
 <ol>
-<li>分析业务</li>
-<li>根据业务逻辑找到不同的贪心策略</li>
-<li>对于能举出反例的策略直接跳过，不能举出反例的策略要证明有效性这往往是特别困难的，要求数学能力很高且不具有统一的技巧性</li>
-<li>用对数器证明正确性</li>
+<li>布隆过滤器用于集合的建立与查询，并可以节省大量空间</li>
+<li>一致性哈希解决数据服务器的负载管理问题</li>
+<li>利用并查集结构做岛问题的并行计算</li>
+<li>哈希函数可以把数据按照种类均匀分流</li>
+<li>位图解决某一范围上数字的出现情况，并可以节省大量空间</li>
+<li>利用分段统计思想、并进一步节省大量空间</li>
+<li>利用堆、外排序来做多个处理单元的结果合并</li>
 </ol>
-<hr />
-<h5 id="最小字典序"><a class="markdownIt-Anchor" href="#最小字典序"></a> 最小字典序</h5>
-<p>  给定一个由字符串组成的数组strs，必须把所有的字符串拼接起来，返回所有可能的拼接结果中，字典序最小的结果。<br />
-  a+b&lt;b+a并且b+c&lt;c+b 得到a+c&lt;c+a，比较的传递性，可以证明。</p>
-<h5 id="分割金条"><a class="markdownIt-Anchor" href="#分割金条"></a> 分割金条</h5>
-<p>  分割金条，60长度分成10、20、30。一块金条切成两半，是需要花费和长度数值一样的铜板的。比如长度为20的金条，不管怎么切，都要花费20个铜板。 一群人想整分整块金条，怎么分最省铜板?</p>
-<p>  例如,给定数组{10,20,30}，代表一共三个人，整块金条长度为60，金条要分成10，20，30三个部分。如果先把长度60的金条分成10和50，花费60; 再把长度50的金条分成20和30，花费50;一共花费110铜板。但如果先把长度60的金条分成30和30，花费60;再把长度30金条分成10和20， 花费30;一共花费90铜板。</p>
-<p>  输入一个数组，返回分割的最小代价。暂不考虑切割的顺序，如果考虑切割顺序需要使用动态规划和四边形不等式。</p>
-<p>  暴力尝试，双层循环将i和j合并，递归得到花费，最后将最小的花费返回。</p>
-<p>  将所有分割后的长度放入小根堆，每次获取两个长度相加然后放回小根堆，重复直到小根堆只剩一个元素。<br />
-  每次都切割最大长度的反例97、98  和  100、99。正确操作是第一次切割成100+99和98+97，而不是切割成100和99+98+97。<font color="red">反例的证明就是哈夫曼编码。</font></p>
-<h5 id="点灯"><a class="markdownIt-Anchor" href="#点灯"></a> 点灯</h5>
-<p>  给定一个字符串str，只由‘X’和‘.’两种字符构成。‘X’表示墙，不能放灯，也不需要点亮。‘.’表示居民点，可以放灯，需要点亮。如果灯放在i位置，可以让i-1，i和i+1三个位置被点亮。返回如果点亮str中所有需要点亮的位置，至少需要几盏灯。</p>
-<h5 id="安排会议室"><a class="markdownIt-Anchor" href="#安排会议室"></a> 安排会议室</h5>
-<p>  一些项目要占用一个会议室宣讲，会议室不能同时容纳两个项目的宣讲。给你每一个项目开始的时间和结束的时间，你来安排宣讲的日程，要求会议室进行的宣讲的场次最多。返回最多的宣讲场次。</p>
-<h5 id="ipo"><a class="markdownIt-Anchor" href="#ipo"></a> IPO</h5>
-<p>  输入正数数组costs、正数数组profits、正数K、正数M，costs[i]表示i号项目的花费，profits[i]表示i号项目在扣除花费之后还能挣到的钱(利润)，K表示你只能串行的最多做k个项目，M表示你初始的资金。说明: 每做完一个项目，马上获得的收益，可以支持你去做下一个项目。不能并行的做项目。输出：你最后获得的最大钱数。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/" class="post-title-link" itemprop="url">二叉树</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-11 17:46:23" itemprop="dateCreated datePublished" datetime="2023-04-11T17:46:23+08:00">2023-04-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-12 18:28:35" itemprop="dateModified" datetime="2023-04-12T18:28:35+08:00">2023-04-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_tree">二叉树</a>是一种很基础的数据结构，二叉树仅要求左右节点和父节点。搜索二叉树要求左节点小于父节点、右节点大于父节点，有序表对搜索二叉树的要求更严格，避免搜索二叉树退化成链表。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>要求左右子树的高度差不超过1，<a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/sbt/">Size-balanced tree</a>要求左右子树的节点个数相差不超过两倍，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">红黑树</a>的限制更复杂，在调整平衡的时候需要考虑的场景更多。AVL Tree每次变更节点时都需要调整平衡，Size balance Tree在删除的时候可以不调整平衡，红黑树调整平衡的次数很少、均摊时间复杂度是O(1)。<br />
-  完全二叉树，只有叶子节点最右侧是空的。平衡二叉树，左右子树高度差不超过1</p>
-<h4 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h4>
-<p>  可以用递归和非递归方式实现二叉树的先序、中序、后序遍历。二叉树的递归序，每一个节点都会经过3次，先序、中序、后序都可以基于递归序实现，第一次到达一个节点就打印就是先序、第二次打印即中序、第三次即后序。<br />
-  利用Stack或者Queue实现系统的弹栈压栈操作，可以非递归方式实现二叉树的先序、中序、后序遍历。</p>
-<ul>
-<li>先序：头、左、右</li>
-<li>中序：左、头、右</li>
-<li>后序：左、右、头</li>
-</ul>
-<h4 id="二叉树的递归套路"><a class="markdownIt-Anchor" href="#二叉树的递归套路"></a> 二叉树的递归套路</h4>
-<ul>
-<li>假设以X节点为头，并且可以获取左子树和右子树的信息</li>
-<li>计算以X为头节点的树，得到答案的可能性</li>
-<li>列出所有可能性后，确定到底需要向左树和右树要什么样的信息</li>
-<li>把左树信息和右树信息求全集，就是任何一棵子树都需要返回的信息S</li>
-<li>递归函数都返回S</li>
-<li>在代码中考虑如何把左树的信息和右树信息整合出整棵树的信息</li>
-</ul>
-<h4 id="实现二叉树的按层遍历"><a class="markdownIt-Anchor" href="#实现二叉树的按层遍历"></a> 实现二叉树的按层遍历</h4>
-<ul>
-<li>宽度优先遍历，用队列</li>
-<li>依次出队列level层的节点，并入队列level+1层的left、right节点</li>
-</ul>
-<h4 id="实现二叉树的序列化和反序列化"><a class="markdownIt-Anchor" href="#实现二叉树的序列化和反序列化"></a> 实现二叉树的序列化和反序列化</h4>
-<ul>
-<li>先序遍历序列化和反序列化</li>
-<li>后序遍历序列化和反序列化</li>
-<li>按层方式序列化和反序列化</li>
-<li>中序遍历无法找到root，不同的二叉树中序结果可能相同，所以不能反序列化</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root 2 、left 1 的中序结果是null 1 null 2 null</span><br><span class="line">root 1 、right 2 的中序结果也是null 1 null 2 null</span><br></pre></td></tr></table></figure>
-<h4 id="将多叉树编码为二叉树-leetcode431"><a class="markdownIt-Anchor" href="#将多叉树编码为二叉树-leetcode431"></a> 将多叉树编码为二叉树 LeetCode431</h4>
-<ul>
-<li>收费题目，多叉树的每一层以null分割。</li>
-<li>深度优先遍历，将多叉树的X节点的所有子节点作为二叉树X的右节点，拉长成一个链表</li>
-<li>解码的时候也是递归，将链表的元素收集作为子节点</li>
-</ul>
-<h4 id="二叉树的宽度"><a class="markdownIt-Anchor" href="#二叉树的宽度"></a> 二叉树的宽度</h4>
-<p>  求二叉树最宽的层有多少个节点</p>
-<h4 id="找出某个节点的后继节点"><a class="markdownIt-Anchor" href="#找出某个节点的后继节点"></a> 找出某个节点的后继节点</h4>
-<p>  二叉树结构如下定义：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class Node &#123;</span><br><span class="line"> V value;</span><br><span class="line"> Node left;</span><br><span class="line"> Node right;</span><br><span class="line"> Node parent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  给你二叉树中的某个节点，返回该节点的后继节点。前驱节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的前一个节点;后继节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的后一个节点。</p>
-<ul>
-<li>右子树的最左节点即是答案</li>
-<li>右子树为空，并且当前节点是parent的左节点，parent也是答案</li>
-</ul>
-<h4 id="折纸问题"><a class="markdownIt-Anchor" href="#折纸问题"></a> 折纸问题</h4>
-<p>  请把一段纸条竖着放在桌子上，然后从纸条的下边向上方对折1次，压出折痕后展开。此时折痕是凹下去的，即折痕突起的方向指向纸条的背面。 如果从纸条的下边向上方连续对折2次，压出折痕后展开，此时有三条折痕，从上到下依次是下折痕、下折痕和上折痕。<br />
-  给定一个输入参数N，代表纸条都从下边向上方连续对折N次。 请从上到下打印所有折痕的方向。例如:N=1时，打印: down N=2时，打印: down down up。</p>
-<ul>
-<li>中序打印凹凸</li>
-</ul>
-<h4 id="判断两颗二叉树是否相同-leetcode100"><a class="markdownIt-Anchor" href="#判断两颗二叉树是否相同-leetcode100"></a> 判断两颗二叉树是否相同 LeetCode100</h4>
-<ul>
-<li>判断当前节点是否为空，值是否相等</li>
-<li>递归比较左右节点</li>
-</ul>
-<h4 id="判断一个二叉树是否对称-leetcode101"><a class="markdownIt-Anchor" href="#判断一个二叉树是否对称-leetcode101"></a> 判断一个二叉树是否对称 LeetCode101</h4>
-<ul>
-<li>node1 = node.left、node2 = node.right</li>
-<li>node1.left == node2.right &amp;&amp; node1.right == node2.left</li>
-<li>递归比较</li>
-</ul>
-<h4 id="获取一个二叉树的高度-leetcode104"><a class="markdownIt-Anchor" href="#获取一个二叉树的高度-leetcode104"></a> 获取一个二叉树的高度 LeetCode104</h4>
-<ul>
-<li>递归获取左子树的高度和右子树的高度</li>
-</ul>
-<h4 id="用先序数组和中序数组重建一个二叉树-leetcode105"><a class="markdownIt-Anchor" href="#用先序数组和中序数组重建一个二叉树-leetcode105"></a> 用先序数组和中序数组重建一个二叉树 LeetCode105</h4>
-<p>  先序遍历的第一个元素是头结点，先序遍历剩余部分左边是左节点的先序，右边是右节点的先序，中序遍历左边是左节点的中序，右边是右节点的中序。递归构建二叉树，递归函数入参为先序遍历的起止index，中序遍历的起止index，返回头结点。</p>
-<h4 id="祖先节点-先序遍历和后序遍历的交集"><a class="markdownIt-Anchor" href="#祖先节点-先序遍历和后序遍历的交集"></a> 祖先节点   先序遍历和后序遍历的交集</h4>
-<p>  X是一棵二叉树的某一个节点，A是二叉树先序遍历X的左边部分，B是二叉树后序遍历X右边部分，AB相交的结果是且仅是X的所有父节点。</p>
+<h4 id="hash函数把数据按照种类均匀分流"><a class="markdownIt-Anchor" href="#hash函数把数据按照种类均匀分流"></a> hash函数把数据按照种类均匀分流</h4>
 <ol>
-<li>X的所有父节点在先序遍历的左边，X的所有父节点在后序遍历的右边，交集一定包含所有父节点</li>
-<li>X的所有子节点在先序遍历的左边，X的所有子节点在后序遍历的左边，交集一定不包含所有子节点</li>
-<li>A不包含所有祖先节点的右兄弟节点，B不包含所有祖先节点的左兄弟节点</li>
+<li>32位无符号整数的范围是0~4,294,967,295，现在有一个正好包含40亿个无符号整数的文件，可以使用最多1GB的内存，怎么找到出现次数最多的数？</li>
 </ol>
-<p>  X的所有祖先节点、X自己、X的子节点、X或者X的父节点作为左树的右兄节点、X或者X的父节点作为右树的左兄节点。</p>
-<h4 id="二叉树按层遍历收集节点-leetcode107-leetcode102"><a class="markdownIt-Anchor" href="#二叉树按层遍历收集节点-leetcode107-leetcode102"></a> 二叉树按层遍历收集节点 LeetCode107 LeetCode102</h4>
-<p>  使用LinkedList(有序，快速插入)，递归将每一层的节点入队、出队。</p>
-<h4 id="平衡二叉树-leetcode110"><a class="markdownIt-Anchor" href="#平衡二叉树-leetcode110"></a> 平衡二叉树 LeetCode110</h4>
-<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是平衡二叉树。<br />
-  判断二叉树是否是平衡二叉树，左子树的高度和右子树的高度相差不超过1，则称为平衡二叉树。</p>
-<h4 id="搜索二叉树-leetcode98"><a class="markdownIt-Anchor" href="#搜索二叉树-leetcode98"></a> 搜索二叉树 LeetCode98</h4>
-<p>  判断二叉树是否是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_search_tree">搜索二叉树</a>。用递归解决。</p>
-<h4 id="路径总和-leetcode112"><a class="markdownIt-Anchor" href="#路径总和-leetcode112"></a> 路径总和 LeetCode112</h4>
-<ul>
-<li>递归计算路径和</li>
-<li>左子树和右子树分别递归</li>
-</ul>
-<h4 id="达标路径总和-leetcode113"><a class="markdownIt-Anchor" href="#达标路径总和-leetcode113"></a> 达标路径总和 LeetCode113</h4>
-<p>  同LeetCode112，收集所有达标路径并返回。</p>
-<h4 id="二叉树的最大距离"><a class="markdownIt-Anchor" href="#二叉树的最大距离"></a> 二叉树的最大距离</h4>
-<p>  给定一颗二叉树的头结点，任何两个节点之间都存在距离，返回整颗二叉树的最大距离。</p>
-<h4 id="判断完全二叉树"><a class="markdownIt-Anchor" href="#判断完全二叉树"></a> 判断完全二叉树</h4>
-<p>  判断二叉树是否是完全二叉树<br />
-  按照二叉树的定义判断，逐行遍历</p>
-<h4 id="满二叉树"><a class="markdownIt-Anchor" href="#满二叉树"></a> 满二叉树</h4>
-<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是满二叉树。</p>
-<h4 id="最大的二叉搜索子树"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树"></a> 最大的二叉搜索子树</h4>
-<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的头节点。</p>
-<h4 id="最大的二叉搜索子树大小"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树大小"></a> 最大的二叉搜索子树大小</h4>
-<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的大小。</p>
-<h4 id="最低公共祖先"><a class="markdownIt-Anchor" href="#最低公共祖先"></a> 最低公共祖先</h4>
-<p>  给定一棵二叉树的头节点head，和另外两个节点a和b。返回a和b的最低公共祖先。a、b可能在head的左右子树，也可能在同一棵子树。</p>
-<ul>
-<li>遍历整棵树，用map保存所有节点的父节点</li>
-<li>遍历a的所有父节点，用set保存</li>
-<li>遍历b的所有父节点，看set中是否存在</li>
-<li>后序遍历递归套路</li>
-</ul>
-<h4 id="派对的最大快乐值"><a class="markdownIt-Anchor" href="#派对的最大快乐值"></a> 派对的最大快乐值</h4>
-<p>  员工信息的定义如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Employee</span> &#123;</span><br><span class="line">    <span class="comment">// 快乐值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> happy;</span><br><span class="line">    <span class="comment">// 直接下级</span></span><br><span class="line">    List&lt;Employee&gt; subordinates;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  公司的每个员工都符合 Employee 类的描述。整个公司的人员结构可以看作是一棵标准的、 没有环的多叉树。树的头节点是公司唯一的老板。除老板之外的每个员工都有唯一的直接上级。 叶节点是没有任何下属的基层员工(subordinates列表为空)，除基层员工外，每个员工都有一个或多个直接下级。<br />
-  这个公司现在要办party，你可以决定哪些员工来，哪些员工不来，规则：</p>
-<ol>
-<li>如果某个员工来了，那么这个员工的所有直接下级都不能来</li>
-<li>派对的整体快乐值是所有到场员工快乐值的累加</li>
-<li>你的目标是让派对的整体快乐值尽量大</li>
+<p>  将每一个数对400取模，分别存到400个小文件中。相同的数一定在同一个文件中，并且因为hash的均匀离散特性，每个文件中最多1000W数据(即使超过1000W，也不会超过太多)，内存不超过1G。<br />
+另外新建小文件记录每个数和出现的次数的键值对。取出每一个文件中出现次数最多的数，取最大值。</p>
+<ol start="2">
+<li>在上一个问题中，如果某一个数字出现了2000W次？</li>
 </ol>
-<p>  给定一棵多叉树的头节点boss，请返回派对的最大快乐值。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">前缀树</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-10 21:51:33" itemprop="dateCreated datePublished" datetime="2023-04-10T21:51:33+08:00">2023-04-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-11 17:43:25" itemprop="dateModified" datetime="2023-04-11T17:43:25+08:00">2023-04-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Trie">前缀树</a>(prefix tree/trie tree)是多叉树，便于处理字符串前缀相关的问题。比如短信、搜索等场景的关键字过滤，黑名单白名单绿坝等。前缀树一般储存静态数据，适用于大量查询，很少新增、删除的场景。</p>
-<ul>
-<li>单个字符串中，字符从前到后的加到一棵多叉树上</li>
-<li>字符放在路上，节点上有专属的数据项（常见的是pass和end值）</li>
-<li>所有样本都这样添加，如果没有路就新建，如有路就复用</li>
-<li>沿途节点的pass值增加1，每个字符串结束时来到的节点end值增加1</li>
-</ul>
-<h4 id="前缀树结构"><a class="markdownIt-Anchor" href="#前缀树结构"></a> 前缀树结构</h4>
-<p>  前缀树的主要操作</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加某个字符串，可以重复添加，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 查询某个字符串在结构中还有几个</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">search</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 删掉某个字符串，可以重复删除，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">//   查询有多少个字符串，是以str做前缀的</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">prefixNumber</span><span class="params">(String str)</span></span><br></pre></td></tr></table></figure>
-<p>  前缀树路的实现可以用固定数组或者哈希表。每个节点的pass、end表示经过、结束的字符串个数，通过pass、end判断目标字符串是否存在。</p>
-<ul>
-<li>固定数组，子节点保存在Node[]数组中</li>
-<li>哈希表，子节点保存在map中</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:47:00" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heap_(data_structure)">堆</a>是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于/小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。<br />
-  （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。<br />
-  一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，产生新的版本</p>
-<h4 id="堆的特点"><a class="markdownIt-Anchor" href="#堆的特点"></a> 堆的特点</h4>
-<ul>
-<li>堆结构就是用数组实现的完全二叉树结构</li>
-<li>完全二叉树中如果每棵子树的最大值都在顶部就是大根堆</li>
-<li>完全二叉树中如果每棵子树的最小值都在顶部就是小根堆</li>
-<li>堆结构的heapInsert与heapify操作</li>
-<li>堆结构的增大和减少</li>
-<li>优先级队列结构，就是堆结构</li>
-<li>堆的父子节点有大小关系，左右节点没有大小限制。</li>
-</ul>
-<h4 id="堆排序"><a class="markdownIt-Anchor" href="#堆排序"></a> 堆排序</h4>
-<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heapsort">堆排序</a>的逻辑</p>
-<ul>
-<li>先让整个数组都变成大根堆结构，建立堆的过程
-<ul>
-<li>从上到下的方法，时间复杂度为O(N*logN)</li>
-<li>从下到上的方法，时间复杂度为O(N)</li>
-</ul>
-</li>
-<li>把堆的最大值和堆末尾的值交换，然后减少堆的大小之后，递归调整堆，时间复杂度为O(N*logN)</li>
-<li>堆的大小减小成0之后，排序完成。</li>
-</ul>
-<h4 id="改写堆"><a class="markdownIt-Anchor" href="#改写堆"></a> 改写堆</h4>
-<p>  JDK的堆(PriorityQueue)无法做到</p>
-<ul>
-<li>已经入堆的元素，如果参与排序的指标方法变化，系统提供的堆无法做到时间复杂度O(logN)调整，都是O(N)的调整。</li>
-<li>系统提供的堆只能弹出堆顶，做不到自由删除任何一个堆中的元素，无法在时间复杂度O(logN)内完成，一定会高于O(logN)。根本原因是无反向索引表。</li>
-</ul>
-<p>  改写堆的要点</p>
-<ul>
-<li>建立反向索引表indexMap</li>
-<li>建立比较器</li>
-<li>push需要heapify、pop需要heapify，remove先将节点交换到heapSize位置，移除后调整。所有操作都要更新indexMap。</li>
-</ul>
-<hr />
-<h5 id="乱序不超过k长度的数组排序"><a class="markdownIt-Anchor" href="#乱序不超过k长度的数组排序"></a> 乱序不超过k长度的数组排序</h5>
-<p>  已知一个几乎有序的数组。几乎有序是指，如果把数组排好顺序的话，每个元素移动的距离一定不超过k，并且k相对于数组长度来说是比较小的。请选择一个合适的排序策略，对这个数组进行排序。<br />
-  将前k个元素放入ProritityQueue，保证数组在k长度有序，遍历完数组即为整体有序。</p>
-<h5 id="最大线段重合问题"><a class="markdownIt-Anchor" href="#最大线段重合问题"></a> 最大线段重合问题</h5>
-<p>  给定很多线段，每个线段都有两个数[start, end]，表示线段开始位置和结束位置，左右都是闭区间。</p>
-<ul>
-<li>线段的开始和结束位置一定都是整数值</li>
-<li>线段重合区域的长度必须&gt;=1</li>
-<li>返回线段最多重合区域中，包含了几条线段？</li>
-</ul>
-<ol>
-<li>将所有线段按照start升序排序</li>
-<li>构造堆，保存当前重合所有重合线段的end, heap的size就是当前重合线段的数量</li>
-<li>遍历所有线段，如果出现不重合线段则弹出不重合的线段，如果重合则加入end</li>
+<p>  将每一个数对400取模后直接写入整数和它出现的次数的键值对，取出每一个文件中出现次数最多的数，取最大值。</p>
+<h4 id="位图找出不存在的无符号整数"><a class="markdownIt-Anchor" href="#位图找出不存在的无符号整数"></a> 位图找出不存在的无符号整数</h4>
+<ol start="3">
+<li>32位无符号整数的范围是0~4,294,967,295，现在有一个正好包含40亿个无符号整数的文件，所以在整个范围中必然存在没出现过的数。可以使用最多1GB的内存，怎么找到所有未出现过的数？</li>
 </ol>
-<h5 id="给购买次数最多的前k名用户颁奖"><a class="markdownIt-Anchor" href="#给购买次数最多的前k名用户颁奖"></a> 给购买次数最多的前K名用户颁奖</h5>
-<p>  给定一个整型数组，int[] arr；和一个布尔类型数组，boolean[] op。两个数组一定等长，假设长度为N，arr[i]表示客户编号，op[i]表示客户操作</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr = [ 3, 3, 1, 2, 1, 2, 5…</span><br><span class="line">op  = [ T, T, T, T, F, T, F…</span><br></pre></td></tr></table></figure>
-<p>  依次表示：3用户购买了一件商品，3用户购买了一件商品，1用户购买了一件商品，2用户购买了一件商品，1用户退货了一件商品，2用户购买了一件商品，5用户退货了一件商品…</p>
-<p>  一对arr[i]和op[i]就代表一个事件：用户号为arr[i]，op[i] == T就代表这个用户购买了一件商品，op[i] == F就代表这个用户退货了一件商品。现在你作为电商平台负责人，你想在每一个事件到来的时候，都给购买次数最多的前K名用户颁奖。所以每个事件发生后，你都需要一个得奖名单（得奖区）。</p>
-<p>  得奖系统的规则：</p>
-<ol>
-<li>如果某个用户购买商品数为0，但是又发生了退货事件，则认为该事件无效，得奖名单和上一个事件发生后一致，例子中的5用户</li>
-<li>某用户发生购买商品事件，购买商品数+1，发生退货事件，购买商品数-1</li>
-<li>每次都是最多K个用户得奖，K也为传入的参数。如果根据全部规则，得奖人数确实不够K个，那就以不够的情况输出结果</li>
-<li>得奖系统分为得奖区和候选区，任何用户只要购买数&gt;0，一定在这两个区域中的一个</li>
-<li>购买数最大的前K名用户进入得奖区，在最初时如果得奖区没有到达K个用户，那么新来的用户直接进入得奖区</li>
-<li>如果购买数不足以进入得奖区的用户，进入候选区</li>
-<li>如果候选区购买数最多的用户，已经足以进入得奖区，该用户就会替换得奖区中购买数最少的用户（大于才能替换），如果得奖区中购买数最少的用户有多个，就替换最早进入得奖区的用户，如果候选区中购买数最多的用户有多个，机会会给最早进入候选区的用户</li>
-<li>候选区和得奖区是两套时间，因用户只会在其中一个区域，所以只会有一个区域的时间，另一个没有。从得奖区出来进入候选区的用户，得奖区时间删除，进入候选区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i，从候选区出来进入得奖区的用户，候选区时间删除，进入得奖区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i</li>
-<li>如果某用户购买数==0，不管在哪个区域都离开，区域时间删除，离开是指彻底离开，哪个区域也不会找到该用户。如果下次该用户又发生购买行为，产生&gt;0的购买数，会再次根据之前规则回到某个区域中，进入区域的时间重记<br />
-  请遍历arr数组和op数组，遍历每一步输出一个得奖名单</li>
+<p>  使用bitmap或者数组保存0~4,294,967,295内的无符号整数，1GB=2<sup>3</sup> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> 2<sup>10</sup> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> 2<sup>10</sup> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> 2<sup>10</sup> bit = 2<sup>33</sup> bit，是可以保存所有0~4,294,967,295的无符号整数。遍历给定的文件，拿到某一个整数index，在bitmap的offset为index的二进制位修改为1，最后取出bitmap中所有二进制位为0的数，bitmap的所有二进制位都是0则是整数0。(2<sup>32</sup>长度的bit数组arr，出现过的数字num，将arr[num]标记成1，最后将没有出现过的数字列出即可。如果arr[index]==0，则index没有出现过。)<br />
+  Set，需要约16G内存，位图，不超过1G内存。2<sup>32</sup>     bit = 2<sup>29</sup>     Byte = 2<sup>19</sup>     KB = 2<sup>9</sup>      MB = 2<sup>-1</sup>     GB</p>
+<ol start="4">
+<li>32位无符号整数的范围是0~4294967295，现在有40亿个无符号整数，可以使用最多1GB的内存，找出所有出现了两次的数。</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt;  <span class="title function_">topK</span> <span class="params">(<span class="type">int</span>[] arr, <span class="type">boolean</span>[] op, <span class="type">int</span> k)</span></span><br></pre></td></tr></table></figure>
-<p>  自定义堆，添加反向索引表。按照业务逻辑进行遍历，调整中奖区、候选区。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/" class="post-title-link" itemprop="url">排序</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-08 20:48:57" itemprop="dateCreated datePublished" datetime="2023-04-08T20:48:57+08:00">2023-04-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-11 17:41:01" itemprop="dateModified" datetime="2023-04-11T17:41:01+08:00">2023-04-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  不基于比较的排序，也叫桶排序。对数据样本有要求，但是特定场景可以做到O(N)时间复杂度，基于比较的排序最好能做到O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)。计数排序需要指定上下限，基数排序要求非负、能用十进制理解的样本。</p>
-<ul>
-<li>不基于比较的排序，对样本数据有严格要求，不容易改写</li>
-<li>基于比较的排序，只要规定好两个样本怎么比较大小就可以直接复用</li>
-<li>基于比较的排序，时间复杂度的极限是O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</li>
-<li>时间复杂度O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)、额外空间复杂度低于O(N)、且稳定的基于比较的排序是不存在的</li>
-<li>为了绝对的速度选择快排、为了省空间选堆排序、为了稳定性选归并</li>
-<li>jdk中为了考虑稳定性，Arrays.sort，基础类型使用快排，有比较器使用归并排序。</li>
-<li>充分利用O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)和O(N<sup>2</sup>)排序各自的优势，O(N<sup>2</sup>)排序的常数项小，在数据样本不大(比如小于60)的时候是比O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)要快的。</li>
-<li><s>归并排序的额外空间复杂度可以变成O(1)，“归并排序 内部缓存法”，但是将变得不再稳定。</s></li>
-<li><s>“原地归并排序&quot; 是垃圾贴，会让时间复杂度变成O(N<sup>2</sup>)</s></li>
-<li><s>快速排序稳定性改进，“01 stable sort”，但是会对样本数据要求更多。</s></li>
-</ul>
-<p>  桶排序有计数排序、基数排序等</p>
-<ul>
-<li>桶排序思想下的排序都是不基于比较的排序</li>
-<li>时间复杂度为O(N)，额外空间负载度O(M)</li>
-<li>应用范围有限，需要样本的数据状况满足桶的划分</li>
-</ul>
-<p>  计数排序和基数排序的特点</p>
-<ul>
-<li>计数排序要求，样本是整数，且范围比较窄</li>
-<li>基数排序要求，样本是10进制的正整数</li>
-<li>一旦要求稍有升级，改写代价增加</li>
-</ul>
-<p>  排序算法稳定性是指同样大小的样本再排序之后不会改变相对次序。对基础类型来说，稳定性毫无意义，对非基础类型来说，稳定性有重要意义。有些排序算法可以实现成稳定的，而有些排序算法无论如何都实现不成稳定的。</p>
+<p>  准备2<sup>33</sup>长度的bit数组arr，对任意无符号整数index，arr[2<em>index]、arr[2</em>index+1]表示index出现的次数</p>
 <table>
 <thead>
 <tr>
-<th>name</th>
-<th>Best</th>
-<th>Average</th>
-<th>Worst</th>
-<th>空间复杂度</th>
-<th>类型</th>
-<th>稳定性</th>
+<th>序号</th>
+<th>arr[2 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> index]</th>
+<th>arr[2 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> index + 1]</th>
+<th>含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Quick Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>比较排序</td>
-<td>不稳定</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>没有出现index</td>
 </tr>
 <tr>
-<td>Merge Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(N)</td>
-<td>比较排序</td>
-<td>稳定</td>
+<td>2</td>
+<td>0</td>
+<td>1</td>
+<td>index出现1次</td>
 </tr>
 <tr>
-<td>Tim Sort</td>
-<td>O(N)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(N)</td>
-<td></td>
-<td></td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>index出现2次</td>
 </tr>
 <tr>
-<td>Heap Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(1)</td>
-<td>比较排序</td>
-<td>不稳定</td>
-</tr>
-<tr>
-<td>Bubble Sort</td>
-<td>O(N)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(1)</td>
-<td>比较排序</td>
-<td>稳定</td>
-</tr>
-<tr>
-<td>Insertion Sort</td>
-<td>O(N)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(1)</td>
-<td>比较排序</td>
-<td>稳定</td>
-</tr>
-<tr>
-<td>Selection Sort</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(1)</td>
-<td>比较排序</td>
-<td>不稳定</td>
-</tr>
-<tr>
-<td>Tree Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Shell Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(N \times logN)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(N \times logN)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span>)</td>
-<td>O(1)</td>
-<td></td>
-<td>不稳定</td>
-</tr>
-<tr>
-<td>Bucket Sort</td>
-<td>O(N+k)</td>
-<td>O(N+k)</td>
-<td>O(N<sup>2</sup>)</td>
-<td>O(N)</td>
-<td>不基于比较</td>
-<td></td>
-</tr>
-<tr>
-<td>Radix Sort</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>)</td>
-<td>O(N+k)</td>
-<td>不急于比较</td>
-<td>稳定</td>
-</tr>
-<tr>
-<td>Counting Sort</td>
-<td>O(N+k)</td>
-<td>O(N+k)</td>
-<td>O(N+k)</td>
-<td>O(k)</td>
-<td>不基于比较</td>
-<td>稳定</td>
-</tr>
-<tr>
-<td>Cube Sort</td>
-<td>O(N)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)</td>
-<td>O(N)</td>
-<td></td>
-<td></td>
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>index出现3次及以上</td>
 </tr>
 </tbody>
 </table>
-</br>
-<h4 id="选择排序"><a class="markdownIt-Anchor" href="#选择排序"></a> 选择排序</h4>
-<p>  双层循环，内层循环完成后获取最小值，内层循环每次将最小值放到i位置。0-i之间认为是有序，i-n之间是原始数据，从i-n之间选择最小的元素放到index为i的地方。是不稳定的排序。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">selectionSort</span><span class="params">(<span class="type">int</span>[] arr)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> arr.length;</span><br><span class="line">    <span class="type">int</span> tmp;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i; j &lt; length; j++) &#123;</span><br><span class="line">            <span class="comment">// 小于号避免位置交换</span></span><br><span class="line">            index = arr[j] &lt; arr[index] ? j : index;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (index == i) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        tmp = arr[i];</span><br><span class="line">        arr[i] = arr[index];</span><br><span class="line">        arr[index] = tmp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="冒泡排序"><a class="markdownIt-Anchor" href="#冒泡排序"></a> 冒泡排序</h4>
-<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bubble_sort">冒泡排序</a>是双层循环，内层循环两两交换，内层循环完成后将最大值冒泡到最右边。外层循环index从大到小，内层循环index从小到大。稳定排序。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">bubbleSort</span><span class="params">(<span class="type">int</span>[] arr)</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> arr.length;</span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> tmp;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> length - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j + <span class="number">1</span>] &lt; arr[j]) &#123;</span><br><span class="line">                tmp = arr[j];</span><br><span class="line">                arr[j] = arr[j + <span class="number">1</span>];</span><br><span class="line">                arr[j + <span class="number">1</span>] = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="插入排序"><a class="markdownIt-Anchor" href="#插入排序"></a> 插入排序</h4>
-<p>  每次获取原始数据最前面的那个元素交换到左侧已经有序的数组。双层循环，外层循环每次递增并获取i，内层循环使用i挨个和0-1的数据比较并交换。如果i比i-1大或者内层循环到了最左侧则终止循环。稳定排序。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">insertionSort</span><span class="params">(<span class="type">int</span>[] arr)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i - <span class="number">1</span>; j &gt;= <span class="number">0</span> &amp;&amp; arr[j] &gt; arr[j + <span class="number">1</span>]; j--) &#123;</span><br><span class="line">            CommonUtil.swap(arr, j, j + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="归并排序"><a class="markdownIt-Anchor" href="#归并排序"></a> 归并排序</h4>
-<p>  归并排序可以用递归方式实现，所有的递归都可以改写成非递归方式。</p>
+<h4 id="分段统计"><a class="markdownIt-Anchor" href="#分段统计"></a> 分段统计</h4>
+<ol start="5">
+<li>32位无符号整数的范围是0~4,294,967,295，现在有一个正好包含40亿个无符号整数的文件，所以在整个范围中必然存在没出现过的数。内存限制为 10MB(3KB)，怎么找到任意一个没有出现的整数。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 假设数组长度为10</span></span><br><span class="line"><span class="type">int</span>[] arr = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">10</span>];</span><br><span class="line"><span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">179</span>; <span class="comment">// i &amp;lt; 10 * 32</span></span><br><span class="line"><span class="type">int</span> <span class="variable">status</span> <span class="operator">=</span> (arr[i / <span class="number">32</span>] &amp; (<span class="number">1</span> &lt;&lt; (i % <span class="number">32</span>))) == <span class="number">0</span> ? <span class="number">0</span> : <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>  程序运行消耗的内存肯定不止3KB，这里的3KB是指用于分段的局部变量内存大小。<br />
+  <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>512</mn><mo>×</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">512 \times 4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">5</span><span class="mord">1</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">4</span></span></span></span> Byte &lt; 3KB，将0-2<sup>32</sup>-1均分成512份，则每一份都应该有2<sup>23</sup> = 8388608个无符号整数。准备数组arr，遍历整个文件，当前无符号整数num对512取模，结果为index，arr[index]记录每一个分段的无符号整数的个数。根据鸽笼原理，必有某一个arr[i]小于2<sup>23</sup>。继续拆分成512份，适当时候可以使用bitmap找到一个没有出现的无符号整数。</p>
+<p>  0~2<sup>32</sup>-1一共2<sup>32</sup>个数字，每个比特位为1和为0的无符号整数个数一定是相同的。遍历40亿个无符号整数，从最高位开始，每次取个数较小的比特位并记录。最多32次就可以获取某一个不存在的无符号整数。<br />
+// TODO 证明</p>
+<ol start="6">
+<li>只能申请几个有限的变量，找到40亿个数的文件中没有出现的(1-2<sup>32</sup>-1)范围内的数字？<br />
+  准备left、mid、right将2<sup>32</sup>二分，个数较少的那部分一定有不存在的无符号整数。最多经过32次二分就可以得出结果。</li>
+</ol>
+<h3 id="布隆过滤器"><a class="markdownIt-Anchor" href="#布隆过滤器"></a> 布隆过滤器</h3>
+<ol start="7">
+<li>有一个包含100亿个URL的大文件，假设每个URL占用64Bit，请找出其中所有重复的URL。</li>
+</ol>
+<p>  布隆过滤器存在误判的可能，hash签名不会误判但需要更多的内存。将所有URL通过一到两次hash到若干个(10000)小文件中，最后统计小文件中重复的URL。</p>
+<ol start="8">
+<li>某搜索公司一天的用户搜索词汇是海量的(百亿数据量)，请设计一种求出每天热门Top100词汇的可行办法。</li>
+</ol>
+<p>  大根堆是不可以的，没法获取每一个搜索词汇的频次，100亿URL的大根堆超过单机处理内存上限。<br />
+可以使用hash或者布隆过滤器拿到所有搜索词出现的次数，再取出top100。</p>
+<h3 id="分段统计-2"><a class="markdownIt-Anchor" href="#分段统计-2"></a> 分段统计</h3>
+<ol start="9">
+<li>
+<p>32位无符号整数的范围是0~4294967295，现在有40亿个无符号整数，可以使用最多3K的内存，怎么找到这40亿个整数的中位数？<br />
+1、准备int[] arr = new int[512]<br />
+2、统计将40亿个数按照512个一组分成若干份，统计每一组的频次<br />
+3、累加每组的频次，直到20亿</p>
+</li>
+<li>
+<p>32位无符号整数的范围是0~4294967295，现在有40亿个无符号整数，可以使用最多3K的内存，怎么找到这40亿个整数的上中位数(偶数个的时候前一个)？<br />
+1、准备int[] arr = new int[512]<br />
+2、统计将40亿个数按照512个一组分成若干份，统计每一组的频次<br />
+3、累加每组的频次，直到20亿</p>
+</li>
+</ol>
+<h3 id="堆排序"><a class="markdownIt-Anchor" href="#堆排序"></a> 堆排序</h3>
+<ol start="11">
+<li>32位无符号整数的范围是0~4294967295，有一个10G大小的文件，每一行都装着这种类型的数字，整个文件是无序的，给你5G的内存空间，请你输出一个10G大小的文件，就是原文件所有数字排序的结果。</li>
+</ol>
+<p>  用自定义的堆或者数组保存前k个最小的无符号整数并排序，记录每个整数和出现的次数的键值对。若干次循环将整个文件的无符号整数排序。外部排序(分布式合并排序)可以忽视单机内存限制，二项堆(堆上堆、二维堆)也有单机内存限制。</p>
+<ol>
+<li>将源文件复制一份</li>
+<li>自定义一个小根堆，大小为2<sup>28</sup>次，正好1GB大小的Integer数据</li>
+<li>从文件中读取逐行读取数字<br />
+a. 如果堆没有满则进堆，在文件中删除这个数字，并记录数字和对应的频次<br />
+b. 如果堆满并且小于堆中最大的数则进堆并且删除堆中最大的数，在文件中删除这个数字，并记录数字和对应的频次。更新堆中最大的数和位置。<br />
+c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数字并重复步骤3</li>
+<li>文件读取完以后将堆中的数字读出并按照频次输出到目标文件</li>
+<li>循环步骤3、4直到文件中没有数据</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/31/Emacs/Emacs%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/31/Emacs/Emacs%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">emacs插件</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-05-31 20:53:25" itemprop="dateCreated datePublished" datetime="2023-05-31T20:53:25+08:00">2023-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-06-02 21:30:20" itemprop="dateModified" datetime="2023-06-02T21:30:20+08:00">2023-06-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/emacs/" itemprop="url" rel="index"><span itemprop="name">emacs</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://www.gnu.org/software/emacs/">Emacs</a>是一个可扩展的、可自定义、自由的文本编辑器(<s>肝帝快来</s>)，其核心是 Emacs Lisp 的解释器，这是 Lisp 编程语言的一种方言，具有支持文本编辑的扩展。<br />
+  <a target="_blank" rel="noopener" href="https://www.msys2.org/">MSYS2</a>是一个工具和库的集合，为您提供了一个易于使用的环境来构建、安装和运行本机 Windows 软件。在安装一些Emacs插件的时候会很方便。<br />
+  可以使用benchmark-init测试启动耗时，然后进行有针对性的优化。<br />
+  将配置文件放到~/.emacs.d(windows系统为C:\Users\username\AppData\Roaming.emacs.d)目录，自动加载。主流开源配置</p>
 <ul>
-<li>整体是递归，左边排好序+右边排好序+merge让整体有序</li>
-<li>让其整体有序的过程里用了排外序方法</li>
-<li>利用master公式来求解时间复杂度</li>
+<li><a target="_blank" rel="noopener" href="https://www.spacemacs.org/">Spacemacs</a></li>
+<li>Centaur Emacs</li>
+<li>Doom Emacs</li>
+<li>Steve Purcell</li>
+<li>redguardtoo</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/emacs-tw/awesome-emacs">Awesome Emacs</a></li>
 </ul>
-<p>  非递归方式，使用步长的概念和merge实现。</p>
+<p>Writing GNU Emacs Extensions</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/31/Linux/network/TcpConnectionStatus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/31/Linux/network/TcpConnectionStatus/" class="post-title-link" itemprop="url">tcp connection status</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-31 17:36:47 / Modified: 20:50:02" itemprop="dateCreated datePublished" datetime="2023-05-31T17:36:47+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://www.ibm.com/docs/en/zos/2.1.0?topic=SSLTBW_2.1.0/com.ibm.zos.v2r1.halu101/constatus.html">原文连接</a>。<br />
+  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> 连接在其生命周期中会经历一系列状态。下图说明了 TCP 连接的可能状态以及状态如何根据来自网络或本地 TCP 套接字应用程序的各种事件进行转换。<br />
+<img src="https://www.goodserendipity.com/asserts/linux/network/dwgl0004.gif" alt="tcp连接状态" /></p>
+<hr />
 <ul>
-<li>步长mergeSize从1开始增长，1、2、4、8… $2 \times mergeSize $ &gt; N终止。</li>
-<li>将整个数组按照步长分成若干组，组内merge使有序但整体无序</li>
-<li>mergeSize达到最大，merge操作结束，数组整体有序。</li>
-<li>mergeSize &gt;&gt; 1以后，left、right必须刚好覆盖上一轮循环的两个left和right</li>
+<li>SYN: (同步序列编号,Synchronize Sequence Numbers)该标志仅在三次握手建立TCP连接时有效。表示一个新的TCP连接请求。</li>
+<li>ACK: (确认编号,Acknowledgement Number)是对TCP请求的确认标志,同时提示对端系统已经成功接收所有数据。</li>
+<li>FIN: (结束标志,FINish)用来结束一个TCP回话.但对应端口仍处于开放状态,准备接收后续数据。</li>
 </ul>
-<p>  归并排序复杂度表达式为T(N) = 2*T($ \frac{N}{2} <span class='katex-error' title='ParseError: KaTeX parse error: Double superscript at position 10: ) + O(N^1^̲)，根据master可知时间复…'>) + O(N^1^)，根据master可知时间复杂度为O(</span>N \times logN$)，merge过程需要辅助数组，所以额外空间复杂度为O(N)。归并排序的实质是把比较行为变成了有序信息并传递，比O(N<sup>2</sup>)的排序快。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">mergeSort2</span><span class="params">(<span class="type">int</span>[] arr)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">mergeSize</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> left;</span><br><span class="line">    <span class="type">int</span> right;</span><br><span class="line">    <span class="type">int</span> middle;</span><br><span class="line">    <span class="keyword">while</span> (mergeSize &lt; arr.length) &#123;</span><br><span class="line">        <span class="comment">// 下一个mergeSize，从数组头部开始合并</span></span><br><span class="line">        left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt; arr.length) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mergeSize &gt;= arr.length - left) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// middle = left + mergeSize; 为什么排序结果就不对</span></span><br><span class="line">            <span class="comment">// 下一轮mergeSize &lt;&lt; 1，left、right必须刚好覆盖这一次的left、right</span></span><br><span class="line">            middle = left + mergeSize - <span class="number">1</span>;</span><br><span class="line">            right = middle + Math.min(mergeSize, arr.length - middle - <span class="number">1</span>);</span><br><span class="line">            merge1(arr, left, middle, right);</span><br><span class="line">            left = right + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 防止溢出</span></span><br><span class="line">        <span class="keyword">if</span> (mergeSize &gt; (arr.length &gt;&gt; <span class="number">1</span>)) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 步长左移</span></span><br><span class="line">        mergeSize &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="随机快排"><a class="markdownIt-Anchor" href="#随机快排"></a> 随机快排</h4>
-<p>  时间复杂度O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times logN</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span></span>)，额外空间复杂度O(logN)。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Quicksort">快排</a>使用荷兰国旗技巧和随机pivot进行排序。</p>
+<h3 id="tcp连接状态描述"><a class="markdownIt-Anchor" href="#tcp连接状态描述"></a> TCP连接状态描述</h3>
+<table>
+<thead>
+<tr>
+<th>TCP  连接状态</th>
+<th>MVS™ 控制台缩写</th>
+<th>TSO或者UNIX shell缩写</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LISTEN</td>
+<td>Listen</td>
+<td>Listen</td>
+<td>等待来自远程 TCP 应用程序的连接请求。这是您可以找到本地 TCP 服务器的侦听套接字的状态。</td>
+</tr>
+<tr>
+<td>SYN-SENT</td>
+<td>SynSent</td>
+<td>SynSent</td>
+<td>发送连接请求后等待来自远程端点的确认, 三次 TCP 握手的第 1 步后的结果。</td>
+</tr>
+<tr>
+<td>SYN-RECEIVED</td>
+<td>SynRcvd</td>
+<td>SynRcvd</td>
+<td>此端点已收到连接请求并发送确认，此端点正在等待其他端点确实收到此端点对原始连接请求的确认的最终确认。 三次 TCP 握手的第 2 步后的结果。</td>
+</tr>
+<tr>
+<td>ESTABLISHED</td>
+<td>Estblsh</td>
+<td>Establsh</td>
+<td>代表一个完全建立的连接； 这是连接数据传输阶段的正常状态。</td>
+</tr>
+<tr>
+<td>FIN-WAIT-1</td>
+<td>FinWt1</td>
+<td>FinWait1</td>
+<td>等待连接终止请求的确认或来自远程 TCP 的同步连接终止请求。 这种状态通常持续时间很短。</td>
+</tr>
+<tr>
+<td>FIN-WAIT-2</td>
+<td>FinWt2</td>
+<td>FinWait2</td>
+<td>在此端点发送其连接终止请求后，等待来自远程 TCP 的连接终止请求。 此状态通常持续时间很短，但如果远程套接字端点在收到此套接字端点关闭连接的信息后不久没有关闭其套接字，则它可能会持续一段时间。 过多的 FIN-WAIT-2 状态可能表示远程应用程序的编码错误。</td>
+</tr>
+<tr>
+<td>CLOSE-WAIT</td>
+<td>ClosWt</td>
+<td>ClosWait</td>
+<td>此端点已收到来自远程端点的关闭请求，此 TCP 现在正在等待来自本地应用程序的连接终止请求。</td>
+</tr>
+<tr>
+<td>CLOSING</td>
+<td>Closing</td>
+<td>Closing</td>
+<td>等待来自远程 TCP 的连接终止请求确认。 当此端点收到来自本地应用程序的关闭请求，向远程端点发送终止请求，并在收到来自远程端点的确认之前收到终止请求时，进入此状态。</td>
+</tr>
+<tr>
+<td>LAST-ACK</td>
+<td>LastAck</td>
+<td>LastAck</td>
+<td>等待对先前发送到远程 TCP 的连接终止请求的确认。 当此端点在发送其终止请求之前收到终止请求时，将进入此状态。</td>
+</tr>
+<tr>
+<td>TIME-WAIT</td>
+<td>TimeWt</td>
+<td>TimeWait</td>
+<td>等待足够的时间以确保远程 TCP 收到其连接终止请求的确认。</td>
+</tr>
+<tr>
+<td>CLOSED</td>
+<td>Closed</td>
+<td>Closed</td>
+<td>表示完全没有连接状态</td>
+</tr>
+</tbody>
+</table>
+<p>  TCP三次握手、四次挥手<br />
+<img src="https://www.goodserendipity.com/asserts/linux/network/packet-exchange-for-tcp-connection.webp" alt="tcp连接数据包交换" /></p>
+<h3 id="linux系统tcp相关参数"><a class="markdownIt-Anchor" href="#linux系统tcp相关参数"></a> Linux系统TCP相关参数</h3>
 <ul>
-<li>划分值pivot越靠近中间，性能越好；越靠近两边，性能越差</li>
-<li>随机选一个数pivot进行划分的目的就是让好情况和差情况都变成概率事件</li>
-<li>把每一种情况都列出来，会有每种情况下的时间复杂度，但概率都是1/N</li>
-<li>那么所有情况都考虑，时间复杂度就是这种概率模型下的长期期望！</li>
+<li>tcp_keepalive_time<br />
+整型，开启keepalive后，TCP发送保活消息的频率，默认2小时</li>
+<li>tcp_keepalive_probes<br />
+整型，TCP 发送了多少个保活探针，直到它决定连接断开，默认9个。</li>
+<li>tcp_keepalive_intvl<br />
+整型，发送探针的频率。探针开启后，到乘以探针数量的时间内，杀死没有响应的连接。默认75秒，尝试11分钟后会终止。</li>
 </ul>
-<h4 id="荷兰国旗问题"><a class="markdownIt-Anchor" href="#荷兰国旗问题"></a> 荷兰国旗问题</h4>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/31/Linux/network/ss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/31/Linux/network/ss/" class="post-title-link" itemprop="url">ss</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-31 15:50:13 / Modified: 20:47:06" itemprop="dateCreated datePublished" datetime="2023-05-31T15:50:13+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3>
+<p>  ss用于转储套接字统计信息。它允许显示类似于netstat的信息，但是比其他工具显示更多的TCP和状态信息。</p>
+<h3 id="ss的语法"><a class="markdownIt-Anchor" href="#ss的语法"></a> ss的语法</h3>
+<p>  ss [options] [ FILTER ]</p>
+<h3 id="ss的参数"><a class="markdownIt-Anchor" href="#ss的参数"></a> ss的参数</h3>
+<p>  当没有使用options时，ss 显示已建立连接的打开的非监听套接字列表（例如 TCP/UNIX/UDP）。</p>
+<p>  OPTIONS列表</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>简写</th>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>-h</td>
+<td>–help</td>
+<td>显示帮助页面</td>
+</tr>
+<tr>
+<td>2</td>
+<td>-V</td>
+<td>–version</td>
+<td>输出版本信息</td>
+</tr>
+<tr>
+<td>3</td>
+<td>-H</td>
+<td>–no-header</td>
+<td>不输出表头</td>
+</tr>
+<tr>
+<td>4</td>
+<td>-n</td>
+<td>–numeric</td>
+<td>以数字显示，不显示服务名</td>
+</tr>
+<tr>
+<td>5</td>
+<td>-r</td>
+<td>–resolve</td>
+<td>尝试解析IP、端口</td>
+</tr>
+<tr>
+<td>6</td>
+<td>-a</td>
+<td>–all</td>
+<td>输出监听和非监听套接字(对TCP是已建立连接)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>-l</td>
+<td>–listening</td>
+<td>输出监听套接字(默认触发)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>-o</td>
+<td>–options</td>
+<td>输出时间信息，输出格式timer:(timer_name,expire_time,retrans)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>-e</td>
+<td>–extended</td>
+<td>输出详细的socket信息，<br>格式uid:&lt;uid_number&gt; ino:&lt;inode_number&gt; sk:<cookie></td>
+</tr>
+<tr>
+<td>10</td>
+<td>-m</td>
+<td>–memory</td>
+<td>输出套接字占用的内存</td>
+</tr>
+<tr>
+<td>11</td>
+<td>-p</td>
+<td>–processes</td>
+<td>输出使用套接字的进程</td>
+</tr>
+<tr>
+<td>12</td>
+<td>-i</td>
+<td>–info</td>
+<td>输出内部TCP信息</td>
+</tr>
+<tr>
+<td>13</td>
+<td>-K</td>
+<td>–kill</td>
+<td>尝试强制关闭套接字，输出成功关闭的套接字，跳过内核不支持关闭的套接字，仅支持IPv4和IPv6</td>
+</tr>
+<tr>
+<td>14</td>
+<td>-s</td>
+<td>–summary</td>
+<td>打印汇总统计信息。 此选项不解析从各种来源获取摘要的套接字列表。 当套接字数量如此之大以至于解析 /proc/net/tcp 很痛苦时，它很有用。</td>
+</tr>
+<tr>
+<td>15</td>
+<td>-E</td>
+<td>–events</td>
+<td>在套接字被销毁时继续显示套接字</td>
+</tr>
+<tr>
+<td>16</td>
+<td>-Z</td>
+<td>–context</td>
+<td>作为 -p 选项，还显示进程安全上下文。</td>
+</tr>
+<tr>
+<td>17</td>
+<td>-z</td>
+<td>–contexts</td>
+<td>作为-Z 选项还显示套接字上下文。 套接字上下文取自关联的 inode，而不是内核持有的实际套接字上下文。 套接字通常标有创建过程的上下文，但是显示的上下文将反映应用的任何策略角色、类型和/或范围转换规则，因此是一个有用的参考。</td>
+</tr>
+<tr>
+<td>18</td>
+<td>-N NSNAME</td>
+<td>–net=NSNAME</td>
+<td>切换到指定的网络命名空间名称。</td>
+</tr>
+<tr>
+<td>19</td>
+<td>-b</td>
+<td>–bpf</td>
+<td>显示套接字 BPF 过滤器（只允许管理员获取这些信息）。</td>
+</tr>
+<tr>
+<td>20</td>
+<td>-4</td>
+<td>–ipv4</td>
+<td>仅显示IPv4套接字</td>
+</tr>
+<tr>
+<td>21</td>
+<td>-6</td>
+<td>–ipv6</td>
+<td>仅显示IPv6套接字</td>
+</tr>
+<tr>
+<td>22</td>
+<td>-0</td>
+<td>–packet</td>
+<td>显示packet套接字</td>
+</tr>
+<tr>
+<td>23</td>
+<td>-t</td>
+<td>–tcp</td>
+<td>显示tcp套接字</td>
+</tr>
+<tr>
+<td>24</td>
+<td>-u</td>
+<td>–udp</td>
+<td>显示udp套接字</td>
+</tr>
+<tr>
+<td>25</td>
+<td>-d</td>
+<td>–dccp</td>
+<td>显示DCCP套接字</td>
+</tr>
+<tr>
+<td>26</td>
+<td>-w</td>
+<td>–raw</td>
+<td>显示RAW套接字</td>
+</tr>
+<tr>
+<td>27</td>
+<td>-x</td>
+<td>–unix</td>
+<td>显示Unix域套接字</td>
+</tr>
+<tr>
+<td>28</td>
+<td>-S</td>
+<td>–sctp</td>
+<td>显示SCTP套接字</td>
+</tr>
+<tr>
+<td>29</td>
+<td>–vsock</td>
+<td></td>
+<td>显示vsock套接字</td>
+</tr>
+<tr>
+<td>30</td>
+<td>-f FAMILY</td>
+<td>–family=FAMILY</td>
+<td>显示FAMILY类型套接字，当前支持unix,inet,inet6,link,netlink,vsock</td>
+</tr>
+<tr>
+<td>31</td>
+<td>-A QUERY</td>
+<td>–query=QUERY, --socket=QUERY</td>
+<td>要转储的套接字表列表，由命令分隔。 可以理解以下标识符：all、inet、tcp、udp、raw、unix、packet、netlink、unix_dgram、unix_stream、unix_seqpacket、packet_raw、packet_dgram、dccp、sctp、vsock_stream、vsock_dgram。 列表中的任何项目都可以选择以感叹号 (!) 为前缀，以排除该套接字表被转储。</td>
+</tr>
+<tr>
+<td>32</td>
+<td>-D FILE</td>
+<td>–diag=FILE</td>
+<td>不显示任何内容，只是在应用过滤器后将有关 TCP 套接字的原始信息转储到 FILE。 如果 FILE 是 - 使用标准输出。</td>
+</tr>
+<tr>
+<td>33</td>
+<td>-F FILE</td>
+<td>–filter=FILE</td>
+<td>从 FILE 中读取过滤器信息。 FILE 的每一行都被解释为单个命令行选项。 如果 FILE 是 - 使用标准输入。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="state-filter"><a class="markdownIt-Anchor" href="#state-filter"></a> STATE-FILTER</h3>
+<p>  STATE-FILTER 允许构造任意一组状态来匹配。 它的语法是关键字 state 和 exclude 的序列，后跟状态标识符。<br />
+  可用的标志符，所有标准的TCP状态established, syn-sent, syn-recv, fin-wait-1, fin-wait-2, time-wait, closed, close-wait, last-ack, listening  and  clos‐ing.</p>
+<ol>
+<li>all - for all the states</li>
+<li>connected - all the states except for listening and closed</li>
+<li>synchronized - all the connected states except for syn-sent</li>
+<li>bucket - states, which are maintained as minisockets, i.e.  time-wait and syn-recv</li>
+<li>big - opposite to bucket</li>
+</ol>
+<h3 id="用例"><a class="markdownIt-Anchor" href="#用例"></a> 用例</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Display all TCP sockets.</span></span><br><span class="line">ss -t -a</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Display all TCP sockets with process SELinux security contexts.</span></span><br><span class="line">ss -t -a -Z</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Display all UDP sockets.</span></span><br><span class="line">ss -u -a</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Display all established ssh connections.</span></span><br><span class="line">ss -o state established &#x27;( dport = :ssh or sport = :ssh )&#x27;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Find all <span class="built_in">local</span> processes connected to X server.</span></span><br><span class="line">ss -x src /tmp/.X11-unix/*</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">List all the tcp sockets <span class="keyword">in</span> state FIN-WAIT-1 <span class="keyword">for</span> our apache to network 193.233.7/24 and look at their timers.</span></span><br><span class="line">ss -o state fin-wait-1 &#x27;( sport = :http or sport = :https )&#x27; dst 193.233.7/24</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">List sockets <span class="keyword">in</span> all states from all socket tables but TCP.</span></span><br><span class="line">ss -a -A &#x27;all,!tcp&#x27;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://tools.ietf.org/rfc/rfc793.txt">TCP协议规范RFC 793</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/31/Linux/network/netstat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/31/Linux/network/netstat/" class="post-title-link" itemprop="url">netstat</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-31 15:33:52 / Modified: 16:32:19" itemprop="dateCreated datePublished" datetime="2023-05-31T15:33:52+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3>
+<p>  <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/Netstat">netstat</a>是一个基于命令行界面的网络实用工具，可显示当前的网络状态，包括传输控制协议层的连线状况、路由表、网络接口状态和网络协议的统计消息等。netstat命令适用于类Unix系统（如macOS、Linux、Solaris和BSD）、IBM OS/2和Windows NT操作系统家族（如Windows XP、Windows Vista、Windows 7、Windows 8和Windows 10）。<br />
+  netstat可用于查找网络中的问题，并可通过计算网络流量来度量网络性能。尽管该工具仍然被包含在许多Linux发行版中，但基本都被看作过时、应被替代的工具。<br />
+  在Linux上，推荐使用ss替代netstat，使用ip route替代netstat -r，使用ip -s link替代netstat -i，使用ip maddr替代netstat -g。</p>
+<h3 id="输出结果"><a class="markdownIt-Anchor" href="#输出结果"></a> 输出结果</h3>
+<p>  netstat输出结果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Active Internet connections (w/o servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line">tcp        0     48 anonymous:ssh           desktop-7qe4e7u:9193    ESTABLISHED</span><br><span class="line">tcp        0      0 anonymous:ssh           desktop-7qe4e7u:9195    ESTABLISHED</span><br><span class="line">Active UNIX domain sockets (w/o servers)</span><br><span class="line">Proto RefCnt Flags       Type       State         I-Node   Path</span><br><span class="line">unix  3      [ ]         DGRAM                    13329    /run/systemd/notify</span><br><span class="line">unix  2      [ ]         DGRAM                    18451    /run/user/1000/systemd/notify</span><br><span class="line">unix  7      [ ]         DGRAM                    13350    /run/systemd/journal/socket</span><br><span class="line">unix  7      [ ]         DGRAM                    13616    /run/systemd/journal/dev-log</span><br><span class="line">unix  2      [ ]         DGRAM                    13506    /run/systemd/journal/syslog</span><br><span class="line">unix  2      [ ]         DGRAM                    13894</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17379</span><br><span class="line">unix  3      [ ]         DGRAM                    13331</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     18458    /var/run/dbus/system_bus_socket</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16067</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     18531</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16071</span><br><span class="line">unix  3      [ ]         DGRAM                    14410</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16155    /run/systemd/journal/stdout</span><br><span class="line">unix  2      [ ]         DGRAM                    16220</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     18457</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16068    /run/systemd/journal/stdout</span><br><span class="line">unix  3      [ ]         DGRAM                    14411</span><br><span class="line">unix  2      [ ]         DGRAM                    14308</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     18536</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     14394    /run/systemd/journal/stdout</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16567    /var/run/dbus/system_bus_socket</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16566</span><br><span class="line">unix  2      [ ]         DGRAM                    18389</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     16154</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     18381    /run/systemd/journal/stdout</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>  netstat的输出结果可以分为两个部分：</p>
 <ul>
-<li>给定一个数组arr，和一个整数num。请把小于num的数放在数组的左边，等于num的数放在中间，大于num的数放在数组的右边。要求额外空间复杂度O(1)，时间复杂度O(N)</li>
+<li>一个是Active Internet connections，称为有源TCP连接，其中&quot;Recv-Q&quot;和&quot;Send-Q&quot;指%0A的是接收队列和发送队列。这些数字一般都应该是0。如果不是则表示软件包正在队列中堆积。这种情况只能在非常少的情况见到。</li>
+<li>另一个是Active UNIX domain sockets，称为有源Unix域套接口(和网络套接字一样，但是只能用于本机通信，性能可以提高一倍)。Proto显示连接使用的协议,RefCnt表示连接到本套接口上的进程号,Types显示套接口的类型,State显示套接口当前的状态,Path表示连接到套接口的其它进程使用的路径名。</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span>[] netherlandsFlag(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right) &#123;</span><br><span class="line">    <span class="keyword">if</span> (left &gt; right) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;-<span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (left == right) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;left, right&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// = arr[right]的位置</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">scopeLeft</span> <span class="operator">=</span> left - <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">scopeRight</span> <span class="operator">=</span> right;</span><br><span class="line">    <span class="comment">// left...right的任意一个位置</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> left;</span><br><span class="line">    <span class="keyword">while</span> (index &lt; scopeRight) &#123;</span><br><span class="line">        <span class="comment">// index右移</span></span><br><span class="line">        <span class="keyword">if</span> (arr[index] == arr[right]) &#123;</span><br><span class="line">            index++;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[index] &lt; arr[right]) &#123;</span><br><span class="line">            <span class="comment">// &lt; arr[right] 交换到左边</span></span><br><span class="line">            <span class="comment">// scopeLeft...index-1都是=arr[right]</span></span><br><span class="line">            CommonUtil.swap(arr, index++, ++scopeLeft);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// &gt; arr[right]交换到右边</span></span><br><span class="line">            <span class="comment">// arr[--scopeRight]的大小不确定，所以index不动</span></span><br><span class="line">            CommonUtil.swap(arr, index, --scopeRight);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    CommonUtil.swap(arr, scopeRight, right);</span><br><span class="line">    <span class="comment">// arr[scopeLeft] &lt; arr[right]，所以要+1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;scopeLeft + <span class="number">1</span>, scopeRight&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="小和问题"><a class="markdownIt-Anchor" href="#小和问题"></a> 小和问题</h5>
-<p>  在一个数组中，一个数左边比它小的数的总和，叫数的小和，所有数的小和累加起来，叫数组小和。求数组小和。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">例子： [1,3,4,2,5]</span><br><span class="line">1左边比1小的数：没有</span><br><span class="line">3左边比3小的数：1</span><br><span class="line">4左边比4小的数：1、3</span><br><span class="line">2左边比2小的数：1</span><br><span class="line">5左边比5小的数：1、3、4、 2</span><br><span class="line">所以数组的小和为1+1+3+1+1+3+4+2=16</span><br></pre></td></tr></table></figure>
-<p>  小和问题等价于每一个数，右边比它大的每一个数累加一次，在合并的过程中累加。left &lt;  p &lt;middle，middle+1 &lt; q &lt; right，arr[p] &lt; arr[q] 则[q, right]区间的所有数都累加一次arr[p]。</p>
-<h5 id="逆序对"><a class="markdownIt-Anchor" href="#逆序对"></a> 逆序对</h5>
-<p>  在一个数组中，任何一个前面的数a，和任何一个后面的数b，如果(a,b)是降序的，就称为逆序对。返回数组中所有的逆序对。<br />
-  逆序对不一定是相邻的，使用归并排序对左右两部分逆序排序，每次合并的时候拿到逆序对个数。</p>
-<h5 id="大于两倍-leetcode493"><a class="markdownIt-Anchor" href="#大于两倍-leetcode493"></a> 大于两倍 LeetCode493</h5>
-<p>  在一个数组中，对于每个数num，求有多少个后面的数 * 2 依然&lt;num，求总个数</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">比如：[3,1,7,0,2]</span><br><span class="line">3的后面有：1，0</span><br><span class="line">1的后面有：0</span><br><span class="line">7的后面有：0，2</span><br><span class="line">0的后面没有</span><br><span class="line">2的后面没有</span><br><span class="line">所以总共有5个</span><br></pre></td></tr></table></figure>
-<p>  递归合并操作，判断&gt;2 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> num。先转成long类型再 $ \times 2$ ,避免溢出。不同于小和问题、逆序对，需要完全遍历左边和右边。小和问题和逆序对在左边或者右边越界的时候递归终止。</p>
-<h5 id="奇偶分组"><a class="markdownIt-Anchor" href="#奇偶分组"></a> 奇偶分组</h5>
-<p>  在整型数组中，请把奇数放在数组左边，偶数放在数组右边，要求所有奇数之间原始的相对次序不变，所有偶数之间原始相对次序不变。要求时间复杂度做到O(N)，额外空间复杂度做到O(1)<br />
-  桶排序是否可以解决问题？</p>
-<h5 id="数组区间和的个数leetcode327"><a class="markdownIt-Anchor" href="#数组区间和的个数leetcode327"></a> 数组区间和的个数LeetCode327</h5>
-<p>  给定一个数组arr，两个整数lower和upper，返回arr中有多少个子数组的累加和在[lower,upper]范围上。<br />
-  可以使用归并排序、线段树、动态增加节点的线段树、树状数组、平衡二叉搜索树等方法结局。<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/count-of-range-sum/solutions/">LeetCode题解</a></p>
-<h6 id="归并排序-2"><a class="markdownIt-Anchor" href="#归并排序-2"></a> 归并排序</h6>
-<ul>
-<li>由原数组得到前缀和数组sum，递归合并，在合并操作中统计区间个数</li>
-<li>左边left…middle有序，右边middle+1…right有序，遍历右边每一个元素，拿到max、min。</li>
-<li>因为左边有序拿到左边的上下限，则是包含sum[i]的区间和子数组的上下限。</li>
-<li>左侧、右侧部分内部的区间和个数已经在上一步处理完。</li>
-</ul>
-<h5 id="单链表荷兰国旗问题"><a class="markdownIt-Anchor" href="#单链表荷兰国旗问题"></a> 单链表荷兰国旗问题</h5>
-<p>  遍历链表的时间复杂度是O(N)，链表节点的移动需要处理好next、记录pre。<br />
-// TODO</p>
-<h6 id="计数排序"><a class="markdownIt-Anchor" href="#计数排序"></a> 计数排序</h6>
-<p>  待排序数组arr要求全部是非负，如果不是正数则转化为正数，排序完以后再还原。arr的最大值决定bucket的长度，影响时间复杂度。</p>
-<ul>
-<li>拿到arr的最大值max+1作为bucket数组的长度</li>
-<li>将arr[index]作为bucket的下标，bucket[i]表示arr中等于i的个数。</li>
-<li>遍历bucket，将下标赋值给arr则完成排序。</li>
-</ul>
-<h6 id="基数排序"><a class="markdownIt-Anchor" href="#基数排序"></a> 基数排序</h6>
-<p>  要求非负的十进制，每次进桶出桶按照digit排序。</p>
-<ul>
-<li>拿到最大数的digit，从1-digit遍历</li>
-<li>桶数组count、辅助数组help，help保存每次出桶的顺序</li>
-<li>count的前缀和count[j]表示在digit位置为j的上限</li>
-<li>复制help到原数组，递归结束后整体有序</li>
-</ul>
+<h3 id="参数"><a class="markdownIt-Anchor" href="#参数"></a> 参数</h3>
+<p>  可以使用man netstat查看使用手册。netstat的参数必须以连字符（-）而非斜杠（/）为前缀。并非所有平台都支持某些参数。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-a</td>
+<td>显示所有活动中的网络连接和电脑正在监听的TCP/UDP端口。</td>
+</tr>
+<tr>
+<td>-b</td>
+<td>显示每个应用程序所使用的网络连接和监听端口 。（仅适用于Windows XP、Windows Server 2003或更高版本的Microsoft Windows操作系统，Windows 2000或更早版本不可用。）</td>
+</tr>
+<tr>
+<td>-b</td>
+<td>同-i，但计算网络流量的总字节数。</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>显示以太网统计消息，例如发送和接收的字节数及数据包数。此参数可以与-s组合使用。</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>显示外部地址的完整网域名称。（仅适用于Windows Vista和更高版本的Microsoft Windows操作系统。）</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>限定显示使用特定套接字（unix、inet、inet6）的地址族。</td>
+</tr>
+<tr>
+<td>-g</td>
+<td>显示多播组消息。（可能仅适用于较新的操作系统。）</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>显示网络接口及统计消息。</td>
+</tr>
+<tr>
+<td>-m</td>
+<td>显示随机存取存储器统计消息。</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>显示活动中的TCP连接，但主机地址和端口号以数字形式表示，不会尝试确定实际主机名。</td>
+</tr>
+<tr>
+<td>-o</td>
+<td>显示活动中的TCP连接，并包含每个连接的进程ID（PID）。根据PID，可在Windows任务管理器的“进程”选项卡中找到该应用程序。此参数可以与-a、-n和-p组合使用。如果安装了Windows修补程序，则此参数在Windows XP、Windows Server 2003和Windows 2000上可用。</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>显示使用指定网络协议的连接。协议可以是TCP、UDP、TCPv6或UDPv6。如果此参数与-s组合使用，则协议可以是TCP、UDP、ICMP、IP、TCPv6、UDPv6、ICMPv6或IPv6。</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>显示哪些进程正在使用哪些网络接口，类似于Microsoft Windows下的-b。（需要root权限才能执行此操作。）</td>
+</tr>
+<tr>
+<td>-P</td>
+<td>显示使用指定网络协议的连接。协议可以是IP、IPv6、ICMP、ICMPv6、IGMP、UDP、TCP或RawIP。</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>显示路由表内容，与Microsoft Windows下route print命令相同。</td>
+</tr>
+<tr>
+<td>-s</td>
+<td>按网络协议显示统计消息。默认情况下，显示TCP、UDP、ICMP和IP协议的统计消息。如果Windows XP安装了IPv6协议，亦可以显示TCPv6、UDPv6、ICMPv6和IPv6协议的统计消息。-p参数可用于指定一组协议。</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>仅显示TCP连接。</td>
+</tr>
+<tr>
+<td>-u</td>
+<td>仅显示UDP连接。</td>
+</tr>
+<tr>
+<td>-W</td>
+<td>显示完整主机名或IPv6地址。</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>与-b组合使用时，将显示所有应用程序使用的网络连接和监听端口所涉及的组件列表。</td>
+</tr>
+<tr>
+<td>-h</td>
+<td>显示该命令的提示。</td>
+</tr>
+<tr>
+<td>-?</td>
+<td>显示该命令的提示。</td>
+</tr>
+<tr>
+<td>/?</td>
+<td>显示该命令的提示。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="命令实例"><a class="markdownIt-Anchor" href="#命令实例"></a> 命令实例</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出所有端口 (包括监听和未监听的)</span></span><br><span class="line">netstat -a</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出所有 tcp 端口</span></span><br><span class="line">netstat -at</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出所有 udp 端口</span></span><br><span class="line">netstat -au</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">列出所有处于监听状态的 Sockets</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">只显示监听端口</span></span><br><span class="line">netstat -l</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">只列出所有监听 tcp 端口</span></span><br><span class="line">netstat -lt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">只列出所有监听 udp 端口</span></span><br><span class="line">netstat -lu</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">只列出所有监听 UNIX 端口</span></span><br><span class="line">netstat -lx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示每个协议的统计信息</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示所有端口的统计信息</span></span><br><span class="line">netstat -s</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示 TCP 或 UDP 端口的统计信息</span></span><br><span class="line">netstat -st</span><br><span class="line">netstat -su</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在 netstat 输出中显示 PID 和进程名称</span></span><br><span class="line">netstat -p</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可以与其它命令一起使用，就可以添加 “PID/进程名称” 到 netstat 输出中，这样 debugging 的时候可以很方便的发现特定端口运行的程序。</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在 netstat 输出中不显示主机，端口和用户名 (host, port or user)</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">当你不想让主机，端口和用户名显示，将会使用数字代替那些名称</span></span><br><span class="line">netstat -n</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">同样可以加速输出，因为不用进行比对查询。</span></span><br><span class="line">netstat -an</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果只是不想让这三个名称中的一个被显示，使用以下命令</span></span><br><span class="line">netsat -a --numeric-ports</span><br><span class="line">netsat -a --numeric-hosts</span><br><span class="line">netsat -a --numeric-users</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">netstat 将每隔一秒输出网络信息</span></span><br><span class="line">netstat -c</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示系统不支持的地址族 (Address Families)</span></span><br><span class="line">netstat --verbose</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示核心路由信息</span></span><br><span class="line">netstat -r</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示数字格式，不查询主机名称</span></span><br><span class="line">netstat -rn</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">找出程序运行的端口，并不是所有的进程都能找到，没有权限的会不显示，使用 root 权限查看所有的信息。</span></span><br><span class="line">netstat -ap | grep ssh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">找出运行在指定端口的进程</span></span><br><span class="line"> netstat -an | grep &#x27;:80&#x27;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示网络接口列表</span></span><br><span class="line">netstat -i</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示详细信息，像是 ifconfig</span></span><br><span class="line">netstat -ie</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看连接某服务端口最多的的IP地址</span></span><br><span class="line">netstat -nat | grep &quot;192.168.1.15:22&quot; | awk &#x27;&#123;print $5&#125;&#x27;| awk -F: &#x27;&#123;print $1&#125;&#x27;|sort|uniq -c|sort -nr|head -20</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">TCP各种状态列表</span></span><br><span class="line">netstat -nat |awk &#x27;&#123;print $6&#125;&#x27;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">先把状态全都取出来,然后使用<span class="built_in">uniq</span> -c统计，之后再进行排序</span></span><br><span class="line">netstat -nat |awk &#x27;&#123;print $6&#125;&#x27;|sort|uniq -c</span><br><span class="line">netstat -nat |awk &#x27;&#123;print $6&#125;&#x27;|sort|uniq -c|sort -rn</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分析access.log获得访问前10位的ip地址</span></span><br><span class="line">awk &#x27;&#123;print $1&#125;&#x27; access.log |sort|uniq -c|sort -nr|head -10</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/" class="post-title-link" itemprop="url">Linux服务器安全</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-07 15:43:34 / Modified: 16:23:03" itemprop="dateCreated datePublished" datetime="2023-05-07T15:43:34+08:00">2023-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  安全涉及各个层面，防护策略也不尽相同。安全防护只是提高攻击成本，并不能绝对保证安全。常见的Linux服务器安全防护措施可以屏蔽绝大多数扫描，但并不能抵御有针对性的攻击。可以参考<a target="_blank" rel="noopener" href="https://downloads.cisecurity.org/#/">CIS安全基线</a>、<a target="_blank" rel="noopener" href="https://cve.mitre.org/">CVE</a>、<a target="_blank" rel="noopener" href="https://owasp.org/">OWASP</a>等。Google搜索Linux server hardening 、security baseline</p>
+<h3 id="ssh"><a class="markdownIt-Anchor" href="#ssh"></a> ssh</h3>
+<p>  修改默认的22端口，使用密钥登录，禁止root远程登录。</p>
+<h3 id="黑白名单"><a class="markdownIt-Anchor" href="#黑白名单"></a> 黑白名单</h3>
+<p>  避免使用8080、3306等各种常见的默认端口，仅开放特定的端口暴露服务。将特定IP拉黑，比如国外IP，经常访问失败的IP等。</p>
+<h3 id="fail2ban"><a class="markdownIt-Anchor" href="#fail2ban"></a> fail2ban</h3>
+<p>  <a target="_blank" rel="noopener" href="https://www.fail2ban.org/wiki/index.php/Main_Page">fail2ban</a>通过扫描日志并禁用有恶意访问记录的IP，比如太多的密码错误、寻找漏洞等。<a target="_blank" rel="noopener" href="https://github.com/fail2ban/fail2ban">fail2ban的github地址</a>。</p>
+<h3 id="容器化"><a class="markdownIt-Anchor" href="#容器化"></a> 容器化</h3>
+<p>  容器化比如docker，可以将服务隔离，将攻击范围限制在当前容器中，而不是整个服务器。</p>
+<h3 id="cloudflare-tunnel"><a class="markdownIt-Anchor" href="#cloudflare-tunnel"></a> Cloudflare Tunnel</h3>
+<p>  <a target="_blank" rel="noopener" href="https://www.cloudflare-cn.com/products/tunnel/">Cloudflare Tunnel</a>是一个内网穿透工具，可以暴露服务，但网络不稳定，不支持HTTP3/QUIC/UDP，需要托管域名。<a target="_blank" rel="noopener" href="https://github.com/cloudflare/cloudflared">github仓库</a>。</p>
 
       
     </div>
@@ -1585,7 +1583,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1651,20 +1649,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">65</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

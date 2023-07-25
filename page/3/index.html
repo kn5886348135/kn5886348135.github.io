@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,7 +179,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/06/DataStructuresAndAlgorithms/3%E3%80%81%E9%93%BE%E8%A1%A8%E3%80%81%E6%A0%88%E5%92%8C%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">链表、栈和队列</a>
+            <a href="/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/" class="post-title-link" itemprop="url">避免10大nginx配置错误</a>
         </h2>
 
         <div class="post-meta">
@@ -189,14 +189,131 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2023-04-06 13:31:10" itemprop="dateCreated datePublished" datetime="2023-04-06T13:31:10+08:00">2023-04-06</time>
+              <time title="Created: 2023-05-06 17:59:31" itemprop="dateCreated datePublished" datetime="2023-05-06T17:59:31+08:00">2023-05-06</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-08 19:03:42" itemprop="dateModified" datetime="2023-04-08T19:03:42+08:00">2023-04-08</time>
+                <time title="Modified: 2023-05-07 15:00:13" itemprop="dateModified" datetime="2023-05-07T15:00:13+08:00">2023-05-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  nginx官方博客，<a target="_blank" rel="noopener" href="https://www.nginx.com/blog/avoiding-top-10-nginx-configuration-mistakes/">避免10大nginx配置错误</a>指出nginx使用中10个最常见的配置错误。</p>
+<h3 id="没有足够的文件描述符"><a class="markdownIt-Anchor" href="#没有足够的文件描述符"></a> 没有足够的文件描述符</h3>
+<p>  worker_connections指令限制每个worker进程最大的连接数，最大连接数也受操作系统的文件描述符限制。通常的配置错误是将文件描述符增加到worker_connections的两倍，正确的操作是在主上下文配置<a target="_blank" rel="noopener" href="https://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile">worker_rlimit_nofile</a>。每个worker进程对客户端连接或者upstream消耗一个文件描述符、代理文件消耗若干个文件描述符，另外有保存临时响应的文件、写日志、和主进程交流等。根据nginx的启动方式可以使用不同的方式设置文件描述符，但是worker_connections指令不关心nginx的启动方式。</p>
+<ul>
+<li>如果nginx使用shell启动，使用ulimit指令，</li>
+<li>如果nginx作为系统服务启动，使用init脚本或者systemd服务列表变量</li>
+<li>使用/etc/security/limits.conf文件</li>
+</ul>
+<p>  可以使用sysctl fs.file-max指令临时修改系统的最大文件描述符，修改Debian系统的/proc/sys/fs/file-max文件可以永久修改系统的文件描述符数量。系统的文件描述符一般很大，但还是要确保worker_rlimit_nofile <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> worker_processes明显小于fs.file-max，避免服务器被DDOS攻击的时候用完所有的文件描述符而无法登陆。</p>
+<h3 id="关闭error_log指令"><a class="markdownIt-Anchor" href="#关闭error_log指令"></a> 关闭error_log指令</h3>
+<p>  error_log不接受off参数，error_log off指令会在默认目录/etc/nginx创建一个名为off的日志文件。nginx不建议关闭error_log，因为它是nginx调试问题的重要信息。</p>
+<h3 id="没有启用upstream的keepalive"><a class="markdownIt-Anchor" href="#没有启用upstream的keepalive"></a> 没有启用upstream的keepalive</h3>
+<p>  默认情况下，nginx为每一个新进来的请求打开一个新的到upstream的连接。这是安全的，但效率低下，因为nginx和服务器必须经过3次握手建立连接，3次或者4次握手断开连接。<br />
+  在高流量下，为每一个请求打开一个新的连接会耗尽系统资源并导致根本无法打开连接。每个连接的4元组，源ip、源端口、目标ip、目标端口都是唯一的，从nginx到upstream服务器的每个连接，源ip、目标ip、目标端口都是固定的，只有源端口是变量。当连接关闭的时候，Linux的socket保持TIME-WAIT状态并持续2分钟，在高流量的时候增加了耗尽可用源端口池的可能。发生这种情况后，nginx就不能打开到upstream的新链接。<br />
+  解决方案就是开启nginx到upstream的keepalive，而不是请求完成时关闭连接，让连接保持建立状态用于额外的请求。这样既能减少耗尽源端口的可能，也能提升性能。<br />
+  在每个upstream块中添加keepalive指令，设置保留在每个worker进程缓存中的与upstream服务器的空闲的、活跃的连接数。keepalive不限制nginx的每个worker进程可以打开的总的连接数，所以keepalive不必设置成很大的值。nginx官方建议设置为upstream块中服务器数量的2倍。如果在upstream块中指定了负载均衡策略，比如hash、ip_hash、least_conn、least_time、random等，则keepalive必须在负载均衡策略下面。<br />
+  转发请求到upstream服务器的location块，包含proxy_pass、proxy_http_version、proxy_set_header指令。nginx默认为每个到upstream的连接使用HTTP/1.0，并且对应地添加请求头Connection: close。结果就是每个请求完成后都会关闭，尽管upstream块中有keepalive指令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">告诉nginx使用HTTP/1.1</span></span><br><span class="line">proxy_http_version 1.1;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">移除Connection请求头的close值</span></span><br><span class="line">proxy_set_header   &quot;Connection&quot; &quot;&quot;;</span><br></pre></td></tr></table></figure>
+<h3 id="忘记指令继承工作原理"><a class="markdownIt-Anchor" href="#忘记指令继承工作原理"></a> 忘记指令继承工作原理</h3>
+<p>  nginx指令是向下继承的，比如http{}中的server{}、location{}会继承http{}的指令值，server{}中的指令会完全被location{}继承，相同的指令值会被内层块覆盖。数组指令不仅在多个上下文中被替换，在指定的上下文中也会被替换多次，比如proxy_set_header、add_header。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    add_header X-HTTP-LEVEL-HEADER 1;</span><br><span class="line">    add_header X-ANOTHER-HTTP-LEVEL-HEADER 1;</span><br><span class="line"></span><br><span class="line">    # 继承http块的X-HTTP-LEVEL-HEADER和X-ANOTHER-HTTP-LEVEL-HEADER</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8080;</span><br><span class="line">        location / &#123;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8081;</span><br><span class="line">        add_header X-SERVER-LEVEL-HEADER 1;</span><br><span class="line">        </span><br><span class="line">        # 覆盖http块的header，只剩下X-SERVER-LEVEL-HEADER</span><br><span class="line">        location / &#123;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        # 覆盖server块的header，只剩下X-LOCATION-LEVEL-HEADER</span><br><span class="line">        location /test &#123;</span><br><span class="line">            add_header X-LOCATION-LEVEL-HEADER 1;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        # 覆盖server块的header，要显示4个header，必须全部添加</span><br><span class="line">        location /correct &#123;</span><br><span class="line">            add_header X-HTTP-LEVEL-HEADER 1;</span><br><span class="line">            add_header X-ANOTHER-HTTP-LEVEL-HEADER 1;</span><br><span class="line"></span><br><span class="line">            add_header X-SERVER-LEVEL-HEADER 1;</span><br><span class="line">            add_header X-LOCATION-LEVEL-HEADER 1;</span><br><span class="line">            return 200 &quot;OK&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="关闭proxy_buffering指令"><a class="markdownIt-Anchor" href="#关闭proxy_buffering指令"></a> 关闭proxy_buffering指令</h3>
+<p>  nginx默认开启proxy_buffering指令，开启proxy_buffering表示nginx会将服务器的响应保存在内部缓冲区，直到整个响应缓冲完才向客户端发送数据。缓冲区帮助优化慢客户端，nginx尽可能长时间地缓存响应直到客户端获取所有响应，被代理的服务器可以尽快返回响应并处理其他请求。当关闭proxy_buffering后，nginx仅在发送数据到客户端前缓冲第一部分响应，通常是一个内存页的大小(根据操作系统可能是4KB或者8KB)。这通常只够响应头的空间，nginx同步将收到的数据发送响应到客户端，强制服务器保持空闲，直到nginx可以接收下一个响应片段。<br />
+  关闭proxy_buffering对客户端的响应延迟提升效果微乎其微，但是副作用却很明显，比如即使配置了速率限制和缓存也不会生效，影响性能等。只有很少场景关闭proxy_buffering是有意义的，比如长轮询。nginx官方强烈反对修改默认值。</p>
+<h3 id="错误使用if指令"><a class="markdownIt-Anchor" href="#错误使用if指令"></a> 错误使用if指令</h3>
+<p>  if指令很难使用，尤其是在location块中。它通常不会实现你所期望的功能，并且还会引起段错误。实际上因为if特别难使用，nginx wiki上有一篇文章<a target="_blank" rel="noopener" href="https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/">if是恶魔</a>。通常可以在if块中安全使用的指令是return和rewrite。</p>
+<h3 id="太多健康检查"><a class="markdownIt-Anchor" href="#太多健康检查"></a> 太多健康检查</h3>
+<p>  配置多个虚拟服务器以将请求代理到同一个上游组是很常见的（换句话说，在多个 server{} 块中包含相同的 proxy_pass 指令）。 这种情况下的错误是在每个 server{} 块中包含一个 health_check 指令。这只会在上游服务器上增加负载，而不会产生任何额外信息。解决方法是为每个上游{} 块定义一次健康检查。可以参考<a target="_blank" rel="noopener" href="https://docs.nginx.com/nginx/admin-guide/load-balancer/">nginx负载均衡</a>。</p>
+<h3 id="不安全地访问统计指标"><a class="markdownIt-Anchor" href="#不安全地访问统计指标"></a> 不安全地访问统计指标</h3>
+<p>  nginx操作的基础统计指标可以通过Stub Status模块获取，NGINX plus可以通过NGINX Plus API收集更多监控信息。在server{}或者location{}块中添加stub_status或者api指令可以开启监控信息收集功能。某些监控信息包含敏感数据，可能被用来攻击网站或者App，通常用户配置并没有限制对应的URL访问。</p>
+<ul>
+<li>使用HTTP Basic Authentication</li>
+<li>使用allow和deny指令</li>
+<li>结合上面两种方式</li>
+</ul>
+<h3 id="当所有流量都来自同一24-cidr子网段时使用ip_hash"><a class="markdownIt-Anchor" href="#当所有流量都来自同一24-cidr子网段时使用ip_hash"></a> 当所有流量都来自同一/24 CIDR子网段时使用ip_hash</h3>
+<p>  ip_hash负载均衡基于客户端的IP地址，hash key是IPv4地址的前3个8位字节或者整个IPv6地址。该方法会建立持久性会话，同一个客户端ip会被转发到同一个服务器，直到服务器不可用。假设nginx前有各种防火墙、路由器、4层负载均衡、网关等，并且在同一个子网(10.10.0.0/24)，客户端来源于内部网络、合作方网络、互联网等，那么nginx会认为所有请求都来自10.10.0.0/24这个子网。ip_hash会将所有请求分发到同一个服务器。<br />
+  解决方案是使用带$binary_remote_addr 的hash，将完整的客户端IP作为散列键，用consistent参数使用<a target="_blank" rel="noopener" href="https://www.metabrew.com/article/libketama-consistent-hashing-algo-memcached-clients">ketama</a>替代默认的哈希算法，在服务器列表发生变化时，这会大幅度减少重新映射到不同upstream服务器的key的数量，这会提高缓存命中率。</p>
+<h3 id="没有使用upstream"><a class="markdownIt-Anchor" href="#没有使用upstream"></a> 没有使用Upstream</h3>
+<p>  upstream块不仅提供负载均衡功能，还解锁了很多其他的功能，比如提升性能等。<br />
+  zone指令建立了一个共享内存区域，主机上的所有 NGINX worker进程都可以访问upstream服务器的配置和状态信息，几个upstream组可以共享该区域。<br />
+  server指令有几个参数可用于调整服务器行为。比如max_fails=1，fail_timeout=2s表示每 2 秒内失败一次（而不是默认的每10 秒一次），就认为服务器不健康，并因此没有资格接受请求。<br />
+  proxy_next_upstream表示NGINX认为失败的通信尝试，把请求转发给upstream组的下一个服务器。在默认的错误和超时条件中，添加http_500，以便NGINX认为来自upstream服务器的HTTP 500（内部服务器错误）代码代表一个失败的尝试。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">    upstream node_backend &#123;</span><br><span class="line">        zone upstreams 64K;</span><br><span class="line">        server 127.0.0.1:3000 max_fails=1 fail_timeout=2s;</span><br><span class="line">        keepalive 2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name example.com;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_pass http://node_backend/;</span><br><span class="line">            proxy_next_upstream error timeout http_500;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/" class="post-title-link" itemprop="url">hash</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-28 14:57:41" itemprop="dateCreated datePublished" datetime="2023-04-28T14:57:41+08:00">2023-04-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-05-07 18:06:19" itemprop="dateModified" datetime="2023-05-07T18:06:19+08:00">2023-05-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,161 +336,247 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  链表（Linked list）是一种常见的基础数据结构，是一种线性表，但是并不会按线性的顺序存储数据，而是在每一个节点里存到下一个节点的指针(Pointer)。由于不必须按顺序存储，链表在插入的时候可以达到O(1)的复杂度，比另一种线性表顺序表快得多，但是查找一个节点或者访问特定编号的节点则需要O(n)的时间，而顺序表相应的时间复杂度分别是O(logn)和O(1)。</p>
-<p>  使用链表结构可以克服数组链表需要预先知道数据大小的缺点，链表结构可以充分利用计算机内存空间，实现灵活的内存动态管理。但是链表失去了数组随机读取的优点，同时链表由于增加了结点的指针域，空间开销比较大。</p>
-<p>  链表有很多种不同的类型：单向链表，双向链表以及循环链表。单链表有一个next指针指向下一个节点，双链表有一个next和一个last指针，循环链表的头尾相连。</p>
-<p>  栈是数据先进后出，队列是数据先进先出。<br />
-  链表、栈和队列相关的题目可以合理使用一些技巧，比如哈希表、有序表、数组、快慢指针等。</p>
-<h4 id="递归"><a class="markdownIt-Anchor" href="#递归"></a> 递归</h4>
-<p>  递归（英语：Recursion），在数学和计算机科学中是指在函数的定义中使用函数自身的方法，在计算机科学中还额外指一种通过重复将问题分解为同类的子问题而解决问题的方法。<br />
-  任何递归都可以改成非递归方式实现。将系统压栈改为自定义实现，则可以避免递归。<br />
-  例如递归求数组arr[L…R]中的最大值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、将[L..R]范围分成左右两半。左：[L..Mid]  右[Mid+<span class="number">1.</span>.R]</span><br><span class="line"><span class="number">2</span>、左部分求最大值，右部分求最大值</span><br><span class="line"><span class="number">3</span>、[L..R]范围上的最大值，是max&#123;左部分最大值，右部分最大值&#125;</span><br><span class="line">注意：步骤<span class="number">2</span>是个递归过程，当范围上只有一个数，就可以不用再递归了</span><br><span class="line"><span class="comment">// 特别容易栈溢出</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">process</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">    <span class="comment">// 递归终止条件</span></span><br><span class="line">    <span class="keyword">if</span> (left == right) &#123;</span><br><span class="line">        <span class="keyword">return</span> Math.max(arr[left], arr[right]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">middle</span> <span class="operator">=</span> left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">ans1</span> <span class="operator">=</span> process(arr, left, middle);</span><br><span class="line">    <span class="type">int</span> <span class="variable">ans2</span> <span class="operator">=</span> process(arr, middle + <span class="number">1</span>, right);</span><br><span class="line">    <span class="keyword">return</span> Math.max(ans1, ans2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="master公式"><a class="markdownIt-Anchor" href="#master公式"></a> Master公式</h4>
-<p>  master公式预估递归的时间复杂度，要求子问题数据规模一样。<br />
-  形如T(N) = a <em>T(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mi>b</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{N}{b}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>) + O(N<sup>d</sup>)(其中的a、b、d都是常数)的递归函数，可以直接通过Master公式来确定时间复杂度。<br />
-   如果 log(b,a) &lt; d，时间复杂度为O(N<sup>d</sup>)<br />
-   如果 log(b,a) &gt; d，时间复杂度为O(N<sup>log(b,a)</sup>)<br />
-   如果 log(b,a) == d，时间复杂度为O(N<sup>d</sup></em> logN)</p>
-<h4 id="哈希表"><a class="markdownIt-Anchor" href="#哈希表"></a> 哈希表</h4>
+          <h4 id="hash函数的特点"><a class="markdownIt-Anchor" href="#hash函数的特点"></a> hash函数的特点</h4>
+<p>1、输入域无限、输出域相对有限，比如SHA256，可以输入任意字符串，输出定长字符串<br />
+2、没有任何随机，同一个输入、输出必定相同<br />
+3、存在hash碰撞(因为输入无限、输出有限)<br />
+4、输出域是均匀离散的</p>
+<p>  哈希函数作用,可以把数据根据不同值，几乎均匀的分开，比如java.util.HashMap。</p>
+<h4 id="布谷鸟过滤器"><a class="markdownIt-Anchor" href="#布谷鸟过滤器"></a> 布谷鸟过滤器</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cuckoo_filter">布谷鸟过滤器</a>(Cuckoo Filter)相对于布隆过滤器查询性能好、空间利用效率高、支持删除操作和计数，但是严格要求同一个元素不能被插入多次(k <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> b + 1)。所以布谷鸟过滤器是有条件支持删除操作的，实际使用场景非常有限。</p>
+<h4 id="布隆过滤器"><a class="markdownIt-Anchor" href="#布隆过滤器"></a> 布隆过滤器</h4>
+<p>  字符串str，经过三个hash函数得出3个结果，每个结果对mod取模结果index，bit[index]的结果都为1则证明str可能存在布隆过滤器中，只要有一个不为1，则str一定不在布隆过滤器中。</p>
 <ol>
-<li>哈希表在使用层面上可以理解为一种集合结构</li>
-<li>如果只有key，没有伴随数据value，可以使用HashSet结构</li>
-<li>如果既有key，又有伴随数据value，可以使用HashMap结构</li>
-<li>有无伴随数据，是HashMap和HashSet唯一的区别，实际结构是一回事</li>
-<li>使用哈希表增(put)、删(remove)、改(put)和查(get)的操作，可以认为时间复杂度为 O(1)，但是常数时间比较大</li>
-<li>放入哈希表的东西，如果是基础类型，内部按值传递，内存占用是这个东西的大小</li>
-<li>放入哈希表的东西，如果不是基础类型，内部按引用传递，内存占用是8字节</li>
+<li>利用哈希函数的性质</li>
+<li>每一条数据提取特征</li>
+<li>加入描黑库</li>
 </ol>
-<h4 id="有序表"><a class="markdownIt-Anchor" href="#有序表"></a> 有序表</h4>
+<h4 id="布隆过滤器的公式"><a class="markdownIt-Anchor" href="#布隆过滤器的公式"></a> 布隆过滤器的公式</h4>
 <ol>
-<li>有序表在使用层面上可以理解为一种集合结构</li>
-<li>如果只有key，没有伴随数据value，可以使用TreeSet结构</li>
-<li>如果既有key，又有伴随数据value，可以使用TreeMap结构</li>
-<li>有无伴随数据，是TreeSet和TreeMap唯一的区别，底层的实际结构是一回事</li>
-<li>有序表把key按照顺序组织起来，而哈希表完全不组织</li>
-<li>红黑树、AVL树、size-balance-tree和跳表等都属于有序表结构，只是底层具体实现不同</li>
-<li>放入如果是基础类型，内部按值传递，内存占用就是这个东西的大小</li>
-<li>放入如果不是基础类型，内部按引用传递，内存占用是8字节</li>
-<li>不管是什么底层具体实现，只要是有序表，都有以下固定的基本功能和固定的时间复杂度
+<li>假设数据量为n，预期的失误率为p（布隆过滤器大小和每个样本的大小无关，因为将样本hash以后的大小是固定的，取模后映射到bit数组上）</li>
+<li>根据n和p，算出Bloom Filter一共需要多少个bit位，向上取整，记为m</li>
+<li>根据m和n，算出Bloom Filter需要多少个哈希函数，向上取整，记为k</li>
+<li>根据修正公式，算出真实的失误率p</li>
+</ol>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>m</mi><mo>=</mo><mo>−</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>l</mi><mi>n</mi><mi>p</mi></mrow><mrow><mo stretchy="false">(</mo><mi>l</mi><mi>n</mi><mn>2</mn><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">m=-\frac{n \times lnp}{(ln2)^2}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.3074399999999997em;vertical-align:-0.936em;"></span><span class="mord">−</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714399999999998em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">n</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.740108em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">n</span><span class="mord mathnormal">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mo>=</mo><mi>l</mi><mi>n</mi><mn>2</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac><mo>=</mo><mn>0.7</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac></mrow><annotation encoding="application/x-tex">k=ln2\times\frac{m}{n}=0.7\times\frac{m}{n}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">n</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">7</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>p</mi><mo>=</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mo>−</mo></msup><mo stretchy="false">(</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>k</mi></mrow><mi>m</mi></mfrac><mo stretchy="false">)</mo><msup><mo stretchy="false">)</mo><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">p=(1-e^-(\frac{n \times k}{m}))^k
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.05744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.821331em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span></span></p>
+<p>  k个hash函数可以由i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> a + b得到，a、b是两个不同的hash函数，1 ≤ i ≤ k。a、b没有任何要求，hash结果是字符串，对mod取模可以参考guava的BloomFilter实现。guava没有集成redis，不能实现集群功能。可以让redis加载<a target="_blank" rel="noopener" href="https://github.com/RedisBloom/RedisBloom">RedisBloom</a>，使用spring-data-redis客户端实现集群功能。redis的bitMap部分操作会阻塞，如果有必要可以进行缓存预热。某些场景可以将比较大的bitmap拆分成几个小的bitmap，并使用lua脚本进行操作。</p>
+<h4 id="一致性hash"><a class="markdownIt-Anchor" href="#一致性hash"></a> 一致性hash</h4>
+<p>  分布式存储结构最常见的结构</p>
+<ol>
+<li>哈希域变成环的设计</li>
+<li>虚拟节点技术</li>
+</ol>
+<p>  选择合适的hash key，将数据路由到对应的redis或者mysql上。hash key一定是要求均匀的，<br />
+中国的姓氏是不均匀的，如果以姓氏作为hash key，那么路由到大姓(李、王)的服务器数据一定是最多的。</p>
+<p>  当服务器数量发生变化的时候，需要重新hash，迁移全量的数据。一致性hash可以极大的减少迁移的数据量。</p>
+<p>  比如数据范围为0 - 2<sup>64</sup>-1，则想象有一个环，服务器的ip经过hash后放在环上。服务器hash后会发生冲突，但是概率极小，万一发生冲突了，冲突的机器都拿到一份数据/换一个ip。请求的hash key落在环上，路由到顺时针的第一台服务器上。扩容，在server5、server6中间增加server7，则将server6中hash值在server5、server7的值迁移到server7。缩容同理。<br />
+  使用虚拟节点保证server均匀分布在环上。每个server使用1000个虚拟节点，各个server的虚拟节点可以相互交叉，保存hashkey和server、server和虚拟节点的映射。虚拟节点因为数量多，所以分布相对均匀。数据迁移的时候每个server都要迁移部分数据。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/26/DataStructuresAndAlgorithms/23%E3%80%81AC%E8%87%AA%E5%8A%A8%E6%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/26/DataStructuresAndAlgorithms/23%E3%80%81AC%E8%87%AA%E5%8A%A8%E6%9C%BA/" class="post-title-link" itemprop="url">AC自动机</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-26 17:52:21" itemprop="dateCreated datePublished" datetime="2023-04-26T17:52:21+08:00">2023-04-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-06-01 00:54:35" itemprop="dateModified" datetime="2023-06-01T00:54:35+08:00">2023-06-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/ac-automaton/">AC 自动机</a>(Aho–Corasick算法)是 以 Trie 的结构为基础，结合 KMP 的思想 建立的自动机，用于解决多模式匹配等任务。</p>
+<h4 id="ac自动机算法核心"><a class="markdownIt-Anchor" href="#ac自动机算法核心"></a> AC自动机算法核心</h4>
+<ol>
+<li>把所有匹配串生成一棵前缀树</li>
+<li>前缀树节点增加fail指针</li>
+<li>fail指针的含义：如果必须以当前字符结尾，当前形成的路径是str，剩下哪一个字符串的前缀和str的后缀，拥有最大的匹配长度。fail指针就指向那个字符串的最后一个字符所对应的节点。</li>
+</ol>
+<h4 id="fail指针的定义"><a class="markdownIt-Anchor" href="#fail指针的定义"></a> fail指针的定义</h4>
+<ol>
+<li>trieTree的每一个节点都有一个fail指针，头结点的fail指向null，trieTree第二层节点的fail全部指向头结点。(宽度优先)</li>
+<li>取其余任意一个节点X，X的父节点为Y，Y节点fail指针指向的节点Z，Y到X的路径为path
 <ul>
-<li>void put(K key, V value)将一个(key，value)记录加入到表中，或者将key的记录 更新成value。</li>
-<li>V get(K key)根据给定的key，查询value并返回。</li>
-<li>void remove(K key)移除key的记录。</li>
-<li>boolean containsKey(K key)询问是否有关于key的记录。</li>
-<li>K firstKey()返回所有键值的排序结果中，最小的那个。</li>
-<li>K lastKey()返回所有键值的排序结果中，最大的那个。</li>
-<li>K floorKey(K key)返回&lt;= key 离key最近的那个</li>
-<li>K ceilingKey(K key）返回&gt;= key 离key最近的那个</li>
+<li>如果Z或者Z的fail递归指向的节点到P的路径包含path，则X的fail指向P</li>
+<li>否则X的fail指向头结点</li>
+<li>宽度优先搜索</li>
 </ul>
 </li>
 </ol>
-<h4 id="哈希表和有序表的优点"><a class="markdownIt-Anchor" href="#哈希表和有序表的优点"></a> 哈希表和有序表的优点</h4>
-<ul>
-<li>哈希表在使用时，增删改查时间复杂度都是O(1)</li>
-<li>有序表在使用时，比哈希表功能多，时间复杂度都是O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><msub><mi>g</mi><mi>N</mi></msub></mrow><annotation encoding="application/x-tex">log_N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)</li>
-</ul>
+<p>fail指针的实质是匹配失败后的下一个选择的节点<br />
+证明<br />
+1、x的fail指向y<br />
+2、fail指针保证以x结尾的后缀字符串和以y开头的前缀字符串最长<br />
+demo<br />
+text    abcdex<br />
+敏感词   abcdef、cdey、ex<br />
+1、匹配abcdef时，f匹配失败，fail指向cdey的e节点，淘汰ab<br />
+2、匹配cdey时，y匹配失败，fail指向ex的e节点，淘汰cd</p>
+<p>{abd,abdk, abchijn, chnit, ijabdf, ijaij}<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/AC-automaton-fail.png" alt="AC自动机" /></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/26/DataStructuresAndAlgorithms/19%E3%80%81%E8%93%84%E6%B0%B4%E6%B1%A0%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/26/DataStructuresAndAlgorithms/19%E3%80%81%E8%93%84%E6%B0%B4%E6%B1%A0%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">蓄水池算法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-26 17:48:08 / Modified: 17:50:10" itemprop="dateCreated datePublished" datetime="2023-04-26T17:48:08+08:00">2023-04-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="蓄水池算法"><a class="markdownIt-Anchor" href="#蓄水池算法"></a> 蓄水池算法</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Reservoir_sampling">蓄水池算法</a>(Reservoir sampling)是一系列随机算法，用于从未知大小 n 的总体中一次性选择 k 个项目的简单随机样本，无需放回。 总体 n 的大小对于算法来说是未知的，并且通常对于所有 n 个项目都太大而无法放入内存。当前只考虑等概率获取k个样本。蓄水池算法的应用场景有抽奖、发放唯一id等。</p>
+<ol>
+<li>某一天第一次登录的用户等概率获奖</li>
+<li>每一级服务器都维护一个区间的唯一id，下限是base，上限范围是range。可以减小向上一级服务器的交互次数，根服务器可能少到一天交互一次，每一级服务器做集群加备份保证高可用性。</li>
+</ol>
+<h5 id="证明"><a class="markdownIt-Anchor" href="#证明"></a> 证明</h5>
+<p>  假设当前来到第i个元素，蓄水池大小为k，需要证明池中元素不被替换的概率、池外的元素进池子并且不被替换的概率都是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>k</mi><mi>n</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2251079999999999em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></p>
+<ol>
+<li>i ≤ k
+<ol>
+<li>k步之前i被选中的概率是1</li>
+<li>走到k+1步时，i被第k+1个元素替换的概率 = 第k+1个元素被选中的概率 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> i被选中的概率，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mn>1</mn><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{k+1} \times \frac{1}{k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，k+1个元素中选取k个元素，每个元素被选中的概率就是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">\frac{1}{k+1} \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span>。i不被第k+1个元素替换的概率就是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mfrac><mn>1</mn><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">1- \frac{1}{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。依次类推，i不被第k+2个元素替换的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mn>2</mn></mrow></mfrac><mo>×</mo><mfrac><mn>1</mn><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">1- \frac{k}{k+2} \times \frac{1}{k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi>k</mi><mo>+</mo><mn>2</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{k+1}{k+2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，当递推到第n个元素时，i被保留的概率</li>
+</ol>
+</li>
+</ol>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi>k</mi><mo>+</mo><mn>2</mn></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi>k</mi><mo>+</mo><mn>2</mn></mrow></mfrac><mo>×</mo><mo>⋯</mo><mo>×</mo><mfrac><mrow><mi>n</mi><mo>−</mo><mn>2</mn></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><mi>n</mi></mfrac><mo>=</mo><mfrac><mi>k</mi><mi>n</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{k+1} \times \frac{k+1}{k+2} \times \frac{k+1}{k+2} \times \dots \times \frac{n-2}{n-1} \times \frac{n-1}{n} = \frac{k}{n}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.14077em;vertical-align:-0.7693300000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693300000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.14077em;vertical-align:-0.7693300000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693300000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.14077em;vertical-align:-0.7693300000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693300000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="minner">⋯</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.09077em;vertical-align:-0.7693300000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693300000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.05744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<ol>
+<li>j &gt; k
+<ol>
+<li>j被选中的概率是\frac{k}{j}$</li>
+<li>不被第j+1个元素替换的概率是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mfrac><mi>k</mi><mrow><mi>j</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mn>1</mn><mi>k</mi></mfrac></mrow><annotation encoding="application/x-tex">1- \frac{k}{j+1} \times \frac{1}{k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.3612159999999998em;vertical-align:-0.481108em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.481108em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>j</mi><mrow><mi>j</mi><mo>+</mo><mn>1</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{j}{j+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.38888em;vertical-align:-0.481108em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.907772em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.481108em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，递推到第n个元素，j被保留的概率=j被选中的概率<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span>j不被替换的概率</li>
+</ol>
+</li>
+</ol>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>k</mi><mi>j</mi></mfrac><mo>×</mo><mfrac><mi>j</mi><mrow><mi>j</mi><mo>+</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>j</mi><mo>+</mo><mn>1</mn></mrow><mrow><mi>j</mi><mo>+</mo><mn>2</mn></mrow></mfrac><mo>×</mo><mo>⋯</mo><mo>×</mo><mfrac><mrow><mi>n</mi><mo>−</mo><mn>2</mn></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><mi>n</mi></mfrac><mo>=</mo><mfrac><mi>k</mi><mi>n</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{j} \times \frac{j}{j+1} \times \frac{j+1}{j+2} \times \dots \times \frac{n-2}{n-1} \times \frac{n-1}{n} = \frac{k}{n}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.25188em;vertical-align:-0.8804400000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05724em;">j</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804400000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.2169600000000003em;vertical-align:-0.8804400000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3365200000000002em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804400000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.2169600000000003em;vertical-align:-0.8804400000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3365200000000002em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804400000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="minner">⋯</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.09077em;vertical-align:-0.7693300000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693300000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.05744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.37144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
 <hr />
-<h5 id="1-反转单链表和双链表"><a class="markdownIt-Anchor" href="#1-反转单链表和双链表"></a> 1、反转单链表和双链表</h5>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用while循环，保存next节点，设置当前节点的next，保存pre，移动head，最后返回pre</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Node <span class="title function_">reverseLinkedList</span><span class="params">(Node head)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">pre</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">while</span> (head != <span class="literal">null</span>) &#123;</span><br><span class="line">        next = head.getNext();</span><br><span class="line">        head.next = pre;</span><br><span class="line">        pre = head;</span><br><span class="line">        head = next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pre;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用while循环，保存next节点，设置当前节点的last和pre，保存pre，移动head，最后返回pre</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Node <span class="title function_">reverDoubleLinkedList</span><span class="params">(Node head)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">pre</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">while</span> (head != <span class="literal">null</span>) &#123;</span><br><span class="line">        next = head.getLast();</span><br><span class="line">        head.setLast(pre);</span><br><span class="line">        head.setPre(next);</span><br><span class="line">        pre = head;</span><br><span class="line">        head = next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> pre;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="2-删除单链表和双链表的指定值"><a class="markdownIt-Anchor" href="#2-删除单链表和双链表的指定值"></a> 2、删除单链表和双链表的指定值</h5>
-<h5 id="3-单链表实现队列和栈"><a class="markdownIt-Anchor" href="#3-单链表实现队列和栈"></a> 3、单链表实现队列和栈</h5>
-<h5 id="4-双向链表实现队列和栈"><a class="markdownIt-Anchor" href="#4-双向链表实现队列和栈"></a> 4、双向链表实现队列和栈</h5>
-<h5 id="5-使用双链表实现双端队列"><a class="markdownIt-Anchor" href="#5-使用双链表实现双端队列"></a> 5、使用双链表实现双端队列</h5>
-<ul>
-<li>单链表和双链表的新增、删除，主要注意处理好前驱和后继指针，必要的时候添加中间变量保存。双链表注意处理头尾重合、为空的边界条件。</li>
-</ul>
-<h5 id="6-数组实现队列和栈"><a class="markdownIt-Anchor" href="#6-数组实现队列和栈"></a> 6、数组实现队列和栈</h5>
-<h5 id="7-数组实现不超过固定大小的队列和栈"><a class="markdownIt-Anchor" href="#7-数组实现不超过固定大小的队列和栈"></a> 7、数组实现不超过固定大小的队列和栈</h5>
-<ul>
-<li>栈：正常使用</li>
-<li>队列：环形数组</li>
-</ul>
-<h5 id="8-两个栈实现队列"><a class="markdownIt-Anchor" href="#8-两个栈实现队列"></a> 8、两个栈实现队列</h5>
-<h5 id="9-两个队列实现栈"><a class="markdownIt-Anchor" href="#9-两个队列实现栈"></a> 9、两个队列实现栈</h5>
-<h5 id="10-实现一个特殊的栈一个栈保存min-一个栈正常操作"><a class="markdownIt-Anchor" href="#10-实现一个特殊的栈一个栈保存min-一个栈正常操作"></a> 10、实现一个特殊的栈(一个栈保存min、一个栈正常操作)</h5>
-<ul>
-<li>实现方法push、pop、peek、empty、search，getMin</li>
-<li>pop、push、getMin操作的时间复杂度都是 O(1)。</li>
-<li>设计的栈类型可以使用现成的栈结构。</li>
-</ul>
-<h5 id="11-图的宽度优先搜索使用队列实现图的深度优先搜索实现栈实现"><a class="markdownIt-Anchor" href="#11-图的宽度优先搜索使用队列实现图的深度优先搜索实现栈实现"></a> 11、图的宽度优先搜索，使用队列实现，图的深度优先搜索，实现栈实现</h5>
-<h5 id="12-图的宽度优先搜索使用栈实现图的深度优先搜索实现队列实现"><a class="markdownIt-Anchor" href="#12-图的宽度优先搜索使用栈实现图的深度优先搜索实现队列实现"></a> 12、图的宽度优先搜索，使用栈实现，图的深度优先搜索，实现队列实现</h5>
-<h5 id="13-k个节点的组内逆序调整-leetcode25"><a class="markdownIt-Anchor" href="#13-k个节点的组内逆序调整-leetcode25"></a> 13、K个节点的组内逆序调整 LeetCode25</h5>
-<ul>
-<li>k个一组，获取start和end</li>
-<li>翻转start到end，将start指向end.next</li>
-<li>lastEnd = start，递归终止条件lastEnd.next != null</li>
-</ul>
-<h5 id="14-两个链表相加-leetcode2-leetcode445"><a class="markdownIt-Anchor" href="#14-两个链表相加-leetcode2-leetcode445"></a> 14、两个链表相加 LeetCode2、LeetCode445</h5>
-<ul>
-<li>根据链表长度分三段处理，第一段处理短链表，第二段处理长链表多出的部分，第三段处理长链表最后的进位</li>
-</ul>
-<h5 id="15-合并两个有序链表-leetcode21"><a class="markdownIt-Anchor" href="#15-合并两个有序链表-leetcode21"></a> 15、合并两个有序链表 LeetCode21</h5>
-<ul>
-<li>比较头结点，选取较小的那个作为返回链表的头部head</li>
-<li>将head作为一个单独的链表，尾部记为pre</li>
-<li>依次比较node1、node2，pre指向node1、node2较小的那个</li>
-<li>返回head</li>
-</ul>
-<h5 id="16-合并k个升序链表-leetcode23"><a class="markdownIt-Anchor" href="#16-合并k个升序链表-leetcode23"></a> 16、合并K个升序链表 LeetCode23</h5>
-<ul>
-<li>使用PriorityQueue保存各链表的头结点，链表的头结点是当前链表的最小值。每次prorityQueue.poll()弹出最小值，注意单链表的next指针和中间变量。循环终止条件为优先级队列变空。</li>
-</ul>
-<h5 id="17-快慢指针双指针"><a class="markdownIt-Anchor" href="#17-快慢指针双指针"></a> 17、快慢指针/双指针</h5>
-<p>  快慢指针一般用于链表成环、相交等场景，某些具有单调性的范围上的问题可以使用双指针，比如求正数数组中乘积小于k的连续子数组个数等。</p>
-<ol>
-<li>输入链表头节点，奇数长度返回中点，偶数长度返回上中点</li>
-<li>输入链表头节点，奇数长度返回中点，偶数长度返回下中点</li>
-<li>输入链表头节点，奇数长度返回中点前一个，偶数长度返回上中点前一个</li>
-<li>输入链表头节点，奇数长度返回中点前一个，偶数长度返回下中点前一个</li>
-</ol>
-<h5 id="18-判断链表是否回文结构"><a class="markdownIt-Anchor" href="#18-判断链表是否回文结构"></a> 18、判断链表是否回文结构</h5>
-<ol>
-<li>辅助栈，遍历栈和单链表，每个元素相同则是回文链表</li>
-<li>拿到链表中点，将链表后半部分入栈，遍历单链表和栈</li>
-<li>将中点后的指针逆向，从两边遍历链表对比，然后将链表逆序部分还原。</li>
-<li>借助hash表，key保存链表位置，value保存链表值。取left和right位置比较，递归终止条件为left&gt;right。</li>
-</ol>
-<h5 id="19-寻找链表环入口"><a class="markdownIt-Anchor" href="#19-寻找链表环入口"></a> 19、寻找链表环入口</h5>
-<ul>
-<li>快慢指针，快指针走两步，慢指针走一步，如果快指针走到null仍未相遇则无环</li>
-<li>假设链表在环中是顺时针的，在p点相遇时，慢指针走了m圈，快指针走了n圈</li>
-<li>则2(c+m(a+b)+a) = c+n*(a+b)+a得出c=(n-2m-1)(a+b)+b</li>
-<li>n-2m-1是整数并且不小于0，如果小于0则c成负数</li>
-<li>所以快指针从O点出发，每次走一步可以和慢指针在Q点相遇。</li>
-<li><img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/%E9%93%BE%E8%A1%A8%E5%85%A5%E7%8E%AF%E7%82%B9%E8%AF%81%E6%98%8E.png" alt="证明辅助图" /></li>
-</ul>
-<h5 id="20-两个链表相交"><a class="markdownIt-Anchor" href="#20-两个链表相交"></a> 20、两个链表相交</h5>
-<p>  给定两个可能有环也可能无环的单链表，头节点head1和head2。请实现一个函数，如果两个链表相交，请返回相交的 第一个节点。如果不相交，返回null<br />
-  要求如果两个链表长度之和为N，时间复杂度请达到O(N)，额外空间复杂度 请达到O(1)。</p>
-<ul>
-<li>要么都有环，要么都没环，一个有环一个没环无法相交。因为链表只有一个next指针，相交后的节点完全一样。</li>
-<li>快慢指针获取链表入环节点</li>
-<li>都没环，遍历两个链表，相交的两个链表尾结点一定相同。长链表先走len1-len2步，然后两个链表同时遍历，出现相同的节点即相交的第一个节点</li>
-<li>都有环，环外相交同都没有环，环内相交则验证入环点在同一个环，返回任意一个入环点即可。</li>
-</ul>
-<h5 id="21-链表分组-将单向链表按某值划分成左边小-中间相等-右边大的形式"><a class="markdownIt-Anchor" href="#21-链表分组-将单向链表按某值划分成左边小-中间相等-右边大的形式"></a> 21、链表分组、将单向链表按某值划分成左边小、中间相等、右边大的形式</h5>
-<ul>
-<li>把链表放入数组里，在数组上做partition</li>
-<li>分成小、中、大三部分，再把各个部分之间串起来</li>
-</ul>
-<h5 id="22-复制无环单链表"><a class="markdownIt-Anchor" href="#22-复制无环单链表"></a> 22、复制无环单链表</h5>
-<p>  一种特殊的单链表节点类描述如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">  <span class="type">int</span> value;</span><br><span class="line">  Node next;</span><br><span class="line">  Node rand;</span><br><span class="line">  Node(<span class="type">int</span> val) &#123; value = val; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  rand指针是单链表节点结构中新增的指针，rand可能指向链表中的任意一个节点，也可能指向null。给定一个由Node节点类型组成的无环单链表的头节点 head，请实现一个函数完成这个链表的复制，并返回复制的新链表的头节点。<br />
-  要求时间复杂度O(N)，额外空间复杂度O(1)</p>
-<ul>
-<li>使用map保存节点和复制后的节点，设置next和random，返回map.get(head)</li>
-<li>将复制后的节点插入原链表对应节点后，设置random，拆开链表。</li>
-</ul>
-<h5 id="23-没有头结点不能删除链表节点"><a class="markdownIt-Anchor" href="#23-没有头结点不能删除链表节点"></a> 23、没有头结点，不能删除链表节点</h5>
-<p>  不给单链表的头节点，只给想要删除的节点，没法删除这个节点。</p>
-<ol>
-<li>给定的节点是头结点，可以删除</li>
-<li>给定的节点是中间节点，把后面节点依次往前移动，只能将移动后的尾结点指向null，但无法删除尾结点</li>
-<li>给定的节点是尾结点，也无法删除尾结点。只能将尾结点设置为null，但无法删除尾结点。</li>
-</ol>
+<h5 id="蓄水池算法-2"><a class="markdownIt-Anchor" href="#蓄水池算法-2"></a> 蓄水池算法</h5>
+<p>  假设有一个源源吐出不同球的机器，只有装下10个球的袋子，每一个吐出的球，要么放入袋子，要么永远扔掉。如何做到机器吐出每一个球之后，所有吐出的球都等概率被放进袋子里。<br />
+  对k之前和之后的元素，按照被保留的概率 = 被选中的概率<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span>不被替换的概率，对每一个新输入的元素按照概率进行替换。</p>
 
       
     </div>
@@ -393,7 +596,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/26/DataStructuresAndAlgorithms/22%E3%80%81indexTree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -407,7 +610,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/05/DataStructuresAndAlgorithms/2%E3%80%81%E4%BD%8D%E8%BF%90%E7%AE%97/" class="post-title-link" itemprop="url">位运算</a>
+            <a href="/2023/04/26/DataStructuresAndAlgorithms/22%E3%80%81indexTree/" class="post-title-link" itemprop="url">index tree</a>
         </h2>
 
         <div class="post-meta">
@@ -417,14 +620,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2023-04-05 22:29:39" itemprop="dateCreated datePublished" datetime="2023-04-05T22:29:39+08:00">2023-04-05</time>
+              <time title="Created: 2023-04-26 10:03:37" itemprop="dateCreated datePublished" datetime="2023-04-26T10:03:37+08:00">2023-04-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-08 19:02:20" itemprop="dateModified" datetime="2023-04-08T19:02:20+08:00">2023-04-08</time>
+                <time title="Modified: 2023-04-28 14:53:44" itemprop="dateModified" datetime="2023-04-28T14:53:44+08:00">2023-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -447,142 +650,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h4 id="认识位运算"><a class="markdownIt-Anchor" href="#认识位运算"></a> 认识位运算</h4>
+          <p>  前缀和数组可以很方便的获取数组arr的区间和，但仅限于arr不发生变化的场景。arr某个元素发生变化，仍然要获取某个区间和的问题可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Fenwick_tree">index tree</a>解决。index tree可以推导二维问题，线段树二维问题则比较复杂。<a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/fenwick/">树状数组</a>是一种支持<strong>单点修改</strong>和<strong>区间查询</strong>的，代码量小的数据结构。普通树状数组维护的信息及运算要满足<strong>结合律</strong>且<strong>可差分</strong>，如加法（和）、乘法（积）、异或等。</p>
 <ul>
-<li>异或运算：相同为0，不同为1</li>
-<li>同或运算：相同为1，不同为0</li>
-<li>异或运算可以理解成无进位相加</li>
-<li>与运算&amp;</li>
-<li>或运算|</li>
-<li>取反~</li>
-<li>无符号右移&gt;&gt;&gt;</li>
-<li>左移&lt;&lt;</li>
-</ul>
-<h4 id="异或运算的性质"><a class="markdownIt-Anchor" href="#异或运算的性质"></a> 异或运算的性质</h4>
+<li>结合律：(x <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> y) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> z = x <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> (y <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> z)，其中 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> 是一个二元运算符。</li>
+<li>可差分：具有逆运算的运算，即已知 x <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">∘</mo></mrow><annotation encoding="application/x-tex">{ \circ }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord"><span class="mord">∘</span></span></span></span></span> y 和 x 可以求出 y。
 <ul>
-<li>0 ^ N == N</li>
-<li>N ^ N == 0</li>
-<li>异或运算满足交换律和结合律</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 交换律</span></span><br><span class="line">a ^ b = b ^ a</span><br><span class="line"><span class="comment">// 结合律</span></span><br><span class="line">((a ^ b) ^ c) == (a ^ (b ^ c))</span><br><span class="line"><span class="comment">// a、b两个整数交换，位运算不需要临时变量</span></span><br><span class="line">a = a ^ b;</span><br><span class="line">b = a ^ b; <span class="comment">// a ^ b -&gt; a ^ b ^ b -&gt; a ^ 0 -&gt; a</span></span><br><span class="line">a = a ^ b; <span class="comment">// a ^ b -&gt; a ^ a ^ b -&gt; 0 ^ b -&gt; b</span></span><br></pre></td></tr></table></figure>
-<h4 id="题目"><a class="markdownIt-Anchor" href="#题目"></a> 题目</h4>
+<li>模意义下的乘法若要可差分，需保证每个数都存在逆元（模数为质数时一定存在）；</li>
+<li>gcd，max 这些信息不可差分，所以不能用<strong>普通树状数组</strong>处理，但是：
 <ul>
-<li>
-<h5 id="如何不用额外变量交换两个数"><a class="markdownIt-Anchor" href="#如何不用额外变量交换两个数"></a> 如何不用额外变量交换两个数</h5>
-<ul>
-<li>位运算的结合律</li>
-</ul>
-</li>
-<li>
-<h5 id="一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现了奇数次其他数都出现了偶数次怎么找到并打印这种数"></a> 一个数组中有一种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这种数</h5>
-<ul>
-<li>异或运算的性质，0 ^ N == N，N ^ N == 0，N的奇数次的异或结果还是N。</li>
-<li>根据交换律，将奇数次的数交换到最后，数组所有元素异或的结果就是答案。</li>
-<li>偶数次异或为0，奇数次异或为本身，遍历每一个元素并异或，最后结果就是奇数次的数字。</li>
-</ul>
-</li>
-<li>
-<h5 id="怎么把一个int类型的数提取出最右侧的1来"><a class="markdownIt-Anchor" href="#怎么把一个int类型的数提取出最右侧的1来"></a> 怎么把一个int类型的数，提取出最右侧的1来</h5>
-<ul>
-<li>假设int类型变量a，a最右侧的1在index位置，获取int b = ~a + 1</li>
-<li>则a的index位置以后都是0，b的index位置及以后都是1，a、b的index之前都是相反的</li>
-<li>a &amp; b即为答案</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a的二进制</span></span><br><span class="line"><span class="number">00010100</span> <span class="number">00010100</span> <span class="number">01001000</span> <span class="number">00000000</span></span><br><span class="line"><span class="comment">// ~a的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10110111</span> <span class="number">11111111</span></span><br><span class="line"><span class="comment">// ~a + 1的二进制</span></span><br><span class="line"><span class="number">11101011</span> <span class="number">11101011</span> <span class="number">10111000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>
-<h5 id="一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"><a class="markdownIt-Anchor" href="#一个数组中有两种数出现了奇数次其他数都出现了偶数次怎么找到并打印这两种数"></a> 一个数组中有两种数出现了奇数次，其他数都出现了偶数次，怎么找到并打印这两种数</h5>
-<ul>
-<li>假设这两个数是a、b，并且res = a ^ b</li>
-<li>遍历数组进行异或计算，并拿到res</li>
-<li>计算res最右边的1，记为c，数组中除a、b之外的任意其它数记为arr[i]，则arr[i] &amp; c == 0。因为其他的数经过异或的交换律和结合律最后结果都是0，不存在最右边的1.</li>
-<li>res是ab经过异或计算得到的，所以最右边的1必定属于a、b其中一个。</li>
-<li>遍历数组并判断是否是a、b之一，拿到一个结果，记为a</li>
-<li>res ^ a拿到b</li>
-</ul>
-</li>
-<li>
-<h5 id="一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"><a class="markdownIt-Anchor" href="#一个数组中有一种数出现k次其他数都出现了m次m-1-k-m-找到出现了k次的数-要求额外空间复杂度o1时间复杂度on"></a> 一个数组中有一种数出现K次，其他数都出现了M次，M &gt; 1,  K &lt; M。找到，出现了K次的数。要求，额外空间复杂度O(1)，时间复杂度O(N)</h5>
-<ul>
-<li>假设a出现k次，b出现m次</li>
-<li>将所有数字的二进制位相加，则t[i] % m就是a的二进制在i位置次数，要么是0，要么是k</li>
-</ul>
-</li>
-<li>
-<h5 id="位运算实现加减乘除-leetcode29"><a class="markdownIt-Anchor" href="#位运算实现加减乘除-leetcode29"></a> 位运算实现加减乘除 LeetCode29</h5>
-<ul>
-<li>加法add
-<ul>
-<li>a ^ b结果为无进位相加，(a &amp; b) &lt;&lt; 1是进位信息，递归到进位信息为0，注意中间变量。</li>
-</ul>
-</li>
-<li>减法delete
-<ul>
-<li>add(a, add(~b,1))，取反加1后为相反。</li>
-</ul>
-</li>
-<li>乘法
-<ul>
-<li>a左移b的每一位进制的位数相加。</li>
-<li>b  = 2<sup>k</sup> + 2<sup>k-1</sup>  + 2<sup>k-2</sup> + 2<sup>k-3</sup> + 2<sup>k-4</sup> + 2<sup>k-5</sup> + …</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">a \times 2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.849108em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span> = a &lt;&lt; k</li>
-</ul>
-</li>
-<li>除法
-<ul>
-<li>分别处理除数、被除数为Integer.MIN_VALUE的场景</li>
-<li>a / b = 2<sup>i</sup> + 2<sup>j</sup> + 2<sup>k</sup> + 2<sup>p</sup> + 2<sup>q</sup> + 2<sup>r</sup> + …，并且i、j、k、p、q、r依次减小</li>
-<li>先取绝对值，a右移到刚好大于等于b，拿到一个商，最后所有商相加，补上符号。对系统最小值特殊处理。</li>
+<li>使用两个树状数组可以用于处理区间最值，比如<a href="">Efficient Range Minimum Queries using Binary Indexed Trees</a>的page39。</li>
+<li>树状数组维护不可差分信息，比如维护区间最值等。代码量小，但时间复杂度O<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><msup><mi>g</mi><mn>2</mn></msup><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(log^2n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，比使用线段树的O(logN)要差。</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 核心代码</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">30</span>; i &gt;= <span class="number">0</span>; i = subtraction(i, <span class="number">1</span>)) &#123;</span><br><span class="line">    <span class="comment">// dividend为Integer.MIN_VALUE的时候，&gt;&gt;&gt;左侧补的都是0，&gt;&gt;左侧补的都是1</span></span><br><span class="line">    <span class="keyword">if</span> ((dividend &gt;&gt; i) &gt;= divisor) &#123;</span><br><span class="line">        ans |= (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">        dividend = subtraction(dividend, divisor &lt;&lt; i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h4>
-<ul>
-<li>
-<h5 id="相反数"><a class="markdownIt-Anchor" href="#相反数"></a> 相反数</h5>
-<ul>
-<li>一个数的相反数为取反加1。取反的结果和原来的数相加结果为2<sup>32</sup>-1,再加1则进位为0。</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2^32^-1二进制为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">例如 int a = 1024;二进制为</span></span><br><span class="line">00000000 00000000 00001000 00000000</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取反后</span></span><br><span class="line">11111111 11111111 11110111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相加为</span></span><br><span class="line">11111111 11111111 11111111 11111111</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">再加1则溢出为0</span></span><br><span class="line">a + (~a) + 1 = 0; 则-a = (~a) + 1;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>
-<h5 id="溢出"><a class="markdownIt-Anchor" href="#溢出"></a> 溢出</h5>
-<ul>
-<li>Integer.MIN_VALUE取反加一后仍然为Integer.MIN_VALUE。</li>
-<li>Integer.MIN_VALUE二进制为100000000 00000000 00000000 0000000</li>
-<li>Integer.MAX_VALUE加1后溢出为Integer.MIN_VALUE</li>
-<li>Integer.MIN_VALUE减一则溢出为Integer.MAX_VALUE。</li>
-</ul>
-</li>
-<li>
-<h5 id="位图"><a class="markdownIt-Anchor" href="#位图"></a> 位图</h5>
-<ul>
-<li>位图的功能
-<ul>
-<li>保存已知最大值的集合，比如一亿bit标记用户是否登录</li>
-</ul>
-</li>
-<li>位图的好处
-<ul>
-<li>极大的节省空间，一个bit位标记true/false信息</li>
-</ul>
-</li>
-<li>位图的实现
-<ul>
-<li>java.util.BitSet</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bitmap实现加减法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMap</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span>[] bits;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BitMap</span><span class="params">(<span class="type">int</span> max)</span> &#123;</span><br><span class="line">        bits = <span class="keyword">new</span> <span class="title class_">long</span>[(max + <span class="number">64</span>) &gt;&gt; <span class="number">6</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 给定数字除以64的结果result，模64的结果mod分开保存，bits[result]位置的mod位设置为1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="comment">// num &amp; 63等于num % 64</span></span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] |= (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        bits[num &gt;&gt; <span class="number">6</span>] &amp;= ~(<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(<span class="type">int</span> num)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (bits[num &gt;&gt; <span class="number">6</span>] &amp; (<span class="number">1L</span> &lt;&lt; (num &amp; <span class="number">63</span>))) != <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="indextree"><a class="markdownIt-Anchor" href="#indextree"></a> IndexTree</h4>
+<ol>
+<li>支持区间查询</li>
+<li>没有线段树那么强，但是非常容易改成一维、二维、三维的结构</li>
+<li>只支持单点更新</li>
+</ol>
+<p>  树状数组能解决的问题是线段树能解决的问题的子集。但是，树状数组的代码要远比线段树短，时间效率常数也更小。<br />
+  树状数组c总是能将数组arr的前缀[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> n]拆分成不多于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil logN \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">⌈</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">⌉</span></span></span></span>(向上取整)个已知的区间段，各个区间段的长度为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.849108em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span>(二进制的最低位为第0位，k是n的二进制每一个1的二进制位数)。arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]的区间信息查询可以转化为arr[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> left-1]和arr[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]的前缀区间结果差分。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/indextree.png" alt="树状数组工作原理" /></p>
+<h4 id="树状数组与其树形态的性质"><a class="markdownIt-Anchor" href="#树状数组与其树形态的性质"></a> 树状数组与其树形态的性质</h4>
+<h4 id="建树"><a class="markdownIt-Anchor" href="#建树"></a> 建树</h4>
+<h4 id="二维树状数组"><a class="markdownIt-Anchor" href="#二维树状数组"></a> 二维树状数组</h4>
 
       
     </div>
@@ -602,7 +696,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/24/Linux/LFS/3%E3%80%81%E6%9E%84%E5%BB%BALFS%E4%BA%A4%E5%8F%89%E5%B7%A5%E5%85%B7%E9%93%BE%E5%92%8C%E4%B8%B4%E6%97%B6%E5%B7%A5%E5%85%B7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -616,7 +710,82 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/04/04/DataStructuresAndAlgorithms/1%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">二分法</a>
+            <a href="/2023/04/24/Linux/LFS/3%E3%80%81%E6%9E%84%E5%BB%BALFS%E4%BA%A4%E5%8F%89%E5%B7%A5%E5%85%B7%E9%93%BE%E5%92%8C%E4%B8%B4%E6%97%B6%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">构建LFS交叉工具链和临时工具</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-24 23:29:51 / Modified: 23:33:58" itemprop="dateCreated datePublished" datetime="2023-04-24T23:29:51+08:00">2023-04-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ol>
+<li>构建一个交叉编译器和与之相关的库</li>
+<li>使用这个交叉工具链构建一些工具，并使用保证它们和宿主系统分离的构建方法</li>
+<li>进入 chroot 环境 (它能够进一步提高与宿主的隔离度)，并构建剩余的，在构建最终的系统时必须的工具</li>
+</ol>
+<p>  可以使用tee工具将错误输出到文件。</p>
+<h2 id="工具链技术说明"><a class="markdownIt-Anchor" href="#工具链技术说明"></a> 工具链技术说明</h2>
+<h2 id="编译过程的一般说明"><a class="markdownIt-Anchor" href="#编译过程的一般说明"></a> 编译过程的一般说明</h2>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/2%E3%80%81LFS%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/" class="post-title-link" itemprop="url">LFS准备工作</a>
         </h2>
 
         <div class="post-meta">
@@ -626,14 +795,649 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2023-04-04 22:59:15" itemprop="dateCreated datePublished" datetime="2023-04-04T22:59:15+08:00">2023-04-04</time>
+              <time title="Created: 2023-04-23 12:44:08" itemprop="dateCreated datePublished" datetime="2023-04-23T12:44:08+08:00">2023-04-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-05 22:32:52" itemprop="dateModified" datetime="2023-04-05T22:32:52+08:00">2023-04-05</time>
+                <time title="Modified: 2023-04-28 12:04:51" itemprop="dateModified" datetime="2023-04-28T12:04:51+08:00">2023-04-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="宿主系统硬件和软件"><a class="markdownIt-Anchor" href="#宿主系统硬件和软件"></a> 宿主系统硬件和软件</h4>
+<p>  硬件要求4核8G，准备30G硬盘空间，软件要求</p>
+<ul>
+<li>Bash-3.2 (/bin/sh 必须是到 bash 的符号链接或硬连接)</li>
+<li>Binutils-2.13.1 (比 2.40 更新的版本未经测试，不推荐使用)</li>
+<li>Bison-2.7 (/usr/bin/yacc 必须是到 bison 的链接，或者是一个执行 bison 的小脚本)</li>
+<li>Coreutils-6.9</li>
+<li>Diffutils-2.8.1</li>
+<li>Findutils-4.2.31</li>
+<li>Gawk-4.0.1 (/usr/bin/awk 必须是到 gawk 的链接)</li>
+<li>GCC-5.1，包括 C++ 编译器 g++ (比 12.2.0 更新的版本未经测试，不推荐使用)。C 和 C++ 标准库 (包括头文件) 也必须可用，这样 C++ 编译器才能构建宿主环境的程序</li>
+<li>Grep-2.5.1a</li>
+<li>Gzip-1.3.12</li>
+<li>Linux Kernel-3.2 内核版本的要求是为了符合第 5 章和第 8 章中编译 glibc 时开发者推荐的配置选项。</li>
+<li>M4-1.4.10</li>
+<li>Make-4.0</li>
+<li>Patch-2.5.4</li>
+<li>Perl-5.8.8</li>
+<li>Python-3.4</li>
+<li>Sed-4.1.5</li>
+<li>Tar-1.22</li>
+<li>Texinfo-4.7</li>
+<li>Xz-5.0.0</li>
+</ul>
+<p>  执行检查脚本<a href="./version-check.sh"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span></a>，直接在命令行输入下面的命令，会生成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>−</mo><mi>c</mi><mi>h</mi><mi>e</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi><mi>s</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">version-check.sh</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord">.</span><span class="mord mathnormal">s</span><span class="mord mathnormal">h</span></span></span></span>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; version-check.sh &lt;&lt; &quot;EOF&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Simple script to list version numbers of critical development tools</span></span><br><span class="line">export LC_ALL=C</span><br><span class="line">bash --version | head -n1 | cut -d&quot; &quot; -f2-4</span><br><span class="line">MYSH=$(readlink -f /bin/sh)</span><br><span class="line">echo &quot;/bin/sh -&gt; $MYSH&quot;</span><br><span class="line">echo $MYSH | grep -q bash || echo &quot;ERROR: /bin/sh does not point to bash&quot;</span><br><span class="line">unset MYSH</span><br><span class="line"></span><br><span class="line">echo -n &quot;Binutils: &quot;; ld --version | head -n1 | cut -d&quot; &quot; -f3-</span><br><span class="line">bison --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/yacc ]; then</span><br><span class="line">  echo &quot;/usr/bin/yacc -&gt; `readlink -f /usr/bin/yacc`&quot;;</span><br><span class="line">elif [ -x /usr/bin/yacc ]; then</span><br><span class="line">  echo yacc is `/usr/bin/yacc --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;yacc not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo -n &quot;Coreutils: &quot;; chown --version | head -n1 | cut -d&quot;)&quot; -f2</span><br><span class="line">diff --version | head -n1</span><br><span class="line">find --version | head -n1</span><br><span class="line">gawk --version | head -n1</span><br><span class="line"></span><br><span class="line">if [ -h /usr/bin/awk ]; then</span><br><span class="line">  echo &quot;/usr/bin/awk -&gt; `readlink -f /usr/bin/awk`&quot;;</span><br><span class="line">elif [ -x /usr/bin/awk ]; then</span><br><span class="line">  echo awk is `/usr/bin/awk --version | head -n1`</span><br><span class="line">else</span><br><span class="line">  echo &quot;awk not found&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">gcc --version | head -n1</span><br><span class="line">g++ --version | head -n1</span><br><span class="line">grep --version | head -n1</span><br><span class="line">gzip --version | head -n1</span><br><span class="line">cat /proc/version</span><br><span class="line">m4 --version | head -n1</span><br><span class="line">make --version | head -n1</span><br><span class="line">patch --version | head -n1</span><br><span class="line">echo Perl `perl -V:version`</span><br><span class="line">python3 --version</span><br><span class="line">sed --version | head -n1</span><br><span class="line">tar --version | head -n1</span><br><span class="line">makeinfo --version | head -n1  # texinfo version</span><br><span class="line">xz --version | head -n1</span><br><span class="line"></span><br><span class="line">echo &#x27;int main()&#123;&#125;&#x27; &gt; dummy.c &amp;&amp; g++ -o dummy dummy.c</span><br><span class="line">if [ -x dummy ]</span><br><span class="line">  then echo &quot;g++ compilation OK&quot;;</span><br><span class="line">  else echo &quot;g++ compilation failed&quot;; fi</span><br><span class="line">rm -f dummy.c dummy</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>  Debian 10极简安装后，部分软件是缺失的，比如makeinfo(texinfo)、gcc、g++、m4、make、patch等，使用apt-get install安装即可。Debian 10使用的是dash，需要将/bin/sh 重新指向/bin/bash。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换到root</span></span><br><span class="line">su</span><br><span class="line">cd /bin</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份/bin/sh</span></span><br><span class="line">mv sh shbak</span><br><span class="line">ln -s bash sh</span><br><span class="line">ls -la sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除备份</span></span><br><span class="line">rm -rf shbak</span><br></pre></td></tr></table></figure>
+<h4 id="创建分区"><a class="markdownIt-Anchor" href="#创建分区"></a> 创建分区</h4>
+<p>  使用cfdisk新建一个20G的分区sda3，lsblk查看当前设备状况。ext2适用于不经常更新的小分区，例如 /boot。ext3是 ext2 的升级版本，拥有日志系统，能够在非正常关机的情况下恢复分区的正常状态。它被广泛用于一般场合。ext4是 ext 文件系统家族的最新成员，它支持纳秒精度时间戳、创建或使用超大文件 (最大 16 TB) 支持等新功能，速度也更快。LFS 假设根文件系统 (/) 采用 ext4 文件系统。输入以下命令在 LFS 分区创建一个 ext4 文件系统</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkfs -v -t ext4 /dev/sda3</span><br></pre></td></tr></table></figure>
+<p>  不单独创建swap分区，使用宿主系统的swap分区。</p>
+<h4 id="设置环境变量"><a class="markdownIt-Anchor" href="#设置环境变量"></a> 设置环境变量</h4>
+<p>  设置root和lfs用户的环境变量$LFS，每一步操作必须使用正确的用户，避免破坏宿主机或者没有构建到LFS系统上。编辑主目录下的.bash_profile和/root/.bash_profile，加入环境变量</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">加入环境变量</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">主目录 切换到lfs用户，<span class="built_in">cd</span> 回车后的目录</span></span><br><span class="line">export LFS=/mnt/lfs</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">确认环境变量</span></span><br><span class="line">echo $LFS</span><br></pre></td></tr></table></figure>
+<p>  挂载文件系统，没有创建/boot、/boot/efi、/home、/usr、/opt、/tmp、/usr/src等分区。构建过程中重启宿主系统需要重新挂载，或者修改宿主系统的/etc/fstab文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">挂载分区</span></span><br><span class="line">mkdir -pv $LFS</span><br><span class="line">mount -v -t ext4 /dev/sda3 $LFS</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改/etc/fstab文件</span></span><br><span class="line">/dev/sda3  /mnt/lfs ext4   defaults      1     1</span><br></pre></td></tr></table></figure>
+<p>  创建sources目录，添加写入权限和sticky标志。“Sticky” 标志使得即使有多个用户对该目录有写入权限，也只有文件所有者能够删除其中的文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换到root用户，创建sources目录</span></span><br><span class="line">mkdir -v $LFS/sources</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加写入权限和sticky标志</span></span><br><span class="line">chmod -v a+wt $LFS/sources</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget下载文件</span></span><br><span class="line">wget --input-file=wget-list-sysv --continue --directory-prefix=$LFS/sources</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">校验下载的文件</span></span><br><span class="line">pushd $LFS/sources</span><br><span class="line">  md5sum -c md5sums</span><br><span class="line">popd</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改文件所有者</span></span><br><span class="line">chown root:root $LFS/sources/*</span><br></pre></td></tr></table></figure>
+<p>  <a href="./wget-list-sysv">wget-list-sysv</a>文件包含所有下载连接，<a href="./md5sums">md5sums</a>是所有文件的校验和。<br />
+  如果以非 root 用户身份下载了软件包和补丁，则下载的文件会属于该用户。文件系统使用 UID 记录文件所有者，而宿主系统中普通用户的 UID 在 LFS 中未被分配。因此，这些文件保留到最终的 LFS 系统后，会属于一个没有命名的 UID 。如果您不准备在 LFS 系统中为您的用户分配相同的 UID，现在就将这些文件的所有者改为 root，以避免这一问题。</p>
+<p>  以root身份创建有限目录，供编译使用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建目录</span></span><br><span class="line">mkdir -pv $LFS/&#123;etc,var&#125; $LFS/usr/&#123;bin,lib,sbin&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建连接</span></span><br><span class="line">for i in bin lib sbin; do</span><br><span class="line">  ln -sv usr/$i $LFS/$i</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">LFS编辑团队特意决定不使用/usr/lib64，应该经常检查，确保它不存在。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为什么Debian 10会创建lib64这个目录？</span></span><br><span class="line">case $(uname -m) in</span><br><span class="line">  x86_64) mkdir -pv $LFS/lib64 ;;</span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+<p>  添加lfs用户</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">groupadd lfs</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-s /bin/bash 设置 bash 为用户 lfs 的默认 shell。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-g lfs       添加用户 lfs 到组 lfs。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-m           为用户 lfs 创建一个主目录。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-k /dev/null 将模板目录设置为空设备文件，防止从默认模板目录 (/etc/skel) 复制文件到新的主目录。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lfs          这是新用户的名称。</span></span><br><span class="line">useradd -s /bin/bash -g lfs -m -k /dev/null lfs</span><br></pre></td></tr></table></figure>
+<p>  将 lfs 设为 $LFS 中所有目录的所有者，使 lfs 对它们拥有完全访问权</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chown -v lfs $LFS/&#123;usr&#123;,/*&#125;,lib,var,etc,bin,sbin,tools&#125;</span><br><span class="line">case $(uname -m) in</span><br><span class="line">  x86_64) chown -v lfs $LFS/lib64 ;;</span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+<p>  为了配置一个良好的工作环境，我们为 bash 创建两个新的启动脚本。以 lfs 的身份，执行以下命令，创建一个新的 .bash_profile：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; ~/.bash_profile &lt;&lt; &quot;EOF&quot;</span><br><span class="line">exec env -i HOME=$HOME TERM=$TERM PS1=&#x27;\u:\w\$ &#x27; /bin/bash</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>  在以 lfs 用户登录或从其他用户使用带 “-” 选项的 su 命令切换到 lfs 用户时，初始的 shell 是一个登录 shell。它读取宿主系统的 /etc/profile 文件 (可能包含一些设置和环境变量)，然后读取 .bash_profile。我们在 .bash_profile 中使用 exec env -i…/bin/bash 命令，新建一个除了 HOME, TERM 以及 PS1 外没有任何环境变量的 shell 并替换当前 shell。这可以防止宿主环境中不需要和有潜在风险的环境变量进入构建环境。</p>
+<p>  新的 shell 实例是 非登录 shell，它不会读取和执行 /etc/profile 或者 .bash_profile 的内容，而是读取并执行 .bashrc 文件。现在我们创建一个 .bashrc 文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; ~/.bashrc &lt;&lt; &quot;EOF&quot;</span><br><span class="line">set +h</span><br><span class="line">umask 022</span><br><span class="line">LFS=/mnt/lfs</span><br><span class="line">LC_ALL=POSIX</span><br><span class="line">LFS_TGT=$(uname -m)-lfs-linux-gnu</span><br><span class="line">PATH=/usr/bin</span><br><span class="line">if [ ! -L /bin ]; then PATH=/bin:$PATH; fi</span><br><span class="line">PATH=$LFS/tools/bin:$PATH</span><br><span class="line">CONFIG_SITE=$LFS/usr/share/config.site</span><br><span class="line">export LFS LC_ALL LFS_TGT PATH CONFIG_SITE</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>set +h</p>
+<ul>
+<li>set +h命令关闭 bash 的散列功能。一般情况下，散列是很有用的 —— bash 使用一个散列表维护各个可执行文件的完整路径，这样就不用每次都在 PATH 指定的目录中搜索可执行文件。然而，在构建 LFS 时，我们希望总是使用最新安装的工具。关闭散列功能强制 shell 在运行程序时总是搜索 PATH。这样，一旦$LFS/tools/bin 中有新的工具可用，shell 就能够找到它们，而不是使用之前记忆在散列表中，由宿主发行版提供的 /usr/bin 或 /bin 中的工具。</li>
+</ul>
+</li>
+<li>
+<p>umask 022</p>
+<ul>
+<li>将用户的文件创建掩码 (umask) 设定为 022，保证只有文件所有者可以写新创建的文件和目录，但任何人都可读取、执行它们。(如果 open(2) 系统调用使用默认模式，则新文件将具有权限模式 644，而新目录具有权限模式 755)。</li>
+</ul>
+</li>
+<li>
+<p>LFS=/mnt/lfs</p>
+<ul>
+<li>LFS 环境变量必须被设定为之前选择的挂载点。</li>
+</ul>
+</li>
+<li>
+<p>LC_ALL=POSIX</p>
+<ul>
+<li>LC_ALL 环境变量控制某些程序的本地化行为，使得它们以特定国家的语言和惯例输出消息。将 LC_ALL 设置为 “POSIX” 或者 “C”(这两种设置是等价的) 可以保证在交叉编译环境中所有命令的行为完全符合预期，而与宿主的本地化设置无关。</li>
+</ul>
+</li>
+<li>
+<p>LFS_TGT=(uname -m)-lfs-linux-gnu</p>
+<ul>
+<li>LFS_TGT变量设定了一个非默认，但与宿主系统兼容的机器描述符。该描述符被用于构建交叉编译器和交叉编译临时工具链。工具链技术说明将提供关于这个描述符的更多信息。</li>
+</ul>
+</li>
+<li>
+<p>PATH=/usr/bin</p>
+<ul>
+<li>许多现代 Linux 发行版合并了 /bin 和 /usr/bin。在这种情况下，标准 PATH 变量应该被设定为 /usr/bin。否则，后续命令将会增加 /bin 到搜索路径中。</li>
+</ul>
+</li>
+<li>
+<p>if [ ! -L /bin ]; then PATH=/bin:$PATH; fi</p>
+<ul>
+<li>如果 /bin 不是符号链接，则它需要被添加到 PATH 变量中。</li>
+</ul>
+</li>
+<li>
+<p>PATH=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>F</mi><mi>S</mi><mi mathvariant="normal">/</mi><mi>t</mi><mi>o</mi><mi>o</mi><mi>l</mi><mi>s</mi><mi mathvariant="normal">/</mi><mi>b</mi><mi>i</mi><mi>n</mi><mo>:</mo></mrow><annotation encoding="application/x-tex">LFS/tools/bin:</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">/</span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">s</span><span class="mord">/</span><span class="mord mathnormal">b</span><span class="mord mathnormal">i</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span></span></span>PATH</p>
+<ul>
+<li>我们将 $LFS/tools/bin 附加在默认的 PATH 环境变量之前，我们一旦安装了新的程序，shell 就能立刻使用它们。这与关闭散列功能相结合，降低了新程序可用时错误地使用宿主系统中旧程序的风险。</li>
+</ul>
+</li>
+<li>
+<p>CONFIG_SITE=$LFS/usr/share/config.site</p>
+<ul>
+<li>如果没有设定这个变量，configure 脚本可能会从宿主系统的 /usr/share/config.site 加载一些发行版特有的配置信息。覆盖这一默认路径，避免宿主系统可能造成的污染。</li>
+</ul>
+</li>
+<li>
+<p>export …</p>
+<ul>
+<li>上述命令设定了一些变量，为了让所有子 shell 都能使用这些变量，需要导出它们。</li>
+</ul>
+</li>
+</ul>
+<p>  一些商业发行版未做文档说明地将 /etc/bash.bashrc 引入 bash 初始化过程。该文件可能修改 lfs 用户的环境，并影响 LFS 关键软件包的构建。为了保证 lfs 用户环境的纯净，检查 /etc/bash.bashrc 是否存在，如果它存在就将它移走。以 root 用户身份，运行下面命令。当不再需要 lfs 用户时，可以复原 /etc/bash.bashrc 文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE</span><br></pre></td></tr></table></figure>
+<p>  强制生效</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置环境变量</span></span><br><span class="line">export MAKEFLAGS=&#x27;-j4&#x27;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">直接告诉 make 命令有多少个可用的处理器</span></span><br><span class="line">make -j4</span><br></pre></td></tr></table></figure>
+<p>  在运行 Binutils 和 GCC 的测试套件时，较常见的问题是伪终端 (PTY) 被耗尽。这会导致大量测试出现失败结果。这种现象有多种可能原因，但最常见的原因是宿主系统没有正确设置 devpts 文件系统。可以参考<a target="_blank" rel="noopener" href="https://www.linuxfromscratch.org/lfs/faq.html#no-ptys">FAQ</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/1%E3%80%81Linux%20From%20Scratch%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/1%E3%80%81Linux%20From%20Scratch%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">Linux From Scratch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 08:11:05 / Modified: 12:41:24" itemprop="dateCreated datePublished" datetime="2023-04-23T08:11:05+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://www.linuxfromscratch.org/">Linux From Scratch</a>从零开始编译Linux。文章参考LFS book 11.3，宿主系统为虚拟机安装的Debian。LFS systemd book、开发版、安全漏洞等暂时忽略，仅关注编译LFS系统。LFS book主要内容是准备工作、构建LFS交叉工具链和临时工具、构建LFS系统。准备工作，包括分区、下载软件包、编译临时工具链等。LFS系统的构建需要逐个安装和编译所有需要的软件包，设定引导脚本，以及安装内核。得到的 Linux 系统是一个基本系统，在它之上可以继续编译其他软件，以扩展系统，更好地满足需求。附录给出了一个便于使用的引用列表，包括本书中安装的所有软件、库和其他重要文件。<br />
+<img src="https://www.goodserendipity.com/asserts/linux/lfs/LFSbook.png" alt="LFS book 目录" /></p>
+<p>  <a target="_blank" rel="noopener" href="https://tldp.org/HOWTO/Software-Building-HOWTO.html">Software-Building-HOWTO</a>是一份关于在Linux环境编译和安装常规的Unix软件包的详细指南，虽然这份文档比较老，但是它较好的总结了编译和安装软件的基本技巧。<a target="_blank" rel="noopener" href="https://moi.vonos.net/linux/beginners-installing-from-source/">Beginner’s Guide to Installing from Source</a>很好地总结了从源代码编译软件的基本技能和技巧。<a target="_blank" rel="noopener" href="http://catb.org/~esr/faqs/smart-questions.html">How To Ask Questions The Smart Way</a>。<br />
+  LFS的结构尽可能遵循Linux的各项标准，比如<a target="_blank" rel="noopener" href="https://pubs.opengroup.org/onlinepubs/9699919799/">POSIX.1-2008.</a>、<a target="_blank" rel="noopener" href="https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html">Filesystem Hierarchy Standard (FHS) Version 3.0</a>、<a target="_blank" rel="noopener" href="https://refspecs.linuxfoundation.org/lsb.shtml">Linux Standard Base (LSB) Version 5.0 (2015)</a>等。但LSB并不被广泛接受，搭建一个通过LSB认证测试的完整系统是可行的，但是需要安装大量超过LFS的额外软件包，在BLFS中可以找到这些软件包。<br />
+  LFS要求安装的一些软件包的作用</p>
+<ul>
+<li>
+<p>Acl<br />
+这个软件包包含管理访问控制列表 (ACL) 的工具，用来对文件和目录提供细粒度的访问权限控制。</p>
+</li>
+<li>
+<p>Attr<br />
+这个软件包包含管理文件系统对象的扩展属性的程序。</p>
+</li>
+<li>
+<p>Autoconf<br />
+这个软件包提供能根据软件开发者提供的模板，自动生成配置源代码的 shell 脚本的程序。如果修改了软件包的构建过程，一般需要该软件包的支持才能重新构建被修改的软件包。</p>
+</li>
+<li>
+<p>Automake<br />
+这个软件包包含能根据软件开发者提供的模板，自动生成 Makefile 的程序。如果修改了软件包的构建过程，一般需要该软件包的支持才能重新构建被修改的软件包。</p>
+</li>
+<li>
+<p>Bash<br />
+这个软件包为系统提供一个 LSB core 要求的 Bourne Shell 接口。它是较为常用的 shell 软件包，且具有一定的的扩展能力，因此在各种 shell 软件包中选择了它。</p>
+</li>
+<li>
+<p>Bc<br />
+这个软件包提供了一个任意精度数值处理语言。在编译 Linux 内核时需要该软件包。</p>
+</li>
+<li>
+<p>Binutils<br />
+该软件包提供链接器、汇编器，以及其他处理目标文件的工具。编译 LFS 系统中的大多数软件包都需要这些程序。</p>
+</li>
+<li>
+<p>Bison<br />
+这个软件包包含 yacc (Yet Another Compiler Compiler) 的 GNU 版本。一些 LFS 程序的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Bzip2<br />
+这个软件包包含用于压缩和解压缩文件的程序。许多 LFS 软件包的解压需要该软件包。</p>
+</li>
+<li>
+<p>Check<br />
+这个软件包提供其他程序使用的测试环境。</p>
+</li>
+<li>
+<p>Coreutils<br />
+这个软件包包含一些用于查看和操作文件和目录的基本程序。这些程序被用于在命令行下管理文件，以及每个 LFS 软件包的安装过程。</p>
+</li>
+<li>
+<p>DejaGNU<br />
+这个软件包提供用于测试其他程序的框架。</p>
+</li>
+<li>
+<p>Diffutils<br />
+这个软件包包含用于显示文件或目录之间的差异的程序。这些程序可以被用于创建补丁，很多软件包的编译过程也需要该软件包。</p>
+</li>
+<li>
+<p>E2fsprogs<br />
+这个软件包提供用于处理 ext2, ext3 和 ext4 文件系统的工具。它们是 Linux 支持的最常用且久经考验的文件系统。</p>
+</li>
+<li>
+<p>Eudev<br />
+这个软件包是一个设备管理器，它随着系统中硬件设备的增加或移除，动态地控制 /dev 目录中设备节点的所有权，访问权限，文件名，以及符号链接。</p>
+</li>
+<li>
+<p>Expat<br />
+这个软件包提供一个相对轻量级的 XML 解析库。Perl 模块 XML::Parser 需要该软件包。</p>
+</li>
+<li>
+<p>Expect<br />
+这个软件包包含一个自动和其他交互程序交互的脚本执行程序。一般用它测试其他程序。</p>
+</li>
+<li>
+<p>File<br />
+这个软件包包含用于判定给定文件类型的工具。一些软件包的构建脚本需要它。</p>
+</li>
+<li>
+<p>Findutils<br />
+这个软件包提供用于在文件系统中寻找文件的程序。它被许多软件包的编译脚本使用。</p>
+</li>
+<li>
+<p>Flex<br />
+这个软件包包含用于生成词法分析器的程序。它是 lex (lexical analyzer) 程序的 GNU 版本。许多 LFS 软件包的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Gawk<br />
+这个软件包提供用于操作文本文件的程序。它是 awk (Aho-Weinberg-Kernighan) 的 GNU 版本。它被许多其他软件包的构建脚本使用。</p>
+</li>
+<li>
+<p>GCC<br />
+这是 GNU 编译器的集合。它包含 C 和 C++ 编译器，以及其他一些在 LFS 中不会涉及的编译器。</p>
+</li>
+<li>
+<p>GDBM<br />
+这个软件包包含 GNU 数据库管理库。LFS 的另一个软件包 Man-DB 需要该软件包。</p>
+</li>
+<li>
+<p>Gettext<br />
+这个软件包提供用于许多其他软件包的国际化和本地化的工具和库。</p>
+</li>
+<li>
+<p>Glibc<br />
+这个软件包包含主要的 C 语言库。Linux 程序没有该软件包的支持根本无法运行。</p>
+</li>
+<li>
+<p>GMP<br />
+这个软件包提供数学库，这些库支持用于任意精度算术的函数。编译 GCC 需要该软件包。</p>
+</li>
+<li>
+<p>Gperf<br />
+这个软件包提供一个能够根据键值集合生成完美散列函数的程序。Eudev 需要该软件包。</p>
+</li>
+<li>
+<p>Grep<br />
+这个软件包包含在文本中搜索指定模式的程序。它被多数软件包的编译脚本所使用。</p>
+</li>
+<li>
+<p>Groff<br />
+这个软件包提供用于处理和格式化文本的程序。它们的一项重要功能是格式化 man 页面。</p>
+</li>
+<li>
+<p>GRUB<br />
+这个软件包是 Grand Unified Boot Loader。Linux 可以使用其他引导加载器，但 GRUB 最灵活。</p>
+</li>
+<li>
+<p>Gzip<br />
+这个软件包包含用于压缩和解压缩文件的程序。许多 LFS 软件包的解压需要该软件包。</p>
+</li>
+<li>
+<p>Iana-etc<br />
+这个软件包包含网络服务和协议的描述数据。网络功能的正确运作需要该软件包。</p>
+</li>
+<li>
+<p>Inetutils<br />
+这个软件包提供基本网络管理程序。</p>
+</li>
+<li>
+<p>Intltool<br />
+这个软件包提供能够从源代码中提取可翻译字符串的工具。</p>
+</li>
+<li>
+<p>IProute2<br />
+这个软件包提供了用于 IPv4 和 IPv6 网络的基础和高级管理程序。和另一个常见的网络工具包 net-tools 相比，它具有管理 IPv6 网络的能力。</p>
+</li>
+<li>
+<p>Kbd<br />
+这个软件包提供键盘映射文件，用于非美式键盘的键盘工具，以及一些控制台字体。</p>
+</li>
+<li>
+<p>Kmod<br />
+这个软件包提供用于管理 Linux 内核模块的程序。</p>
+</li>
+<li>
+<p>Less<br />
+这个软件包包含一个很好的文本文件查看器，它支持在查看文件时上下滚动。许多软件包使用它对输出进行分页。</p>
+</li>
+<li>
+<p>Libcap<br />
+这个软件包实现了用于访问 Linux 内核中 POSIX 1003.1e 权能字功能的用户空间接口。</p>
+</li>
+<li>
+<p>Libelf<br />
+Elfutils 项目提供了用于 ELF 文件和 DWARF 数据的工具和库。该软件包的大多数工具已经由其他软件包提供，但使用默认 (也是最高效的) 配置构建 Linux 内核时，需要使用该软件包的库。</p>
+</li>
+<li>
+<p>Libffi<br />
+这个软件包实现了一个可移植的高级编程接口，用于处理不同的调用惯例。某些程序在编译时并不知道如何向函数传递参数，例如解释器在运行时才得到函数的参数个数和类型信息。它们可以使用 libffi 作为解释语言和编译语言之间的桥梁。</p>
+</li>
+<li>
+<p>Libpipeline<br />
+Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库。Man-DB 软件包需要这个库。</p>
+</li>
+<li>
+<p>Libtool<br />
+这个软件包包含 GNU 通用库支持脚本。它将共享库的使用封装成一个一致、可移植的接口。在其他 LFS 软件包的测试套件中需要该软件包。</p>
+</li>
+<li>
+<p>Linux Kernel<br />
+这个软件包就是操作系统。我们平常说的 “GNU/Linux” 环境中的 “Linux” 就指的是它。</p>
+</li>
+<li>
+<p>M4<br />
+这个软件包提供通用的文本宏处理器。它被其他程序用作构建工具。</p>
+</li>
+<li>
+<p>Make<br />
+这个软件包包含用于指导软件包编译过程的程序。LFS 中几乎每个软件包都需要它。</p>
+</li>
+<li>
+<p>Man-DB<br />
+这个软件包包含用于查找和浏览 man 页面的程序。与 man 软件包相比，该软件包的国际化功能更为强大。该软件包提供了 man 程序。</p>
+</li>
+<li>
+<p>Man-pages<br />
+这个软件包提供基本的 Linux man 页面的实际内容。</p>
+</li>
+<li>
+<p>Meson<br />
+这个软件包一个自动化软件构建过程的工具。它的设计目标是最小化软件开发者不得不用于配置构建系统的时间。该软件包在构建 Systemd 和很多 BLFS 软件包时是必要的。</p>
+</li>
+<li>
+<p>MPC<br />
+这个软件包提供用于复数算术的函数。GCC 需要该软件包。</p>
+</li>
+<li>
+<p>MPFR<br />
+这个软件包包含用于多精度算术的函数。GCC 需要该软件包。</p>
+</li>
+<li>
+<p>Ninja<br />
+这个软件包提供一个注重执行速度的小型构建系统。它被设计为读取高级构建系统生成的输入文件，并以尽量高的速度运行。Meson 需要该软件包。</p>
+</li>
+<li>
+<p>Ncurses<br />
+这个软件包包含用于处理字符界面的不依赖特定终端的库。它一般被用于为菜单系统提供光标控制。一些 LFS 软件包需要该软件包。</p>
+</li>
+<li>
+<p>Openssl<br />
+这个软件包包含关于密码学的管理工具和库，它们为 Linux 内核等其他软件包提供密码学功能。</p>
+</li>
+<li>
+<p>Patch<br />
+这个软件包包含一个通过 补丁 文件修改或创建文件的程序。补丁文件通常由 diff 程序创建。一些 LFS 软件包的编译过程需要该软件包。</p>
+</li>
+<li>
+<p>Perl<br />
+这个软件包是运行时语言 PERL 的解释器。几个 LFS 软件包的安装和测试过程需要该软件包。</p>
+</li>
+<li>
+<p>Pkg-config<br />
+这个软件包提供一个查询已经安装的库和软件包的元数据信息的程序。</p>
+</li>
+<li>
+<p>Procps-NG<br />
+这个软件包包含用于监控系统进程的程序，对系统管理非常有用。另外 LFS 引导脚本也需要该软件包。</p>
+</li>
+<li>
+<p>Psmisc<br />
+这个软件包提供一些显示当前运行的系统进程信息的程序。这些程序对系统管理非常有用。</p>
+</li>
+<li>
+<p>Python 3<br />
+这个软件包提供了一种在设计时强调代码可读性的解释性语言支持。</p>
+</li>
+<li>
+<p>Readline<br />
+这个软件包是一组库，提供命令行编辑和历史记录支持。Bash 需要该软件包。</p>
+</li>
+<li>
+<p>Sed<br />
+这个软件包可以在没有文本编辑器的情况下编辑文本文件。另外，许多 LFS 软件包的配置脚本需要该软件包。</p>
+</li>
+<li>
+<p>Shadow<br />
+这个软件包包含用于安全地处理密码的程序。</p>
+</li>
+<li>
+<p>Sysklogd<br />
+这个软件包提供用于记录系统消息的程序，这些消息包括内核或者守护进程在异常事件发生时的提示。</p>
+</li>
+<li>
+<p>Sysvinit<br />
+这个软件包提供init程序，在 Linux 系统中它是其他所有进程的祖先。</p>
+</li>
+<li>
+<p>Tar<br />
+这个软件包提供存档和提取功能，几乎每个 LFS 软件包都需要它才能被提取。</p>
+</li>
+<li>
+<p>Tcl<br />
+这个软件包包含在测试套件中广泛使用的工具控制语言 (Tool Command Language)。</p>
+</li>
+<li>
+<p>Texinfo<br />
+这个软件包提供用于阅读、编写和转换 info 页面的程序。许多 LFS 软件包的安装过程需要使用它。</p>
+</li>
+<li>
+<p>Util-linux<br />
+这个软件包包含许多工具程序，其中有处理文件系统、终端、分区和消息的工具。</p>
+</li>
+<li>
+<p>Vim<br />
+这个软件包提供一个编辑器。由于它与经典的 vi 编辑器相兼容，且拥有许多强大的功能，我们选择这个编辑器。编辑器的选择是非常主观的。如果希望的话，读者可以用其他编辑器替代它。</p>
+</li>
+<li>
+<p>Wheel<br />
+该软件包提供一个 Python 模块，该模块是 Python wheel 软件包标准格式的参考实现。</p>
+</li>
+<li>
+<p>XML::Parser<br />
+这个软件包是和 Expat 交互的 Perl 模块。</p>
+</li>
+<li>
+<p>XZ Utils<br />
+这个软件包包含用于压缩和解压缩文件的程序。在所有这类程序中，该软件包提供了最高的压缩率。该软件包被用于解压 XZ 或 LZMA 格式的压缩文件。</p>
+</li>
+<li>
+<p>Zlib<br />
+这个软件包包含一些程序使用的压缩和解压缩子程序。</p>
+</li>
+<li>
+<p>Zstd<br />
+这个软件包提供一些程序使用的压缩和解压缩子程序。它具有较高的压缩比，以及很宽的压缩比/速度权衡范围。</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/23/Linux/LFS/LFS%20systemd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/23/Linux/LFS/LFS%20systemd/" class="post-title-link" itemprop="url">Linux From Scratch Systemd</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-23 08:11:05 / Modified: 12:42:05" itemprop="dateCreated datePublished" datetime="2023-04-23T08:11:05+08:00">2023-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>LFS systemd book和LFS book有啥区别？</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/" class="post-title-link" itemprop="url">segmenttree</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-18 19:59:07" itemprop="dateCreated datePublished" datetime="2023-04-18T19:59:07+08:00">2023-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-28 12:23:00" itemprop="dateModified" datetime="2023-04-28T12:23:00+08:00">2023-04-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -656,273 +1460,31 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  二分查找算法（英语：binary search algorithm），也称折半搜索算法（英语：half-interval search algorithm）[1]、对数搜索算法（英语：logarithmic search algorithm）[2]，是一种在有序数组中查找某一特定元素的搜索算法。搜索过程从数组的中间元素开始，如果中间元素正好是要查找的元素，则搜索过程结束；如果某一特定元素大于或者小于中间元素，则在数组大于或小于中间元素的那一半中查找，而且跟开始一样从中间元素开始比较。如果在某一步骤数组为空，则代表找不到。这种搜索算法每一次比较都使搜索范围缩小一半。但有序不是使用二分的必要条件，只要能正确构建左右两侧的淘汰逻辑，就可以使用二分。</p>
-<h4 id="二分查找算法的要点"><a class="markdownIt-Anchor" href="#二分查找算法的要点"></a> 二分查找算法的要点</h4>
-<ul>
-<li>while循环递归</li>
-<li>构造淘汰逻辑</li>
-<li>移动left、right</li>
-<li>递归终止条件</li>
-</ul>
-<h4 id="二分法题目"><a class="markdownIt-Anchor" href="#二分法题目"></a> 二分法题目</h4>
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/seg/">线段树</a>可以在 O(logN) 的时间复杂度内实现单点修改、区间修改、区间查询（区间求和，求区间最大值，求区间最小值）等操作。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Segment_tree">线段树</a>可以用递归实现，也可以将递归改成迭代方式。线段树的递归深度可控，可以用于工程实践。<br />
+  线段树适用于可以根据左右节点的信息加工，并且加工的时间复杂度O(1)，不需要知道左右子树的具体信息，解决区间查询、更新类的问题的场景。<br />
+  任意数组arr的长度为n，存在k，满足2<sup>k</sup> - 1 ≤ n  ≤ 2<sup>k+1</sup> - 1。则这个数组的所有元素可以填充在高度为k+1的满二叉树叶子节点上，并且满二叉树的最下面一层最右边填充n - 2<sup>k</sup> + 1个空节点。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/segmenttree.svg" alt="segment tree" /><br />
+  lazy数组，i节点task1任务的preLeft、preRight包含<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">i \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>或者<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i \times 2+1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span>节点的left、right，即preLeft ≤ left &amp;&amp; preRight ≥ right，则任务不再继续下发，否则任务下发。如果task2任务来到i节点并且i节点的task1任务没有下发，则先下发task1任务再执行task2。</p>
+<hr />
+<h3 id="线段树"><a class="markdownIt-Anchor" href="#线段树"></a> 线段树</h3>
+<p>  给定一个数组arr，实现如下三个方法，要求时间复杂度都是O(logN)</p>
 <ol>
-<li>在一个有序数组中，找某个数是否存在</li>
-<li>在一个有序数组中，找&gt;=某个数最左侧的位置</li>
-<li>在一个有序数组中，找&lt;=某个数最右侧的位置</li>
-<li>局部最小值问题</li>
-<li>求有序数组给定区间元素的个数</li>
+<li>void add(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都加上value</li>
+<li>void update(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都变成value</li>
+<li>int sum(int left, int right) :让返回arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]这个范围整体的累加和</li>
 </ol>
-<p>  使用while循环，根据arr[target]和arr[middle]的大小，移动left或者right。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">binarySearch</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">        <span class="comment">// 边界条件</span></span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="comment">// 递归终止条件</span></span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &gt; target) &#123;</span><br><span class="line">                <span class="comment">// target在middle左边</span></span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[middle] &lt; target) &#123;</span><br><span class="line">                <span class="comment">// target在middle右边</span></span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 找到target</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 大于等于target最左的位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">binarySearchLeft</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 当left + 1 = right时，如果while条件为left &lt; right则会漏掉right</span></span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &lt; target) &#123;</span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                index = middle;</span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 小于等于target最右的位置</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">binarySearchRight</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> middle;</span><br><span class="line">        <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">            middle = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (arr[middle] &gt; value) &#123;</span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                index = middle;</span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> index;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>  在while循环中递归，总是能构造淘汰逻辑，所以可以使用二分法查找到一个局部最小值。如果arr[0]和arr[arr.length-1]都不是局部最小值，那么中间必然存在最小值，满足递归之后依然满足或者递归终止。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">localMin</span><span class="params">(<span class="type">int</span>[] arr)</span> &#123;</span><br><span class="line">    <span class="comment">// 边界条件</span></span><br><span class="line">    <span class="keyword">if</span> (arr == <span class="literal">null</span> || arr.length == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> arr.length;</span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">1</span> || arr[<span class="number">0</span>] &lt; arr[<span class="number">1</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (arr[len - <span class="number">1</span>] &lt; arr[len - <span class="number">2</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> len - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> len - <span class="number">2</span>;</span><br><span class="line">    <span class="type">int</span> mid;</span><br><span class="line">    <span class="comment">// 开始二分</span></span><br><span class="line">    <span class="keyword">while</span> (left &lt; right) &#123;</span><br><span class="line">        mid = left + ((right - left) &gt;&gt; <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 左边</span></span><br><span class="line">        <span class="keyword">if</span> (arr[mid] &gt; arr[mid - <span class="number">1</span>]) &#123;</span><br><span class="line">            right = mid - <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &gt; arr[mid + <span class="number">1</span>]) &#123;</span><br><span class="line">            <span class="comment">// 右边</span></span><br><span class="line">            left = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 找到局部最小值</span></span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> left;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/03/DataStructuresAndAlgorithms/0%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%A4%A7%E7%BA%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/03/DataStructuresAndAlgorithms/0%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E5%A4%A7%E7%BA%B2/" class="post-title-link" itemprop="url">数据结构与算法大纲</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-03 17:53:55" itemprop="dateCreated datePublished" datetime="2023-04-03T17:53:55+08:00">2023-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-11 18:48:02" itemprop="dateModified" datetime="2023-04-11T18:48:02+08:00">2023-04-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          </br>
-<h4 id="常见的数据结构和算法"><a class="markdownIt-Anchor" href="#常见的数据结构和算法"></a> 常见的数据结构和算法</h4>
-<p>  常见的数据结构有堆、队列、链表、栈、二叉树、图、并查集、线段树、index Tree、字典树、后缀数组等，常见的算法有字符串匹配算法、topK算法、排序算法、递归、分治、回溯、贪心算法、深度优先搜索与广度优先搜索算法、动态规划、二分查找算法、前缀和、双指针、位运算、bitmap等。</p>
-<h4 id="经验"><a class="markdownIt-Anchor" href="#经验"></a> 经验</h4>
-<p>  所有的数据结构底层都是数组或者链表，C、C++、Java的数组和链表没有使用有序表封装，可以正确得出算法时间复杂度。<br />
-  解决问题的算法需要用到一些技巧，比如前缀和、位运算、动态规划中的边界范围不回退、kmp算法的next数组的反证法等，最主要是要有递归和拆分的思维。如果某个问题可以使用递归解决，需要尝试某一种思路并确定递归的入参和返回值。拆分就是i位置的结果可以依赖i-1位置，这样就可以从边界位置推导整个范围的结果。</p>
-<h4 id="辅助资料"><a class="markdownIt-Anchor" href="#辅助资料"></a> 辅助资料</h4>
-<p>  算法一般都有严格数学证明的，可以参考<a target="_blank" rel="noopener" href="https://oi-wiki.org/">oi-wiki</a>或者对应的论文。<br />
-  搬运一张<a target="_blank" rel="noopener" href="https://www.processon.com/mindmap/642aea6e3aff4d5813d3bdb2">数据结构与算法思维导图</a>，这个图很大，并且附有练习题，可以折叠起来看。<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.png">备用png导入processon</a><br />
-  有一个github仓库总结了很多<a target="_blank" rel="noopener" href="https://github.com/0voice/algorithm-structure#nav_01">算法</a>，是用C和C++编码的。有些没有学过(比如RSA算法、协同过滤算法等)，有些没有收录(跳表、后缀数组等)，可以适度参考。<br />
-  有一些辅助学习的资料比如<a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/">数据结构可视化</a>，<a target="_blank" rel="noopener" href="https://algorithm-visualizer.org/">算法可视化网站</a>，<a target="_blank" rel="noopener" href="https://visualgo.net/en">可视化</a>等，某些特别复杂的数据结构和算法可能没有被收录。<br />
-  <a target="_blank" rel="noopener" href="https://www.bigocheatsheet.com/">常见算法的复杂度</a>，也可以参考下图。<br />
-<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/big-o-cheat-sheet-poster.png" alt="bigO" /></p>
-<h4 id="算法的5个特点"><a class="markdownIt-Anchor" href="#算法的5个特点"></a> 算法的5个特点</h4>
+<h3 id="积方块问题-leetcode699"><a class="markdownIt-Anchor" href="#积方块问题-leetcode699"></a> 积方块问题 LeetCode699</h3>
+<p>  简化版的俄罗斯方块游戏，X轴是积木最终下落到底的轴线</p>
 <ol>
-<li>有穷性</li>
-<li>确定性(确定的执行流程或者确定的尝试流程)</li>
-<li>可行性</li>
-<li>输入</li>
-<li>输出</li>
+<li>只会下落正方形积木</li>
+<li>[a,b] -&gt; 代表一个边长为b的正方形积木，积木左边缘沿着X = a这条线从上方掉落</li>
+<li>认为整个X轴都可能接住积木，也就是说简化版游戏是没有整体的左右边界的</li>
+<li>没有整体的左右边界，所以简化版游戏不会消除积木，因为不会有哪一层被填满。</li>
 </ol>
-<h4 id="时间复杂度"><a class="markdownIt-Anchor" href="#时间复杂度"></a> 时间复杂度</h4>
-<p>  评估算法优劣的核心指标</p>
-<ol>
-<li>时间复杂度（流程决定）</li>
-<li>额外空间复杂度（流程决定）</li>
-<li>常数项时间（实现细节决定）</li>
-</ol>
-<h5 id="时间复杂度估算"><a class="markdownIt-Anchor" href="#时间复杂度估算"></a> 时间复杂度估算</h5>
-<ul>
-<li>常数时间的操作</li>
-<li>确定算法流程的总操作数量与样本数量之间的表达式关系</li>
-<li>只看表达式最高阶项的部分</li>
-</ul>
-<h5 id="常数时间的操作"><a class="markdownIt-Anchor" href="#常数时间的操作"></a> 常数时间的操作</h5>
-<p>  如果一个操作的执行时间不以具体样本量为转移，每次执行时间都是固定时间。称这样的操作为常数时间的操作。</p>
-<h5 id="常见的常数时间的操作"><a class="markdownIt-Anchor" href="#常见的常数时间的操作"></a> 常见的常数时间的操作</h5>
-<ul>
-<li>常见的算术运算（+、-、*、/、% 等）</li>
-<li>常见的位运算（&gt;&gt;、&gt;&gt;&gt;、&lt;&lt;、|、&amp;、^等）</li>
-<li>赋值、比较、自增、自减操作等</li>
-<li>数组寻址操作</li>
-</ul>
-<h5 id="确定算法流程的总操作数量与样本数量之间的表达式关系"><a class="markdownIt-Anchor" href="#确定算法流程的总操作数量与样本数量之间的表达式关系"></a> 确定算法流程的总操作数量与样本数量之间的表达式关系</h5>
-<ol>
-<li>想象该算法流程所处理的数据状况，要按照最差情况来。</li>
-<li>把整个流程彻底拆分为一个个基本动作，保证每个动作都是常数时间的操作。</li>
-<li>如果数据量为N，看看基本动作的数量和N是什么关系。</li>
-</ol>
-<h5 id="确定算法流程的时间复杂度"><a class="markdownIt-Anchor" href="#确定算法流程的时间复杂度"></a> 确定算法流程的时间复杂度</h5>
-<p>  当完成了表达式的建立，只要把最高阶项留下即可。低阶项都去掉，高阶项的系数也去掉。记为：O(忽略掉系数的高阶项)。可以用选择排序、冒泡排序、插入排序练习估算时间复杂度。</p>
-<h5 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h5>
-<ol>
-<li>算法和具体的语言是无关的。</li>
-<li>一定要确保在拆分算法流程时，拆分出来的所有行为都是常数时间的操作。这意味着你写算法时，对自己的用过的每一个系统api，都非常的熟悉。否则会影响你对时间复杂度的估算。比如Java的LinkedList的get(int index)方法是需要遍历所有节点的，时间复杂度是O(N)。</li>
-<li>递归的时间复杂度可以使用master公式进行估算。</li>
-</ol>
-<h4 id="时间复杂度的意义"><a class="markdownIt-Anchor" href="#时间复杂度的意义"></a> 时间复杂度的意义</h4>
-<p>  当我们要处理的样本量很大很大时，低阶项和每一项的系数对算法执行的时间的影响和高阶项相比，可以忽略。它是衡量算法流程的复杂程度的一种指标，该指标只与数据量有关，与过程之外的优化无关。<br />
-  同样时间复杂度的两个不同算法在具体运行的时候，时间也不一定一样。常数项和每一项的系数也是算法优化的一个方向。</p>
-<h4 id="额外空间复杂度"><a class="markdownIt-Anchor" href="#额外空间复杂度"></a> 额外空间复杂度</h4>
-<p>  在实现算法流程的过程中，需要开辟一些空间。作为输入参数的空间和作为输出结果的空间，不算额外空间。因为这些都是必要的、和现实目标有关的。除此之外，除此之外，算法流程中开辟的空间就是额外空间。如果你的流程只需要开辟有限几个变量，额外空间复杂度就是O(1)。</p>
-<p>  一般情况下，一个问题的最优解，在时间复杂度的指标上，一定要尽可能的低，先满足了时间复杂度最低这个指标之后，使用最少的空间的算法流程。一般最优解都是忽略掉常数项这个因素的，因为这个因素只决定了实现层次的优化和考虑，而和怎么解决整个问题的思想无关。</p>
-<h4 id="时间复杂度补充"><a class="markdownIt-Anchor" href="#时间复杂度补充"></a> 时间复杂度补充</h4>
-<p>  常见的时间复杂度，排名从好到差：</p>
-<ul>
-<li>O(1)</li>
-<li>O(logN)</li>
-<li>O(N)</li>
-<li>O(N * logN)</li>
-<li>O(N<sup>2</sup>)   O(N<sup>3</sup>)   …   O(N<sup>K</sup>)</li>
-<li>O(2<sup>N</sup>)   O(3<sup>N</sup>)   …   O(K<sup>N</sup>)</li>
-<li>O(N!)</li>
-</ul>
-<p>  在Stack Overflow上有一个对算法复杂度表示方法O的<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/487258/what-is-a-plain-english-explanation-of-big-o-notation">讨论</a>，有一些关于时间复杂度更详细的表述。</p>
-<p>  算法的时间复杂度有平均时间复杂度、均摊时间复杂度、最差时间复杂度、最好时间复杂度几种情况。平均时间复杂度是所有输入的可能性相同时，算法运行时间的平均值。比如快排，因为选择partition的位置是随机的，最差时间复杂度是O(N<sup>2</sup>)，但是快排的平均时间复杂度是O(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>l</mi><mi>o</mi><msub><mi>g</mi><mi>N</mi></msub></mrow><annotation encoding="application/x-tex">N \times log_N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)，认为最差的输入出现的概率很小。均摊时间复杂度是指算法中偶尔会出现一次比较昂贵的操作，比如O(N)，但是出现的频率比较小，均摊到所有操作上就是常数时间的操作，比如红黑树的平衡操作，不是每一次左旋、右旋以后都会执行平衡操作。<br />
-  攻击者可能会构造特殊的输入让算法出现最坏时间复杂度，比如hash洪水攻击。Java8以前的HashMap是使用链表解决hash碰撞问题，Java8在HashMap中加入了红黑树，红黑树可以极大地降低时间复杂度，使恶意输入的攻击成本上升。带密钥哈希算法是解决hash flooding attack的另一种方法，比如<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/SipHash">SipHash</a>、<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash</a>、<a target="_blank" rel="noopener" href="https://github.com/google/cityhash">CityHash</a>等。Google的<a target="_blank" rel="noopener" href="https://opensource.googleblog.com/2011/04/introducing-cityhash.html">CityHash</a>论文、</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/03/Hexo/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/03/Hexo/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">使用hexo搭建个人博客</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-03 17:53:55" itemprop="dateCreated datePublished" datetime="2023-04-03T17:53:55+08:00">2023-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-10 22:51:17" itemprop="dateModified" datetime="2023-04-10T22:51:17+08:00">2023-04-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hexo/" itemprop="url" rel="index"><span itemprop="name">Hexo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="初始化"><a class="markdownIt-Anchor" href="#初始化"></a> 初始化</h4>
-<p>  新建文件夹blog，在VSCode中打开blog，在命令行输入hexo init进行初始化，npm install安装依赖。用hexo-renderer-markdown-it-plus替换默认的markdown渲染引擎，避免emsp等渲染失败。</p>
-<h4 id="图床"><a class="markdownIt-Anchor" href="#图床"></a> 图床</h4>
-<p>  使用Nginx代理图片，将图片和md文件放在一起上传到git，做好目录管理。</p>
-<h4 id="博客和源文件的管理"><a class="markdownIt-Anchor" href="#博客和源文件的管理"></a> 博客和源文件的管理</h4>
-<p>  将hexo生成的public的文件夹上传到github，仓库名称为{username}.github.io，可以被github识别为博客网站。注意readme.md文件不能有#一级标题，否则访问github page不会展示index.html页面。<br />
-  将hexo的source文件夹下的源码上传到另一个github仓库。<br />
-  也可以使用同一个仓库的两个不同分支分别提交源文件和hexo生成的静态文件。<br />
-  可以考虑使用hexo-admin管理和发布文章。</p>
-<h4 id="hexo的配置"><a class="markdownIt-Anchor" href="#hexo的配置"></a> hexo的配置</h4>
-<p>  hexo自身的配置在_config.yml文件中，主题相关的配置在themes/next/_config.yml中。hexo支持categories、tags、搜索、社交等功能。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo <span class="keyword">new</span> page categories</span><br><span class="line">hexo <span class="keyword">new</span> page tags</span><br></pre></td></tr></table></figure>
-<p>  使用next主题，clone源码并在themes/next/_config.yml中更换next的样式。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd blog</span><br><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-<h4 id="部署到个人服务器"><a class="markdownIt-Anchor" href="#部署到个人服务器"></a> 部署到个人服务器</h4>
-<p>  clone仓库{username}.github.io，用Nginx代理访问。</p>
-<h4 id="管理多个ssh账号"><a class="markdownIt-Anchor" href="#管理多个ssh账号"></a> 管理多个ssh账号</h4>
-<p>  新建~/.ssh/config文件，按照ssh协议规定的格式记录相关账号信息。</p>
-<h4 id="页面搜索"><a class="markdownIt-Anchor" href="#页面搜索"></a> 页面搜索</h4>
-<p>// TODO</p>
-<h4 id="seo优化"><a class="markdownIt-Anchor" href="#seo优化"></a> SEO优化</h4>
-<p>// TODO</p>
-<h4 id="页面压缩"><a class="markdownIt-Anchor" href="#页面压缩"></a> 页面压缩</h4>
-<p>// TODO</p>
+<p>  给定一个N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> 2的二维数组matrix，可以代表N个积木依次掉落，返回每一次掉落之后的最大高度。</p>
+<h3 id="刷房子"><a class="markdownIt-Anchor" href="#刷房子"></a> 刷房子</h3>
+<p>  1-n有n个房子，随时可以将left-right的房子刷成56中颜色的一种，问粉刷几次后left-right有多少种颜色？<br />
+  long类型的二进制位表示56中颜色，左子树|右子树就是当前节点的颜色数量。</p>
 
       
     </div>
@@ -941,7 +1503,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1007,20 +1569,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">65</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

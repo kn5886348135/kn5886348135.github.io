@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Namespace 技术实际上修改了应用进程看待整个计算机“视图”，即它的“视线”被操作系统做了限制，只能“看到”某些指定的内容。但对于宿主机来说，这些被“隔离”了的进程跟其他进程并没有太大区别。   虚拟化技术必须由Hypervisor负责创建虚拟机，在应用对宿主机操作系统调用时，不可避免地要经过虚拟化软件的拦截和处理，增加了性能损耗，特别是计算资源、网络和磁盘I&#x2F;O。   基于Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程隔离">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/07/24/Linux/Progress/1%E3%80%81%E8%BF%9B%E7%A8%8B%E9%9A%94%E7%A6%BB/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="Namespace 技术实际上修改了应用进程看待整个计算机“视图”，即它的“视线”被操作系统做了限制，只能“看到”某些指定的内容。但对于宿主机来说，这些被“隔离”了的进程跟其他进程并没有太大区别。   虚拟化技术必须由Hypervisor负责创建虚拟机，在应用对宿主机操作系统调用时，不可避免地要经过虚拟化软件的拦截和处理，增加了性能损耗，特别是计算资源、网络和磁盘I&#x2F;O。   基于Linux">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-07-23T16:32:38.000Z">
+<meta property="article:modified_time" content="2023-07-23T16:36:33.796Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="Namespace">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/07/24/Linux/Progress/1%E3%80%81%E8%BF%9B%E7%A8%8B%E9%9A%94%E7%A6%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>进程隔离 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/07/24/Linux/Progress/1%E3%80%81%E8%BF%9B%E7%A8%8B%E9%9A%94%E7%A6%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          进程隔离
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-07-24 00:32:38 / Modified: 00:36:33" itemprop="dateCreated datePublished" datetime="2023-07-24T00:32:38+08:00">2023-07-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Progress/" itemprop="url" rel="index"><span itemprop="name">Progress</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  Namespace 技术实际上修改了应用进程看待整个计算机“视图”，即它的“视线”被操作系统做了限制，只能“看到”某些指定的内容。但对于宿主机来说，这些被“隔离”了的进程跟其他进程并没有太大区别。</p>
+<p>  虚拟化技术必须由Hypervisor负责创建虚拟机，在应用对宿主机操作系统调用时，不可避免地要经过虚拟化软件的拦截和处理，增加了性能损耗，特别是计算资源、网络和磁盘I/O。</p>
+<p>  基于Linux Namespace的隔离机制相比于虚拟化技术的优势是敏捷和高性能，缺点主要是隔离的不彻底。同一歌宿主机上的不同容器共用宿主机的操作系统内核，Linux内核中有很多资源和对象是不能被Namespace化的，比如时间。<br />
+  容器给应用暴露出来的攻击面是相当大的，应用&quot;越狱&quot;的难度也比虚拟机低得多。</p>
+<p>  在实践中可以使用Seccomp等技术对容器内部发起的所有系统调用进行过滤和甄别来进行安全加固，但是会降低容器的性能。</p>
+<p>  Linux Cgroups是Linux内核中用来为进程设置资源限制的一个重要功能，全称是Linux Control Group。他最主要的作用是限制一个进程能够使用的资源上限，包括CPU、内存、磁盘、网络带宽等。Cgroup还能够对进程进行优先级设置、审计，以及将进程挂起和恢复等操作。</p>
+<p>  在Linux中，Cgroups给用户暴露的操作接口是文件系统，以文件和目录的方式组织在操作系统的/sys/fs/cgroup路径下。</p>
+<p>  展示Cgroup</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -t cgroup</span><br></pre></td></tr></table></figure>
+<p>  限制进程的CPU逻辑，在长度为 cfs_period 的一段时间内，只能被分配到总量为 cfs_quota 的 CPU 时间。</p>
+<p>  跑满CPU的脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">while : ; do : ; done &amp;</span><br></pre></td></tr></table></figure>
+<p>  输出</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1] 226</span><br></pre></td></tr></table></figure>
+<p>  Cgroups 对资源的限制能力也有很多不完善的地方，被提及最多的自然是 /proc 文件系统的问题。</p>
+<p>  在容器里执行 top 指令，就会发现，它显示的信息居然是宿主机的 CPU 和内存数据，而不是当前容器的数据。因为/proc 文件系统不了解 Cgroups 限制的存在。</p>
+<p>  Mount Namespace</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define _GNU_SOURCE</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;sys/mount.h&gt;</span> </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;sys/types.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;sys/wait.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;sched.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;signal.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;unistd.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define STACK_SIZE (1024 * 1024)</span></span><br><span class="line">static char container_stack[STACK_SIZE];</span><br><span class="line">char* const container_args[] = &#123;</span><br><span class="line">  &quot;/bin/bash&quot;,</span><br><span class="line">  NULL</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">int container_main(void* arg)</span><br><span class="line">&#123;  </span><br><span class="line">  printf(&quot;Container - inside the container!\n&quot;);</span><br><span class="line">  // 如果你的机器的根目录的挂载类型是 shared，那必须先重新挂载根目录</span><br><span class="line">  // mount(&quot;&quot;, &quot;/&quot;, NULL, MS_PRIVATE, &quot;&quot;);</span><br><span class="line">  mount(&quot;none&quot;, &quot;/tmp&quot;, &quot;tmpfs&quot;, 0, &quot;&quot;);</span><br><span class="line">  execv(container_args[0], container_args);</span><br><span class="line">  printf(&quot;Something&#x27;s wrong!\n&quot;);</span><br><span class="line">  return 1;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  printf(&quot;Parent - start a container!\n&quot;);</span><br><span class="line">  int container_pid = clone(container_main, container_stack+STACK_SIZE, CLONE_NEWNS | SIGCHLD , NULL);</span><br><span class="line">  waitpid(container_pid, NULL, 0);</span><br><span class="line">  printf(&quot;Parent - container stopped!\n&quot;);</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  编译这段代码并执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -o ns ns.c</span><br><span class="line">./ns</span><br><span class="line">Parent - start a container!</span><br><span class="line">Container - inside the container!</span><br></pre></td></tr></table></figure>
+<p>  Mount Namespace对容器进程视图的改变，一定是伴随着挂载操作(mount)生效的。开启Mount Namespace后必须执行mount挂载命令才会生效。虚拟机的根目录可能是share方式挂载的，在容器中mount时也会继承share方式，这样就会把容器内挂载传播到宿主机。可以在挂在前执行mount(“”, “/”, NULL, MS_PRIVATE, “”)</p>
+<p>  chroot挂载根目录。<br />
+  创建测试目录。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $HOME/test</span><br><span class="line">mkdir -p $HOME/test/&#123;bin,lib64,lib&#125;</span><br><span class="line">cd $T</span><br></pre></td></tr></table></figure>
+<p>  把bash命令拷贝到测试目录下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp -v /bin/&#123;bash,ls&#125; $HOME/test/bin</span><br><span class="line">T=$HOME/test</span><br><span class="line">list=&quot;$(ldd /bin/ls | egrep -o &#x27;/lib.*\.[0-9]&#x27;)&quot;</span><br><span class="line">for i in $list; do cp -v &quot;$i&quot; &quot;$&#123;T&#125;$&#123;i&#125;&quot;; done</span><br></pre></td></tr></table></figure>
+<p>  将/bin/bash进程的根目录改为测试目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chroot $HOME/test /bin/bash</span><br></pre></td></tr></table></figure>
+<p>  Mount Namespace是基于对chroot的不断改良才被发明出来的，容器(docker)会在根目录下挂载一个完整的操作系统的文件系统。挂载在容器根目录上、用来为容器进程提供个礼后执行环境的文件系统，就是容器镜像，也叫rootfs(根文件系统)。</p>
+<p>  docker项目的核心原理</p>
+<ol>
+<li>启用Linux Namespace配置</li>
+<li>设置指定的Cgroups参数</li>
+<li>切换进程的根目录(优先使用pivot_root)</li>
+</ol>
+<p>  rootfs只是一个操作系统所包含的文件、配置和目录，并不包含操作系统内核。在Linux操作系统中，这两部分是分开存放的，操作系统只有在开机启动时才会加载指定版本的内核镜像。<br />
+如果应用程序需要配置内核参数、加载额外的内核模块，以及跟内核进行直接的交互，这些操作的对象都是宿主机操作系统的内核，对于宿主机上的所有容器都是一个“全局变量”。这是rootfs的主要缺陷之一，也造就了docker的一致性。</p>
+<p>  Union File System也叫UnionFS，可以将多个不同位置的目录联合挂在到同一个目录下。Docker引入层的概念，使用UnionFS实现镜像的增量修改。</p>
+<p>  容器镜像的增删改查只会作用在上面的容器层，相同的文件会覆盖下层，包括镜像层。copy-on-write。</p>
+<p>  查看当前正在运行的容器PID</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect --format &#x27;&#123;&#123; .State.Pid &#125;&#125;&#x27;  4ddf4638572d</span><br></pre></td></tr></table></figure>
+<p>  查看进程对应的Namespace</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -l  /proc/25686/ns</span><br></pre></td></tr></table></figure>
+<p>  docker exec通过加入到正在运行容器的Namespace实现进入容器的目的。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define _GNU_SOURCE</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;fcntl.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;sched.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;unistd.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;stdlib.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define errExit(msg) <span class="keyword">do</span> &#123; perror(msg); <span class="built_in">exit</span>(EXIT_FAILURE);&#125; <span class="keyword">while</span> (0)</span></span><br><span class="line"> </span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    int fd;</span><br><span class="line">    </span><br><span class="line">    fd = open(argv[1], O_RDONLY);</span><br><span class="line">    if (setns(fd, 0) == -1) &#123;</span><br><span class="line">        errExit(&quot;setns&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    execvp(argv[2], &amp;argv[2]); </span><br><span class="line">    errExit(&quot;execvp&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这段代码通过open()系统调用打开指定的Namespace文件(argv[1])，将文件描述符交给setns()使用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">gcc -o set_ns set_ns.c </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./set_ns /proc/25686/ns/net /bin/bash</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ifconfig</span></span><br><span class="line">eth0      Link encap:Ethernet  HWaddr 02:42:ac:11:00:02  </span><br><span class="line">          inet addr:172.17.0.2  Bcast:0.0.0.0  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:2/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:12 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:10 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">    collisions:0 txqueuelen:0 </span><br><span class="line">          RX bytes:976 (976.0 B)  TX bytes:796 (796.0 B)</span><br><span class="line"> </span><br><span class="line">lo        Link encap:Local Loopback  </span><br><span class="line">          inet addr:127.0.0.1  Mask:255.0.0.0</span><br><span class="line">          inet6 addr: ::1/128 Scope:Host</span><br><span class="line">          UP LOOPBACK RUNNING  MTU:65536  Metric:1</span><br><span class="line">          RX packets:0 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">   collisions:0 txqueuelen:1000 </span><br><span class="line">          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span><br></pre></td></tr></table></figure>
+<p>  ifconfig查看网络设备时，看到的是docker容器中的网卡。</p>
+<p>  Docker Volume允许将宿主机上指定的目录或者文件挂载到容器里面进行读取和修改操作。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Namespace/" rel="tag"># Namespace</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/24/Shell/3%E3%80%81awk/" rel="prev" title="sed">
+      <i class="fa fa-chevron-left"></i> sed
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/07/25/Architecture/COLA/1%E3%80%81COLA/" rel="next" title="COLA">
+      COLA <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

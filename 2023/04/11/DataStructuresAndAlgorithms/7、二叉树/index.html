@@ -28,7 +28,7 @@
 <meta property="og:description" content="二叉树是一种很基础的数据结构，二叉树仅要求左右节点和父节点。搜索二叉树要求左节点小于父节点、右节点大于父节点，有序表对搜索二叉树的要求更严格，避免搜索二叉树退化成链表。AVL要求左右子树的高度差不超过1，Size-balanced tree要求左右子树的节点个数相差不超过两倍，红黑树的限制更复杂，在调整平衡的时候需要考虑的场景更多。AVL Tree每次变更节点时都需要调整平衡，Size bal">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-11T09:46:23.000Z">
-<meta property="article:modified_time" content="2023-04-12T10:28:35.466Z">
+<meta property="article:modified_time" content="2023-04-24T14:39:09.156Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="binary tree">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-12 18:28:35" itemprop="dateModified" datetime="2023-04-12T18:28:35+08:00">2023-04-12</time>
+                <time title="Modified: 2023-04-24 22:39:09" itemprop="dateModified" datetime="2023-04-24T22:39:09+08:00">2023-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,7 +228,7 @@
   完全二叉树，只有叶子节点最右侧是空的。平衡二叉树，左右子树高度差不超过1</p>
 <h4 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h4>
 <p>  可以用递归和非递归方式实现二叉树的先序、中序、后序遍历。二叉树的递归序，每一个节点都会经过3次，先序、中序、后序都可以基于递归序实现，第一次到达一个节点就打印就是先序、第二次打印即中序、第三次即后序。<br />
-  利用Stack或者Queue实现系统的弹栈压栈操作，可以非递归方式实现二叉树的先序、中序、后序遍历。</p>
+  利用Stack或者Queue实现系统的弹栈压栈操作，可以非递归方式实现二叉树的先序、中序、后序遍历。也可以使用morris实现二叉树的先序、中序、后序遍历。</p>
 <ul>
 <li>先序：头、左、右</li>
 <li>中序：左、头、右</li>
@@ -309,7 +309,7 @@
 <p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是平衡二叉树。<br />
   判断二叉树是否是平衡二叉树，左子树的高度和右子树的高度相差不超过1，则称为平衡二叉树。</p>
 <h4 id="搜索二叉树-leetcode98"><a class="markdownIt-Anchor" href="#搜索二叉树-leetcode98"></a> 搜索二叉树 LeetCode98</h4>
-<p>  判断二叉树是否是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_search_tree">搜索二叉树</a>。用递归解决。</p>
+<p>  判断二叉树是否是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_search_tree">搜索二叉树</a>。用递归或者morris遍历解决。</p>
 <h4 id="路径总和-leetcode112"><a class="markdownIt-Anchor" href="#路径总和-leetcode112"></a> 路径总和 LeetCode112</h4>
 <ul>
 <li>递归计算路径和</li>
@@ -444,20 +444,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">65</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
