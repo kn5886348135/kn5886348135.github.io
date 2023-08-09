@@ -165,6 +165,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/" class="post-title-link" itemprop="url">segmenttree</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-18 19:59:07" itemprop="dateCreated datePublished" datetime="2023-04-18T19:59:07+08:00">2023-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-28 12:23:00" itemprop="dateModified" datetime="2023-04-28T12:23:00+08:00">2023-04-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/seg/">线段树</a>可以在 O(logN) 的时间复杂度内实现单点修改、区间修改、区间查询（区间求和，求区间最大值，求区间最小值）等操作。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Segment_tree">线段树</a>可以用递归实现，也可以将递归改成迭代方式。线段树的递归深度可控，可以用于工程实践。<br />
+  线段树适用于可以根据左右节点的信息加工，并且加工的时间复杂度O(1)，不需要知道左右子树的具体信息，解决区间查询、更新类的问题的场景。<br />
+  任意数组arr的长度为n，存在k，满足2<sup>k</sup> - 1 ≤ n  ≤ 2<sup>k+1</sup> - 1。则这个数组的所有元素可以填充在高度为k+1的满二叉树叶子节点上，并且满二叉树的最下面一层最右边填充n - 2<sup>k</sup> + 1个空节点。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/segmenttree.svg" alt="segment tree" /><br />
+  lazy数组，i节点task1任务的preLeft、preRight包含<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">i \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>或者<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i \times 2+1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span>节点的left、right，即preLeft ≤ left &amp;&amp; preRight ≥ right，则任务不再继续下发，否则任务下发。如果task2任务来到i节点并且i节点的task1任务没有下发，则先下发task1任务再执行task2。</p>
+<hr />
+<h3 id="线段树"><a class="markdownIt-Anchor" href="#线段树"></a> 线段树</h3>
+<p>  给定一个数组arr，实现如下三个方法，要求时间复杂度都是O(logN)</p>
+<ol>
+<li>void add(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都加上value</li>
+<li>void update(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都变成value</li>
+<li>int sum(int left, int right) :让返回arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]这个范围整体的累加和</li>
+</ol>
+<h3 id="积方块问题-leetcode699"><a class="markdownIt-Anchor" href="#积方块问题-leetcode699"></a> 积方块问题 LeetCode699</h3>
+<p>  简化版的俄罗斯方块游戏，X轴是积木最终下落到底的轴线</p>
+<ol>
+<li>只会下落正方形积木</li>
+<li>[a,b] -&gt; 代表一个边长为b的正方形积木，积木左边缘沿着X = a这条线从上方掉落</li>
+<li>认为整个X轴都可能接住积木，也就是说简化版游戏是没有整体的左右边界的</li>
+<li>没有整体的左右边界，所以简化版游戏不会消除积木，因为不会有哪一层被填满。</li>
+</ol>
+<p>  给定一个N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> 2的二维数组matrix，可以代表N个积木依次掉落，返回每一次掉落之后的最大高度。</p>
+<h3 id="刷房子"><a class="markdownIt-Anchor" href="#刷房子"></a> 刷房子</h3>
+<p>  1-n有n个房子，随时可以将left-right的房子刷成56中颜色的一种，问粉刷几次后left-right有多少种颜色？<br />
+  long类型的二进制位表示56中颜色，左子树|右子树就是当前节点的颜色数量。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/20%E3%80%81morris/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1194,133 +1292,6 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/" class="post-title-link" itemprop="url">图</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-04-13 22:11:32 / Modified: 22:35:13" itemprop="dateCreated datePublished" datetime="2023-04-13T22:11:32+08:00">2023-04-13</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="图的概念"><a class="markdownIt-Anchor" href="#图的概念"></a> 图的概念</h4>
-<ul>
-<li>由点的集合和边的集合构成</li>
-<li>虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达</li>
-<li>边上可能带有权值</li>
-</ul>
-<p>  图的表示方法邻接表法、邻接矩阵法等。题目会以各种方式给出图的表达方式，可以将它转化为一种熟悉的表达方式，方便操作。可以将图表示为节点和边的集合，例如Graph。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Graph</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> Map&lt;Integer, Node&gt; nodes;</span><br><span class="line">    <span class="keyword">public</span> Set&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Graph</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.nodes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="built_in">this</span>.edges = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="comment">// 节点值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> value;</span><br><span class="line">    <span class="comment">// 入度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> in;</span><br><span class="line">    <span class="comment">// 出度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> out;</span><br><span class="line">    <span class="comment">// 相邻节点</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Node&gt; nexts;</span><br><span class="line">    <span class="comment">// 节点的边</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.value = value;</span><br><span class="line">        in = <span class="number">0</span>;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">        nexts = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        edges = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="comment">// 边的权重</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> weight;</span><br><span class="line">    <span class="comment">// 边的起始节点</span></span><br><span class="line">    <span class="keyword">public</span> Node from;</span><br><span class="line">    <span class="comment">// 边的结束节点</span></span><br><span class="line">    <span class="keyword">public</span> Node to;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Edge</span><span class="params">(<span class="type">int</span> weight, Node from, Node to)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.weight = weight;</span><br><span class="line">        <span class="built_in">this</span>.from = from;</span><br><span class="line">        <span class="built_in">this</span>.to = to;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="宽度优先遍历"><a class="markdownIt-Anchor" href="#宽度优先遍历"></a> 宽度优先遍历</h4>
-<ul>
-<li>利用队列实现(也可以使用栈实现)</li>
-<li>从源节点开始依次按照宽度进队列，然后弹出</li>
-<li>每弹出一个点，把该节点所有没有进过队列的邻接点放入队列</li>
-<li>直到队列变空</li>
-</ul>
-<h4 id="深度优先遍历"><a class="markdownIt-Anchor" href="#深度优先遍历"></a> 深度优先遍历</h4>
-<ul>
-<li>利用栈实现(也可以用队列实现)</li>
-<li>从源节点开始把节点按照深度放入栈，然后弹出</li>
-<li>每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</li>
-<li>直到栈变空</li>
-</ul>
-<h4 id="拓扑排序"><a class="markdownIt-Anchor" href="#拓扑排序"></a> 拓扑排序</h4>
-<p>  拓扑排序要求有向无环图，拓扑排序结果不唯一，可以用宽度优先遍历和深度优先遍历实现。应用场景有事件安排、编译顺序等</p>
-<ul>
-<li>在图中找到所有入度为0的点输出</li>
-<li>把所有入度为0的点在图中删掉，继续找入度为0的点输出，周而复始</li>
-<li>图的所有点都被删除后，依次输出的顺序就是拓扑排序</li>
-</ul>
-<h4 id="最小生成树无向图"><a class="markdownIt-Anchor" href="#最小生成树无向图"></a> 最小生成树(无向图)</h4>
-<p>  <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91">最小生成树</a>要求无向图，可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Kruskal</a>和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Prim</a>算法实现，Kruskal和Prim都是贪心算法。</p>
-<h4 id="kruskal算法使用并查集"><a class="markdownIt-Anchor" href="#kruskal算法使用并查集"></a> Kruskal算法使用并查集</h4>
-<ul>
-<li>总是从权值最小的边开始考虑，依次考察权值依次变大的边</li>
-<li>当前的边要么进入最小生成树的集合，要么丢弃</li>
-<li>如果当前的边进入最小生成树的集合中不会形成环，就要当前边</li>
-<li>如果当前的边进入最小生成树的集合中会形成环，就不要当前边</li>
-<li>考察完所有边之后，最小生成树的集合也得到了</li>
-</ul>
-<h4 id="prim算法"><a class="markdownIt-Anchor" href="#prim算法"></a> Prim算法</h4>
-<ol>
-<li>可以从任意节点出发来寻找最小生成树</li>
-<li>某个点加入到被选取的点中后，解锁这个点出发的所有新的边</li>
-<li>在所有解锁的边中选最小的边，然后看看这个边会不会形成环</li>
-<li>如果会，不要当前边，继续考察剩下解锁的边中最小的边，重复3</li>
-<li>如果不会，要当前边，将该边的指向点加入到被选取的点中，重复2</li>
-<li>当所有点都被选取，最小生成树就得到了</li>
-</ol>
-<h4 id="最短路径算法"><a class="markdownIt-Anchor" href="#最短路径算法"></a> 最短路径算法</h4>
-<p>  可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra</a>算法实现最短路径。</p>
-<h4 id="迪瑞克斯拉算法有向-无负权重-可以有环"><a class="markdownIt-Anchor" href="#迪瑞克斯拉算法有向-无负权重-可以有环"></a> 迪瑞克斯拉算法(有向、无负权重、可以有环)</h4>
-<ol>
-<li>Dijkstra算法必须指定一个源点</li>
-<li>生成一个源点到各个点的最小距离表，一开始只有一条记录，即原点到自己的最小距离为0，源点到其他所有点的最小距离都为正无穷大</li>
-<li>从距离表中拿出没拿过记录里的最小记录，通过这个点发出的边，更新源点到各个点的最小距离表，不断重复这一步</li>
-<li>源点到所有的点记录如果都被拿过一遍，过程停止，最小距离表得到了</li>
-</ol>
-<h4 id="dijkstral算法优化"><a class="markdownIt-Anchor" href="#dijkstral算法优化"></a> Dijkstral算法优化</h4>
-<p>  利用加强堆<br />
-  某个节点最短距离改变时做动态调整</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1390,7 +1361,7 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1403,7 +1374,7 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">67</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

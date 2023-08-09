@@ -165,6 +165,63 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/31%E3%80%81Huffman%20Coding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/31%E3%80%81Huffman%20Coding/" class="post-title-link" itemprop="url">Huffman Coding</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-06-03 01:45:56" itemprop="dateCreated datePublished" datetime="2023-06-03T01:45:56+08:00">2023-06-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/29%E3%80%81Suffix%20array/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1502,84 +1559,6 @@ c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/" class="post-title-link" itemprop="url">Linux服务器安全</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-05-07 15:43:34 / Modified: 16:23:03" itemprop="dateCreated datePublished" datetime="2023-05-07T15:43:34+08:00">2023-05-07</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  安全涉及各个层面，防护策略也不尽相同。安全防护只是提高攻击成本，并不能绝对保证安全。常见的Linux服务器安全防护措施可以屏蔽绝大多数扫描，但并不能抵御有针对性的攻击。可以参考<a target="_blank" rel="noopener" href="https://downloads.cisecurity.org/#/">CIS安全基线</a>、<a target="_blank" rel="noopener" href="https://cve.mitre.org/">CVE</a>、<a target="_blank" rel="noopener" href="https://owasp.org/">OWASP</a>等。Google搜索Linux server hardening 、security baseline</p>
-<h3 id="ssh"><a class="markdownIt-Anchor" href="#ssh"></a> ssh</h3>
-<p>  修改默认的22端口，使用密钥登录，禁止root远程登录。</p>
-<h3 id="黑白名单"><a class="markdownIt-Anchor" href="#黑白名单"></a> 黑白名单</h3>
-<p>  避免使用8080、3306等各种常见的默认端口，仅开放特定的端口暴露服务。将特定IP拉黑，比如国外IP，经常访问失败的IP等。</p>
-<h3 id="fail2ban"><a class="markdownIt-Anchor" href="#fail2ban"></a> fail2ban</h3>
-<p>  <a target="_blank" rel="noopener" href="https://www.fail2ban.org/wiki/index.php/Main_Page">fail2ban</a>通过扫描日志并禁用有恶意访问记录的IP，比如太多的密码错误、寻找漏洞等。<a target="_blank" rel="noopener" href="https://github.com/fail2ban/fail2ban">fail2ban的github地址</a>。</p>
-<h3 id="容器化"><a class="markdownIt-Anchor" href="#容器化"></a> 容器化</h3>
-<p>  容器化比如docker，可以将服务隔离，将攻击范围限制在当前容器中，而不是整个服务器。</p>
-<h3 id="cloudflare-tunnel"><a class="markdownIt-Anchor" href="#cloudflare-tunnel"></a> Cloudflare Tunnel</h3>
-<p>  <a target="_blank" rel="noopener" href="https://www.cloudflare-cn.com/products/tunnel/">Cloudflare Tunnel</a>是一个内网穿透工具，可以暴露服务，但网络不稳定，不支持HTTP3/QUIC/UDP，需要托管域名。<a target="_blank" rel="noopener" href="https://github.com/cloudflare/cloudflared">github仓库</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1649,7 +1628,7 @@ c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1662,7 +1641,7 @@ c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数�
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">67</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

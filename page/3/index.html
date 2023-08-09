@@ -165,6 +165,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/07/Linux/Security/1%E3%80%81Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%89%E5%85%A8/" class="post-title-link" itemprop="url">Linux服务器安全</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-07 15:43:34 / Modified: 16:23:03" itemprop="dateCreated datePublished" datetime="2023-05-07T15:43:34+08:00">2023-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  安全涉及各个层面，防护策略也不尽相同。安全防护只是提高攻击成本，并不能绝对保证安全。常见的Linux服务器安全防护措施可以屏蔽绝大多数扫描，但并不能抵御有针对性的攻击。可以参考<a target="_blank" rel="noopener" href="https://downloads.cisecurity.org/#/">CIS安全基线</a>、<a target="_blank" rel="noopener" href="https://cve.mitre.org/">CVE</a>、<a target="_blank" rel="noopener" href="https://owasp.org/">OWASP</a>等。Google搜索Linux server hardening 、security baseline</p>
+<h3 id="ssh"><a class="markdownIt-Anchor" href="#ssh"></a> ssh</h3>
+<p>  修改默认的22端口，使用密钥登录，禁止root远程登录。</p>
+<h3 id="黑白名单"><a class="markdownIt-Anchor" href="#黑白名单"></a> 黑白名单</h3>
+<p>  避免使用8080、3306等各种常见的默认端口，仅开放特定的端口暴露服务。将特定IP拉黑，比如国外IP，经常访问失败的IP等。</p>
+<h3 id="fail2ban"><a class="markdownIt-Anchor" href="#fail2ban"></a> fail2ban</h3>
+<p>  <a target="_blank" rel="noopener" href="https://www.fail2ban.org/wiki/index.php/Main_Page">fail2ban</a>通过扫描日志并禁用有恶意访问记录的IP，比如太多的密码错误、寻找漏洞等。<a target="_blank" rel="noopener" href="https://github.com/fail2ban/fail2ban">fail2ban的github地址</a>。</p>
+<h3 id="容器化"><a class="markdownIt-Anchor" href="#容器化"></a> 容器化</h3>
+<p>  容器化比如docker，可以将服务隔离，将攻击范围限制在当前容器中，而不是整个服务器。</p>
+<h3 id="cloudflare-tunnel"><a class="markdownIt-Anchor" href="#cloudflare-tunnel"></a> Cloudflare Tunnel</h3>
+<p>  <a target="_blank" rel="noopener" href="https://www.cloudflare-cn.com/products/tunnel/">Cloudflare Tunnel</a>是一个内网穿透工具，可以暴露服务，但网络不稳定，不支持HTTP3/QUIC/UDP，需要托管域名。<a target="_blank" rel="noopener" href="https://github.com/cloudflare/cloudflared">github仓库</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/05/06/Nginx/1%E3%80%81%E9%81%BF%E5%85%8D10%E5%A4%A7nginx%E9%85%8D%E7%BD%AE%E9%94%99%E8%AF%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -426,7 +504,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-06-01 00:54:35" itemprop="dateModified" datetime="2023-06-01T00:54:35+08:00">2023-06-01</time>
+                <time title="Modified: 2023-07-25 20:03:30" itemprop="dateModified" datetime="2023-07-25T20:03:30+08:00">2023-07-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -449,35 +527,72 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/ac-automaton/">AC 自动机</a>(Aho–Corasick算法)是 以 Trie 的结构为基础，结合 KMP 的思想 建立的自动机，用于解决多模式匹配等任务。</p>
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/ac-automaton/">AC 自动机</a>(Aho–Corasick算法)是 以 Trie 的结构为基础，结合 KMP 的思想 建立的自动机，用于解决多模式匹配等任务。它是基于前缀搜索，使用了确定有限自动机原理的，字符串多模匹配算法。<br />
+  确定有限自动机 (Deterministic Finite Automaton, DFA)，自动机(Automaton)是一个代码块,只做一件事——接收输入值，和状态值，输出同为状态值的结果。有限(Finite)是指自动机接收、输入的状态种类是有限的。否则就是英菲尼迪(Infinite)。确定(Deterministic )是指自动机的输出状态是单一的一个状态，否则就是NFA。</p>
 <h4 id="ac自动机算法核心"><a class="markdownIt-Anchor" href="#ac自动机算法核心"></a> AC自动机算法核心</h4>
 <ol>
-<li>把所有匹配串生成一棵前缀树</li>
+<li>把所有模式串生成一棵前缀树</li>
 <li>前缀树节点增加fail指针</li>
-<li>fail指针的含义：如果必须以当前字符结尾，当前形成的路径是str，剩下哪一个字符串的前缀和str的后缀，拥有最大的匹配长度。fail指针就指向那个字符串的最后一个字符所对应的节点。</li>
+<li>fail指针的含义：如果必须以当前字符char1结尾，以char1结尾的字符串str1，fail的子节点为char2，以char2结尾的字符串str2, 则str2是str1的后缀，fail保证str2的长度是最长的。</li>
 </ol>
 <h4 id="fail指针的定义"><a class="markdownIt-Anchor" href="#fail指针的定义"></a> fail指针的定义</h4>
 <ol>
 <li>trieTree的每一个节点都有一个fail指针，头结点的fail指向null，trieTree第二层节点的fail全部指向头结点。(宽度优先)</li>
 <li>取其余任意一个节点X，X的父节点为Y，Y节点fail指针指向的节点Z，Y到X的路径为path
 <ul>
-<li>如果Z或者Z的fail递归指向的节点到P的路径包含path，则X的fail指向P</li>
-<li>否则X的fail指向头结点</li>
-<li>宽度优先搜索</li>
+<li>如果Z到Z的子节点P的路径包含path，则X的fail指向Z</li>
+<li>如果Z到Z的子节点P的路径不包含path，fail指针递归指向Z的fail指针，递归终止条件为fail到子节点的路径包含path或者fail为空</li>
 </ul>
 </li>
 </ol>
-<p>fail指针的实质是匹配失败后的下一个选择的节点<br />
-证明<br />
-1、x的fail指向y<br />
-2、fail指针保证以x结尾的后缀字符串和以y开头的前缀字符串最长<br />
-demo<br />
-text    abcdex<br />
-敏感词   abcdef、cdey、ex<br />
-1、匹配abcdef时，f匹配失败，fail指向cdey的e节点，淘汰ab<br />
-2、匹配cdey时，y匹配失败，fail指向ex的e节点，淘汰cd</p>
-<p>{abd,abdk, abchijn, chnit, ijabdf, ijaij}<br />
+<p>  fail指针的实质是快速找到匹配失败后的下一个选择的节点，减少匹配过程中的回溯。</p>
+<h3 id="证明"><a class="markdownIt-Anchor" href="#证明"></a> 证明</h3>
+<p>  当前考虑的节点为任意节点P，根据trie树和fail指针的规则可以得到结论</p>
+<ol>
+<li>某个节点的所有子节点都是不同的</li>
+<li>任意节点的父节点都有fail指针</li>
+<li>p的父节点p1、p2、p3、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">p_k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{n-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">p_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，并且p1、p2、p3、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">p_k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>的fail全部指向头结点，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{n-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">p_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>是从头结点开始的trie的路径，0 ≤ k ≤ n。</li>
+</ol>
+<p>  假设有另外一条路径anotherPath是以P结尾的后缀并且更长，则</p>
+<ol>
+<li>anotherPath不是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{n-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">p_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>这些节点构成，则说明trie树的某个子节点存在重复</li>
+<li>anotherPath和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{k+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">p_{n-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">p_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>这些节点重合，则不会更长。</li>
+</ol>
+<h3 id="示例"><a class="markdownIt-Anchor" href="#示例"></a> 示例</h3>
+<p>  模式串abcdex，匹配串abcdef、cdey、ex</p>
+<ol>
+<li>匹配abcdef时，f匹配失败，fail指向cdey的e节点，淘汰ab</li>
+<li>匹配cdey时，y匹配失败，fail指向ex的e节点，淘汰cd</li>
+</ol>
+<p>  给定敏感词样本{abd,abdk, abchijn, chnit, ijabdf, ijaij}，则它的fail指针为<br />
 <img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/AC-automaton-fail.png" alt="AC自动机" /></p>
+<h3 id="单模式串匹配问题"><a class="markdownIt-Anchor" href="#单模式串匹配问题"></a> 单模式串匹配问题</h3>
+<p>  单模式匹配问题（Single Pattern Matching）：给定一个文本串str，再给定一个特定模式串match。要求从文本串str找出特定模式串match的所有出现位置。</p>
+<p>  根据在文本中搜索模式串方式的不同，可以将单模式匹配算法分为</p>
+<ol>
+<li>
+<p>基于前缀搜索方法：在搜索窗口内从前向后（沿着文本的正向）逐个读入文本字符，搜索窗口中文本和模式串的最长公共前缀。例如著名的 Knuth-Morris-Pratt (KMP) 算法和更快的 Shift-Or 算法。</p>
+</li>
+<li>
+<p>基于后缀搜索方法：在搜索窗口内从后向前（沿着文本的反向）逐个读入文本字符，搜索窗口中文本和模式串的最长公共后缀。使用这种搜索算法可以跳过一些文本字符，从而具有亚线性的平均时间复杂度。例如最著名的 Boyer-Moore 算法，以及 Horspool 算法、Sunday (Boyer-Moore 算法的简化) 算法。</p>
+</li>
+<li>
+<p>基于子串搜索方法：在搜索窗口内从后向前（沿着文本的反向）逐个读入文本字符，搜索满足既是窗口中文本的后缀，也是模式串的子串的最长字符串。与后缀搜索方法一样，使用这种搜索方法也具有亚线性的平均时间复杂度。这种方法的主要缺点在于需要识别模式串的所有子串，这是一个非常复杂的问题。比如Rabin-Karp 算法、Backward Dawg Matching (BDM) 算法、Backward Nondeterministtic Dawg Matching (BNDM) 算法和 Backward Oracle Matching (BOM) 算法。其中，Rabin-Karp 算法使用了基于散列的子串搜索算法。</p>
+</li>
+</ol>
+<h3 id="多模式串匹配问题"><a class="markdownIt-Anchor" href="#多模式串匹配问题"></a> 多模式串匹配问题</h3>
+<p>  多模式匹配问题（Multi Pattern Matching）：给定一个文本串text，再给定一组模式串集合P，其中每个模式串是定义在有限字母表上的字符串。要求从文本串text中找到模式串集合P中所有模式串的所有出现位置。<br />
+  模式串集合P中的一些字符串可能是集合中其他字符串的子串、前缀、后缀，或者完全相等。解决多模式串匹配问题最简单的方法是利用单模式串匹配算法搜索 r 遍。这将导致预处理阶段的最坏时间复杂度为O(| P|)，搜索阶段的最坏时间复杂度为O(r $ \times $ n)<br />
+。</p>
+<p>  根据在文本中搜索模式串方式的不同，可以将多模式串匹配算法分为</p>
+<ol>
+<li>基于前缀搜索方法：搜索从前向后（沿着文本的正向）进行，逐个读入文本字符，使用在P上构建的自动机进行识别。对于每个文本位置，计算既是已读入文本的后缀，同时也是中某个模式串的前缀的最长字符串。例如著名的 Aho-Corasick Automaton (AC 自动机) 算法、Multiple Shift-And 算法。</li>
+<li>基于后缀搜索方法：搜索从后向前（沿着文本的反向）进行，搜索模式串的后缀。根据后缀的下一次出现位置来移动当前文本位置。这种方法可以避免读入所有的文本字符。例如<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Commentz-Walter_algorithm">Commentz-Walter</a> 算法（Boyer-Moore 算法的扩展算法）、Set Horspool 算法（Commentz-Walter 算法的简化算法）、Wu-Manber 算法。</li>
+<li>基于子串搜索方法：搜索从后向前（沿着文本的反向）进行，在模式串的长度为min(len(p<sup>i</sup>))的前缀中搜索子串，以此决定当前文本位置的移动。这种方法也可以避免读入所有的文本字符。例如Multiple BNDM 算法、Set Backward Dawg Matching (SBDM) 算法、Set Backwrad Oracle Matching (SBOM) 算法。</li>
+</ol>
+<p>  多模式串匹配算法大多使用了一种基本的数据结构：字典树（Trie Tree）。著名的Aho-Corasick Automaton (AC 自动机) 算法就是在 KMP 算法的基础上，与字典树结构相结合而诞生的。而AC 自动机算法也是多模式串匹配算法中最有效的算法之一。</p>
+<h3 id="双数组trie树"><a class="markdownIt-Anchor" href="#双数组trie树"></a> 双数组trie树</h3>
+<p>  双数组trie树(Double-Array Trie)是一种空间复杂度较低，应用于字符区间比较大的语言(中文、日文等)分词的算法。</p>
 
       
     </div>
@@ -627,7 +742,7 @@ text    abcdex<br />
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-28 14:53:44" itemprop="dateModified" datetime="2023-04-28T14:53:44+08:00">2023-04-28</time>
+                <time title="Modified: 2023-07-26 01:48:21" itemprop="dateModified" datetime="2023-07-26T01:48:21+08:00">2023-07-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -675,6 +790,31 @@ text    abcdex<br />
   树状数组c总是能将数组arr的前缀[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> n]拆分成不多于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil logN \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">⌈</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">⌉</span></span></span></span>(向上取整)个已知的区间段，各个区间段的长度为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">2^k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.849108em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span>(二进制的最低位为第0位，k是n的二进制每一个1的二进制位数)。arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]的区间信息查询可以转化为arr[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> left-1]和arr[1 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]的前缀区间结果差分。<br />
 <img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/indextree.png" alt="树状数组工作原理" /></p>
 <h4 id="树状数组与其树形态的性质"><a class="markdownIt-Anchor" href="#树状数组与其树形态的性质"></a> 树状数组与其树形态的性质</h4>
+<p>  约定</p>
+<ol>
+<li>l(x) = x - lowbit(x) + 1。即l(x) 是 c[x] 管辖范围的左端点。</li>
+<li>对于任意正整数 x，总能将 x 表示成 $ s  \times  2^{k + 1} $ + 2<sup>k</sup> 的形式，其中lowbit(x) = 2<sup>k</sup>。</li>
+<li>c[x] 和 c[y] 不交指 c[x] 的管辖范围和 c[y] 的管辖范围不相交，即 [l(x), x] 和 [l(y), y] 不相交。c[x] 包含于 c[y]等表述同理。</li>
+</ol>
+<p>  则有树状数组的性质</p>
+<h4 id="1-对于-x-y要么有-cx-和-cy-不交要么有-cx-包含于-cy"><a class="markdownIt-Anchor" href="#1-对于-x-y要么有-cx-和-cy-不交要么有-cx-包含于-cy"></a> 1. 对于 x ≤ y，要么有 c[x] 和 c[y] 不交，要么有 c[x] 包含于 c[y]</h4>
+<pre><code>证明：假设 c[x] 和 c[y] 相交，即 [l(x), x] 和 [l(y), y] 相交，则一定有 l(y) &amp;le; x &amp;le; y。
+</code></pre>
+<p>将 y 表示为 s \times 2^{k +1} + 2^k，则 l(y) = s \times 2^{k + 1} + 1。所以，x 可以表示为 s \times 2^{k +1} + b，其中 1 \le b \le 2^k。<br />
+不难发现 \operatorname{lowbit}(x) = \operatorname{lowbit}(b)。又因为 b - \operatorname{lowbit}(b) \ge 0，<br />
+所以 l(x) = x - \operatorname{lowbit}(x) + 1 = s \times 2^{k +1} + b - \operatorname{lowbit}(b) +1 \ge s \times 2^{k +1} + 1 = l(y)，即 l(y) \le l(x) \le x \le y。<br />
+所以，如果 c[x] 和 c[y] 相交，那么 c[x] 的管辖范围一定完全包含于 c[y]。</p>
+<h4 id="2-在-boldsymbolcx-真包含于-boldsymbolcx-operatornamelowbitx"><a class="markdownIt-Anchor" href="#2-在-boldsymbolcx-真包含于-boldsymbolcx-operatornamelowbitx"></a> 2. 在 \boldsymbol{c[x]} 真包含于 \boldsymbol{c[x + \operatorname{lowbit}(x)]}</h4>
+<pre><code>证明：设 y = x + \operatorname&#123;lowbit&#125;(x)，x = s \times 2^&#123;k + 1&#125; + 2^k，则 y = (s + 1) \times 2^&#123;k +1&#125;，l(x) = s \times 2^&#123;k + 1&#125; + 1。
+</code></pre>
+<p>不难发现 \operatorname{lowbit}(y) \ge 2^{k + 1}，所以 l(y) = (s + 1) \times 2^{k + 1} - \operatorname{lowbit}(y) + 1 \le s \times 2^{k +1} + 1= l(x)，即 l(y) \le l(x) \le x &lt; y。<br />
+所以，c[x] 真包含于 c[x + \operatorname{lowbit}(x)]。</p>
+<h4 id="3-对于任意-boldsymbolx-y-x-operatornamelowbitx有-boldsymbolcx-和-boldsymbolcy-不交"><a class="markdownIt-Anchor" href="#3-对于任意-boldsymbolx-y-x-operatornamelowbitx有-boldsymbolcx-和-boldsymbolcy-不交"></a> 3. 对于任意 \boldsymbol{x &lt; y &lt; x + \operatorname{lowbit}(x)}，有 \boldsymbol{c[x]} 和 \boldsymbol{c[y]} 不交</h4>
+<pre><code>证明：设 x = s \times 2^&#123;k + 1&#125; + 2^k，则 y = x + b = s \times 2^&#123;k + 1&#125; + 2^k + b，其中 1 \le b &lt; 2^k。
+</code></pre>
+<p>不难发现 \operatorname{lowbit}(y) = \operatorname{lowbit}(b)。又因为 b - \operatorname{lowbit}(b) \ge 0，<br />
+因此 l(y) = y - \operatorname{lowbit}(y) + 1 = x + b - \operatorname{lowbit}(b) + 1 &gt; x，即 l(x) \le x &lt; l(y) \le y。<br />
+所以，c[x] 和 c[y] 不交。</p>
 <h4 id="建树"><a class="markdownIt-Anchor" href="#建树"></a> 建树</h4>
 <h4 id="二维树状数组"><a class="markdownIt-Anchor" href="#二维树状数组"></a> 二维树状数组</h4>
 
@@ -1402,104 +1542,6 @@ Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/" class="post-title-link" itemprop="url">segmenttree</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-18 19:59:07" itemprop="dateCreated datePublished" datetime="2023-04-18T19:59:07+08:00">2023-04-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-28 12:23:00" itemprop="dateModified" datetime="2023-04-28T12:23:00+08:00">2023-04-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/seg/">线段树</a>可以在 O(logN) 的时间复杂度内实现单点修改、区间修改、区间查询（区间求和，求区间最大值，求区间最小值）等操作。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Segment_tree">线段树</a>可以用递归实现，也可以将递归改成迭代方式。线段树的递归深度可控，可以用于工程实践。<br />
-  线段树适用于可以根据左右节点的信息加工，并且加工的时间复杂度O(1)，不需要知道左右子树的具体信息，解决区间查询、更新类的问题的场景。<br />
-  任意数组arr的长度为n，存在k，满足2<sup>k</sup> - 1 ≤ n  ≤ 2<sup>k+1</sup> - 1。则这个数组的所有元素可以填充在高度为k+1的满二叉树叶子节点上，并且满二叉树的最下面一层最右边填充n - 2<sup>k</sup> + 1个空节点。<br />
-<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/segmenttree.svg" alt="segment tree" /><br />
-  lazy数组，i节点task1任务的preLeft、preRight包含<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">i \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>或者<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i \times 2+1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span>节点的left、right，即preLeft ≤ left &amp;&amp; preRight ≥ right，则任务不再继续下发，否则任务下发。如果task2任务来到i节点并且i节点的task1任务没有下发，则先下发task1任务再执行task2。</p>
-<hr />
-<h3 id="线段树"><a class="markdownIt-Anchor" href="#线段树"></a> 线段树</h3>
-<p>  给定一个数组arr，实现如下三个方法，要求时间复杂度都是O(logN)</p>
-<ol>
-<li>void add(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都加上value</li>
-<li>void update(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都变成value</li>
-<li>int sum(int left, int right) :让返回arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]这个范围整体的累加和</li>
-</ol>
-<h3 id="积方块问题-leetcode699"><a class="markdownIt-Anchor" href="#积方块问题-leetcode699"></a> 积方块问题 LeetCode699</h3>
-<p>  简化版的俄罗斯方块游戏，X轴是积木最终下落到底的轴线</p>
-<ol>
-<li>只会下落正方形积木</li>
-<li>[a,b] -&gt; 代表一个边长为b的正方形积木，积木左边缘沿着X = a这条线从上方掉落</li>
-<li>认为整个X轴都可能接住积木，也就是说简化版游戏是没有整体的左右边界的</li>
-<li>没有整体的左右边界，所以简化版游戏不会消除积木，因为不会有哪一层被填满。</li>
-</ol>
-<p>  给定一个N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> 2的二维数组matrix，可以代表N个积木依次掉落，返回每一次掉落之后的最大高度。</p>
-<h3 id="刷房子"><a class="markdownIt-Anchor" href="#刷房子"></a> 刷房子</h3>
-<p>  1-n有n个房子，随时可以将left-right的房子刷成56中颜色的一种，问粉刷几次后left-right有多少种颜色？<br />
-  long类型的二进制位表示56中颜色，左子树|右子树就是当前节点的颜色数量。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1569,7 +1611,7 @@ Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1582,7 +1624,7 @@ Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库�
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">67</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
