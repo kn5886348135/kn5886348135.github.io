@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="mask-icon" href="https://www.goodserendipity.com/asserts/favicon.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Red-Black Tree红黑树是一种自平衡的二叉搜索树。每个节点额外存储了一个 color 字段 (“RED” or “BLACK”)，用于确保树在插入和删除时保持平衡。红黑树的可视化，喵的算法课-红黑树。  红黑树的历史  1972 年，Rudolf Bayer 提出了 symmetric binary B-tree，这是B 树的 4 阶情形，也就是 2-3-4树（或称为 2-4 树）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Red-Black Tree">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/30%E3%80%81Red-Black%20Tree/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="Red-Black Tree红黑树是一种自平衡的二叉搜索树。每个节点额外存储了一个 color 字段 (“RED” or “BLACK”)，用于确保树在插入和删除时保持平衡。红黑树的可视化，喵的算法课-红黑树。  红黑树的历史  1972 年，Rudolf Bayer 提出了 symmetric binary B-tree，这是B 树的 4 阶情形，也就是 2-3-4树（或称为 2-4 树）。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/red-black%20tree%20insert.png">
+<meta property="og:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/rbtree%20delete1.png">
+<meta property="og:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/rbtree%20delete2.png">
+<meta property="article:published_time" content="2023-08-01T06:34:17.000Z">
+<meta property="article:modified_time" content="2023-08-09T15:00:03.082Z">
+<meta property="article:author" content="Louis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/red-black%20tree%20insert.png">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/30%E3%80%81Red-Black%20Tree/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Red-Black Tree | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/30%E3%80%81Red-Black%20Tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Red-Black Tree
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-08-01 14:34:17" itemprop="dateCreated datePublished" datetime="2023-08-01T14:34:17+08:00">2023-08-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-09 23:00:03" itemprop="dateModified" datetime="2023-08-09T23:00:03+08:00">2023-08-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-Black Tree</a>红黑树是一种自平衡的二叉搜索树。每个节点额外存储了一个 color 字段 (“RED” or “BLACK”)，用于确保树在插入和删除时保持平衡。<a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/RedBlack.html">红黑树的可视化</a>，<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1BB4y1X7u3/?spm_id_from=333.788&amp;vd_source=219182b04373881442d7f47ca556521b">喵的算法课-红黑树</a>。</p>
+<h3 id="红黑树的历史"><a class="markdownIt-Anchor" href="#红黑树的历史"></a> 红黑树的历史</h3>
+<ol>
+<li>1972 年，Rudolf Bayer 提出了 <a target="_blank" rel="noopener" href="https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1457&amp;context=cstech">symmetric binary B-tree</a>，这是B 树的 4 阶情形，也就是 2-3-4树（或称为 2-4 树）。</li>
+<li>1978 年，Leonidas J. Guibas 和 Robert Sedgewick 的论文<a target="_blank" rel="noopener" href="https://sedgewick.io/wp-content/themes/sedgewick/papers/1978Dichromatic.pdf">A Dichromatic Framework for Balanced Trees</a>从 symmetric binary B-tree 推导出红黑树。</li>
+<li>1993 年，Arne Andersson 引入 right leaning tree(右倾树) 的概念来简化插入和删除操作，即<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/AA_tree">AA Tree</a>。</li>
+<li>1999 年，Chris Okasaki 在论文<a target="_blank" rel="noopener" href="https://www.cs.tufts.edu/comp/150FP/archive/chris-okasaki/redblack99.pdf">FUNCTIONAL PEARLS – Red-Black Trees in a Functional Setting</a>中展示了如何使插入操作成为纯函数，只需处理 4 种失衡类型和 1 种默认平衡类型。</li>
+<li>2001 年，Cormen 等人在 Introduction to Algorithms, Second Edition 中将原算法的 8 个失衡类型减少为 6 个失衡类型。</li>
+<li>2008 年，Sedgewick 根据 Andersson 的思想，提出了 <a target="_blank" rel="noopener" href="https://sedgewick.io/wp-content/themes/sedgewick/papers/2008LLRB.pdf">Left leaning red black tree</a>(左倾红黑树)，这是 2-3 树的等价转换。</li>
+</ol>
+<h3 id="红黑树的定义"><a class="markdownIt-Anchor" href="#红黑树的定义"></a> 红黑树的定义</h3>
+<ol>
+<li>每个节点是红色或者黑色</li>
+<li>头结点是黑色</li>
+<li>叶子节点(最底层不存放数据的节点)都是黑色，且都为空</li>
+<li>红色节点的父节点和子节点都为黑色(紅色节点不能相连)</li>
+<li>从任一节点到叶子节点的所有路径都包含相同数量的黑色节点</li>
+</ol>
+<p>  最长链红色黑色相间，最短链都是黑色，长度相差不超过两倍。保证红黑树不会退化成链表，路径长度控制在2倍以内保证查询效率。</p>
+<h3 id="红黑树与2-3-4-tree的关系"><a class="markdownIt-Anchor" href="#红黑树与2-3-4-tree的关系"></a> 红黑树与2-3-4 Tree的关系</h3>
+<ol>
+<li>红黑树的红色节点上移到父节点，形成一个2-3-4 Tree，红黑树和2-3-4Tree是等价的。</li>
+<li>红黑树的黑色节点个数=2-3-4Tree的节点个数。</li>
+<li>2-3-4树的每一个节点中:黑色节点必为父节点，红色节点为子节点(黑色在中间，红色在两边)</li>
+</ol>
+<h3 id="红黑树的时间复杂度证明"><a class="markdownIt-Anchor" href="#红黑树的时间复杂度证明"></a> 红黑树的时间复杂度证明</h3>
+<p>  通过数学归纳法证明<strong>定理：一棵含有n个节点的红黑树的高度至多为 $ 2 \times \Theta (log(n+1))$</strong>。它的逆否命题是 <strong>高度为h的红黑树，它的包含的内节点个数至少为 $ 2 ^ \frac{h}{2} - 1 $ 个</strong>。只需要证明逆否命题，即可证明原命题为真。</p>
+<p>  从某个节点x出发（不包括该节点）到达一个叶节点的任意一条路径上，黑色节点的个数称为该节点的黑高度(x’s black height)，记为bh(x)。关于bh(x):</p>
+<ol>
+<li>bh(x)的值是唯一的(红黑树的性质5，从一个节点到该节点的子孙节点的所有路径上包含相同数目的黑节点)</li>
+<li>bh(x) ≥ $ \frac{h}{2} $（根据红黑树的性质4，从节点x出发达到叶节点所经历的黑节点数目&gt;= 所经历的红节点的数目)</li>
+</ol>
+<p>  只需证明<strong>高度为h的红黑树，它的包含的黑节点个数至少为 $ 2^{bh(x)} -1 $个</strong>即可，数学归纳法论证过程如下：</p>
+<ol>
+<li>当树的高度h = 0时，内节点个数是0，bh(x) 为0，$ 2^{bh(x)} -1 $ 也为 0。显然，原命题成立。</li>
+<li>当h &gt; 0，且树的高度为 h-1 时，它包含的节点个数至少为 $ 2^{bh(x)-1} -1 $。</li>
+</ol>
+<blockquote>
+<p>由树的高度为 h-1 的已知条件推出“树的高度为 h 时，它所包含的节点树为 $ 2^{bh(x)} -1 $”。<br />
+当树的高度为 h 时，<br />
+对于节点x(x为根节点)，其黑高度为bh(x)。<br />
+对于节点x的左右子树，它们黑高度为 bh(x) 或者 bh(x)-1。<br />
+x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 $ 2^{bh(x)-1} -1 $；<br />
+所以，节点x所包含的节点至少为 ( $ 2^{bh(x)-1} -1 $ ) + ( $ 2^{bh(x)-1} -1 $ ) + 1 = $ 2^{bh(x)} -1 $。即节点x所包含的节点至少为 $ 2^{bh(x)} -1 $。<br />
+因此，原命题成立。</p>
+</blockquote>
+<h3 id="红黑树插入操作"><a class="markdownIt-Anchor" href="#红黑树插入操作"></a> 红黑树插入操作</h3>
+<ol>
+<li>如果插入的是根节点，则为黑色</li>
+<li>其余情况插入的节点最开始一定为红色(如果是插入红色节点，仅有一种冲突情况，就是可能出现连续两个红色节点，这时候只需要旋转和变色进行调整)</li>
+<li>红黑树的插入操作分为12中情况
+<ol>
+<li>插入节点的父节点为黑色(4种情况)，直接插入，不做调整</li>
+<li>叔父节点不是红色(4中情况)，变色加旋转(叔父节点不是红色，则只能是黑色的叶子节点，如果不是叶子节点则破坏了性质5)</li>
+<li>叔父节点是红色(4种上溢情况)，变色，向上递归</li>
+</ol>
+</li>
+</ol>
+<p><img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/red-black%20tree%20insert.png" alt="红黑树插入" /></p>
+<h3 id="红黑树删除操作"><a class="markdownIt-Anchor" href="#红黑树删除操作"></a> 红黑树删除操作</h3>
+<p>  算法(第4版)，展示了2-3树为基础的左倾红黑树。也可以2-3-4树为基础理解红黑树。1个B树节点=以黑色节点为主，若有红色节点则在其两边。B树中的删除操作，对于非叶子节点是转换为其前驱/后继节点的删除，将要删除的节 点和前驱/后继节点数据交换，然后删除。</p>
+<ol>
+<li>红色节点可以直接删除</li>
+<li>黑色节点的删除(从任一节点到叶子节点的所有路径，都包含相同的黑色节点)
+<ol>
+<li>有2个子节点的黑色节点(4节点)，(不做考虑，会转化为对子节点的删除，待删除节点的前驱/后继节点最多只有一个子节点)</li>
+<li>有1个红色子节点的黑色节点(3节点)，用唯一的红色子节点来替代被删除的节点(红色子节点替代、删除节点、染黑)(有1个黑色子节点的黑色节点，这个黑色子节点只能是叶子节点)</li>
+<li>没有子节点的黑色节点(2节点)</li>
+</ol>
+<ul>
+<li>删除节点为根节点，直接删除(整个红黑树只有这一个黑色节点，没有红色子节点，所以只有一个节点)</li>
+<li>删除节点的兄弟节点为黑色
+<ul>
+<li>兄弟节点有红色子节点(借用兄弟子节点修复)
+<ul>
+<li>红色左子节点，父节点单旋不染色</li>
+<li>红色右子节点，兄弟节点左旋，父节点右旋，父节点染黑</li>
+<li>两个红色子节点，可以选择左子节点/右子节点</li>
+</ul>
+</li>
+<li>兄弟节点没有红色子节点(父节点向下合并)
+<ul>
+<li>父节点是红色，父节点染黑，兄弟节点染红</li>
+<li>父节点是黑色，把父节点当做已经被删除的节点处理，向上递归染色</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>删除节点的兄弟节点为红色(转变为兄弟节点为黑色)
+<ul>
+<li>兄弟节点染黑，父节点染红，父节点右旋</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/rbtree%20delete1.png" alt="红黑树的删除操作" /></p>
+<p>  兄弟节点没有红色子节点</p>
+<p><img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/rbtree%20delete2.png" alt="红黑树的删除操作" /></p>
+<h3 id="红黑树的特点"><a class="markdownIt-Anchor" href="#红黑树的特点"></a> 红黑树的特点</h3>
+<ol>
+<li>平衡性规定非常特别</li>
+<li>平衡性调整最为复杂</li>
+<li>优点在于每次插入删除扰动较好，但是在今天看来这个优势也极其微弱了。贪图扰动小的话，B+树、2-3-4树可能更好</li>
+<li>除此之外，红黑树并不比AVL树、SB树、跳表更加优秀</li>
+<li>数组、hashmap等扩容的时间复杂度均摊下来就是O(1)</li>
+<li>234树、B树、B+树、红黑树等平衡性相对不严格，只需要在调整平衡性的时候进行磁盘IO，用于硬盘相关，主要减少磁盘IO，而AVL Tree平衡性好，但是对磁盘IO比较敏感。</li>
+<li>插入删除、查询的时间复杂度都是O(logN)，严格证明涉及概率。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/01/DataStructuresAndAlgorithms/29%E3%80%812-3-4%20Tree/" rel="prev" title="2-3-4 Tree">
+      <i class="fa fa-chevron-left"></i> 2-3-4 Tree
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/01/DataStructuresAndAlgorithms/31%E3%80%81B-Tree/" rel="next" title="B-Tree">
+      B-Tree <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%8E%86%E5%8F%B2"><span class="nav-number">1.</span> <span class="nav-text"> 红黑树的历史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text"> 红黑树的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E4%B8%8E2-3-4-tree%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text"> 红黑树与2-3-4 Tree的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E8%AF%81%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text"> 红黑树的时间复杂度证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text"> 红黑树插入操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C"><span class="nav-number">6.</span> <span class="nav-text"> 红黑树删除操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">7.</span> <span class="nav-text"> 红黑树的特点</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

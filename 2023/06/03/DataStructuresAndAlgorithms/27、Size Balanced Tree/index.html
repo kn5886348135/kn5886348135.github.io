@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 6.3.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="mask-icon" href="https://www.goodserendipity.com/asserts/favicon.png" color="#222">
 
 <link rel="stylesheet" href="/css/main.css">
 
@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="SB树（size-balance-tree） 1）让每一个叔叔节点为头的数，节点个数都不少于其任何一个侄子节点 2）也是从底层被影响节点开始向上做路径每个节点检查 3）与AVL树非常像，也是四种违规类型：LL、RR、LR、RL 4）与AVL树非常像，核心点是： LL（做一次右旋）、RR（做一次左旋） LR和RL（利用旋转让底层那个上到顶部） 5）与AVL树不同的是，每轮经过调整后，谁的孩子发生变化">
+  <meta name="description" content="Size Balanced Tree (SBT) 是由中国 OI 选手陈启峰在 2007 年提出的一种自平衡二叉搜索树 (Self-Balanced Binary Search Tree, SBBST), 通过检查子树的节点数量进行自身的平衡维护。相比于红黑树，AVL 等主流自平衡二叉搜索树而言，Size Balanced Tree 支持在 Θ(log⁡n)\Theta(\log n)Θ(lo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Size Balanced Tree">
 <meta property="og:url" content="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/27%E3%80%81Size%20Balanced%20Tree/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="SB树（size-balance-tree） 1）让每一个叔叔节点为头的数，节点个数都不少于其任何一个侄子节点 2）也是从底层被影响节点开始向上做路径每个节点检查 3）与AVL树非常像，也是四种违规类型：LL、RR、LR、RL 4）与AVL树非常像，核心点是： LL（做一次右旋）、RR（做一次左旋） LR和RL（利用旋转让底层那个上到顶部） 5）与AVL树不同的是，每轮经过调整后，谁的孩子发生变化">
+<meta property="og:description" content="Size Balanced Tree (SBT) 是由中国 OI 选手陈启峰在 2007 年提出的一种自平衡二叉搜索树 (Self-Balanced Binary Search Tree, SBBST), 通过检查子树的节点数量进行自身的平衡维护。相比于红黑树，AVL 等主流自平衡二叉搜索树而言，Size Balanced Tree 支持在 Θ(log⁡n)\Theta(\log n)Θ(lo">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-06-02T17:36:47.000Z">
-<meta property="article:modified_time" content="2023-06-02T17:38:31.358Z">
+<meta property="article:modified_time" content="2023-07-31T16:19:46.880Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="Size Balanced Tree">
 <meta property="article:tag" content="SBT">
@@ -195,10 +195,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-06-03 01:36:47 / Modified: 01:38:31" itemprop="dateCreated datePublished" datetime="2023-06-03T01:36:47+08:00">2023-06-03</time>
+              <time title="Created: 2023-06-03 01:36:47" itemprop="dateCreated datePublished" datetime="2023-06-03T01:36:47+08:00">2023-06-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-01 00:19:46" itemprop="dateModified" datetime="2023-08-01T00:19:46+08:00">2023-08-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -220,48 +226,71 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>SB树（size-balance-tree）<br />
-1）让每一个叔叔节点为头的数，节点个数都不少于其任何一个侄子节点<br />
-2）也是从底层被影响节点开始向上做路径每个节点检查<br />
-3）与AVL树非常像，也是四种违规类型：LL、RR、LR、RL<br />
-4）与AVL树非常像，核心点是：<br />
-LL（做一次右旋）、RR（做一次左旋）<br />
-LR和RL（利用旋转让底层那个上到顶部）<br />
-5）与AVL树不同的是，每轮经过调整后，谁的孩子发生变化了，谁就再查</p>
-<p>SB树在使用时候的改进<br />
-1）删除时候可以不用检查<br />
-2）就把平衡性的调整放在插入的时候<br />
-3）因为这种只要变就递归的特性，别的树没有<br />
-4）可以在节点上封装别的数据项，来增加功能</p>
-<p>跳表（skiplist）</p>
-<p>1）结构上根本和搜索二叉树无关</p>
-<p>2）利用随机概率分布来使得高层索引可以无视数据规律，做到整体性能优良</p>
-<p>3）思想是所有有序表中最先进的</p>
-<p>4）结构简单就是多级单链表</p>
-<p>聊聊红黑树</p>
-<p>1）平衡性规定非常诡异<br />
-2）平衡性调整最为复杂<br />
-3）优点在于每次插入删除扰动较好，但是在今天看来这个优势也极其微弱了<br />
-原因：贪图扰动小的话，B+树、2-3-4树可能更好，还是那句话，到底图什么<br />
-4）除此之外，红黑树并不比AVL树、SB树、跳表更加优秀<br />
-5）面试上遇到，说清楚道理，不行就举报</p>
-<p></br></br></br></br><br />
-平衡性<br />
+        <p>  <a target="_blank" rel="noopener" href="http://wcipeg.com/wiki/Size_Balanced_Tree">Size Balanced Tree</a> (SBT) 是由中国 OI 选手陈启峰在 2007 年提出的一种自平衡二叉搜索树 (Self-Balanced Binary Search Tree, SBBST), 通过检查子树的节点数量进行自身的平衡维护。相比于红黑树，AVL 等主流自平衡二叉搜索树而言，Size Balanced Tree 支持在 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 的时间复杂度内查询某个键值在树中的排名 (rank)。</p>
+<h3 id="size-balanced-tree定义"><a class="markdownIt-Anchor" href="#size-balanced-tree定义"></a> Size Balanced Tree定义</h3>
+<p>  Size Balance Tree是一颗二叉搜索树，每个节点 Node 仅需要多维护一个整数字段 size, 用于储存以 Node 为根的子树中节点的个数。</p>
+<h3 id="size-balance-tree性质"><a class="markdownIt-Anchor" href="#size-balance-tree性质"></a> Size Balance Tree性质</h3>
+<ol>
+<li>每一个叔叔节点为头的树，节点个数都不少于其任何一个侄子节点</li>
+<li>从底层被影响节点开始向上做路径上每个节点检查</li>
+<li>与AVL树一样，有四种违规类型：LL(一次右旋)、RR(一次左旋)、LR(左旋右旋)、RL(右旋左旋)</li>
+<li>与AVL树不同的是，每轮经过调整后，检查子节点发生变化的节点</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>类型</th>
+<th>解释</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>LL</td>
+<td>size(cur.left.left) &gt; size(cur.right)</td>
+<td>cur右旋并递归检查cur,cur.left是否违规</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LR</td>
+<td>size(cur.left.right)&gt;size(cur.right)</td>
+<td>cur.left左旋，cur.left.right右旋，并递归检查cur、cur.left、cur.left.right</td>
+</tr>
+<tr>
+<td>3</td>
+<td>RR</td>
+<td>size(cur.right.right)&gt;size(cur.left)</td>
+<td>cur左旋并递归检查cur,cur.right</td>
+</tr>
+<tr>
+<td>4</td>
+<td>RL</td>
+<td>size(cur.right.left)&gt;size(cur.left)</td>
+<td>cur.right右旋，cur.right.left左旋，并递归检查cur、cur.right、cur.right.left</td>
+</tr>
+</tbody>
+</table>
+<h3 id="size-balance-tree的平衡性"><a class="markdownIt-Anchor" href="#size-balance-tree的平衡性"></a> Size Balance Tree的平衡性</h3>
+<blockquote>
+<p>T.left = A, T.right = B<br />
 size(T.left) ≥ size(T.right.left), size(T.right.right)<br />
-size(T.right) ≥ size(T.left.left), size(T.left.right)<br />
-假设size(A)=n，AB是左右两个子节点，则size(B)&lt;=2n。则整颗树的高度仍然是logN的水平，没有avl tree的平衡性好。<br />
-破坏平衡性的4种类型<br />
-当前节点cur<br />
-left、right都是指初始状态的左右节点，而不是调整以后的。<br />
-LL      size(cur.left.left)&gt;size(cur.right) cur右旋并递归检查cur,cur.left是否违规<br />
-LR      size(cur.left.right)&gt;size(cur.right) cur.left左旋，cur.left.right右旋，并递归检查cur、cur.left、cur.left.right<br />
-RL      size(cur.right.left)&gt;size(cur.left) cur.right右旋，cur.right.left左旋，并递归检查cur、cur.right、cur.right.left<br />
-RR      size(cur.right.right)&gt;size(cur.left) cur左旋并递归检查cur,cur.right</p>
-<p>avl tree的平衡性很严苛，每次添加、删除节点都会检查。<br />
-size-balanced tree只能保证两个子树的size不超过2倍，时间复杂度有严格的数学证明，O(logN)<br />
-size-balanced tree的优势<br />
-删除节点的时候不调整平衡性，只在增加节点的时候递归调整<br />
-假设size-balanced tree的节点数是N，删除所有的左节点或者右节点后退化成链表时，高度为logN，是最差时间复杂度。后续如果增加节点，马上递归调整成平衡状态。</p>
+size(T.right) ≥ size(T.left.left), size(T.left.right)</p>
+</blockquote>
+<p>  假设size(A)=n，B节点的两个子节点数都小于n，则size(B) ≤ 2n。则整颗树的高度仍然是logN的水平，没有avl tree的平衡性好。<br />
+  Size Balanced tree只能保证两个子树的size不超过2倍，时间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logN)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span>有严格的数学证明，</p>
+<h3 id="sb树在使用时候的改进"><a class="markdownIt-Anchor" href="#sb树在使用时候的改进"></a> SB树在使用时候的改进</h3>
+<ol>
+<li>删除时候可以不用检查平衡性
+<ul>
+<li>假设size-balanced tree的节点数是N，删除所有的左节点或者右节点后退化成链表时，高度为logN，是最差时间复杂度。后续如果增加节点，马上递归调整成平衡状态。</li>
+</ul>
+</li>
+<li>把平衡性的调整放在插入的时候</li>
+<li>子节点发生变化就需要递归检查的特性，AVL Tree，Red-Black Tree等没有</li>
+<li>可以在节点上封装别的数据项，来增加功能</li>
+</ol>
 
     </div>
 
@@ -347,6 +376,7 @@ size-balanced tree的优势<br />
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#size-balanced-tree%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text"> Size Balanced Tree定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#size-balance-tree%E6%80%A7%E8%B4%A8"><span class="nav-number">2.</span> <span class="nav-text"> Size Balance Tree性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#size-balance-tree%E7%9A%84%E5%B9%B3%E8%A1%A1%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text"> Size Balance Tree的平衡性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sb%E6%A0%91%E5%9C%A8%E4%BD%BF%E7%94%A8%E6%97%B6%E5%80%99%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">4.</span> <span class="nav-text"> SB树在使用时候的改进</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -360,20 +390,20 @@ size-balanced tree的优势<br />
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">67</span>
+        <span class="site-state-item-count">86</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

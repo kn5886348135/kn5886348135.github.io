@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="mask-icon" href="https://www.goodserendipity.com/asserts/favicon.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="子数组达到规定累加和的最大长度系列问题 正整数数组的子数组累加和等于k的最大长度   给定一个正整数组成的无序数组arr，给定一个正整数值K。找到arr的所有子数组里，累加和等于K，并且是长度最大的，返回其长度。   利用单调性优化 子数组累加和等于k的最大长度   给定一个整数组成的无序数组arr，值可能正、可能负、可能0。给定一个整数值K，找到arr的所有子数组里，累加和等于K，并且是长度最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="子数组累加和的最大长度问题">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/08/10/DataStructuresAndAlgorithms/35%E3%80%81%E5%AD%90%E6%95%B0%E7%BB%84%E7%B4%AF%E5%8A%A0%E5%92%8C%E7%9A%84%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="子数组达到规定累加和的最大长度系列问题 正整数数组的子数组累加和等于k的最大长度   给定一个正整数组成的无序数组arr，给定一个正整数值K。找到arr的所有子数组里，累加和等于K，并且是长度最大的，返回其长度。   利用单调性优化 子数组累加和等于k的最大长度   给定一个整数组成的无序数组arr，值可能正、可能负、可能0。给定一个整数值K，找到arr的所有子数组里，累加和等于K，并且是长度最">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-10T11:18:52.000Z">
+<meta property="article:modified_time" content="2023-08-10T11:49:49.877Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="累加和">
+<meta property="article:tag" content="长度">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/08/10/DataStructuresAndAlgorithms/35%E3%80%81%E5%AD%90%E6%95%B0%E7%BB%84%E7%B4%AF%E5%8A%A0%E5%92%8C%E7%9A%84%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>子数组累加和的最大长度问题 | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/10/DataStructuresAndAlgorithms/35%E3%80%81%E5%AD%90%E6%95%B0%E7%BB%84%E7%B4%AF%E5%8A%A0%E5%92%8C%E7%9A%84%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          子数组累加和的最大长度问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-10 19:18:52 / Modified: 19:49:49" itemprop="dateCreated datePublished" datetime="2023-08-10T19:18:52+08:00">2023-08-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="子数组达到规定累加和的最大长度系列问题"><a class="markdownIt-Anchor" href="#子数组达到规定累加和的最大长度系列问题"></a> 子数组达到规定累加和的最大长度系列问题</h3>
+<p><strong>正整数数组的子数组累加和等于k的最大长度</strong></p>
+<p>  给定一个正整数组成的无序数组arr，给定一个正整数值K。找到arr的所有子数组里，累加和等于K，并且是长度最大的，返回其长度。<br />
+  利用单调性优化</p>
+<p><strong>子数组累加和等于k的最大长度</strong></p>
+<p>  给定一个整数组成的无序数组arr，值可能正、可能负、可能0。给定一个整数值K，找到arr的所有子数组里，累加和等于K，并且是长度最大的，返回其长度。<br />
+  利用预处理结构优化 + 讨论开头结尾</p>
+<p><strong>子数组累加和小于等于k的最大长度</strong></p>
+<p>  给定一个整数组成的无序数组arr，值可能正、可能负、可能0。给定一个整数值K，找到arr的所有子数组里，哪个子数组的累加和&lt;=K，并且是长度最大的，返回其长度。<br />
+  假设答案法+淘汰可能性（很难）</p>
+<p><strong>子数组平均值小于等于v的最大长度</strong><br />
+  给定一个数组arr，给定一个值v。求子数组平均值小于等于v的最长子数组长度。</p>
+<p><strong>矩阵顺时针转动</strong><br />
+  给定一个正方形矩阵matrix，原地调整成顺时针90度转动的样子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a  b  c     g  d  a</span><br><span class="line">d  e  f     h  e  b</span><br><span class="line">g  h  i     i  f  c</span><br></pre></td></tr></table></figure>
+<p><strong>矩阵转圈打印</strong><br />
+  给定一个长方形矩阵matrix，实现转圈打印。打印顺序：a b c d h L k j I e f g</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a  b  c  d</span><br><span class="line">e  f  g  h</span><br><span class="line">i  j  k  L</span><br></pre></td></tr></table></figure>
+<p><strong>矩阵zigzag打印</strong></p>
+<p>  给定一个正方形或者长方形矩阵matrix，实现zigzag打印。打印: 0 1 3 6 4 2 5 7 8。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span> <span class="number">1</span> <span class="number">2</span></span><br><span class="line"><span class="number">3</span> <span class="number">4</span> <span class="number">5</span></span><br><span class="line"><span class="number">6</span> <span class="number">7</span> <span class="number">8</span></span><br></pre></td></tr></table></figure>
+<h4 id="题目八"><a class="markdownIt-Anchor" href="#题目八"></a> 题目八</h4>
+<p>  输入N，在控制台输出初始边长为N的图案。转弯的时候不能和上一层接触。<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/printnrect.png">打印demo</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%B4%AF%E5%8A%A0%E5%92%8C/" rel="tag"># 累加和</a>
+              <a href="/tags/%E9%95%BF%E5%BA%A6/" rel="tag"># 长度</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/10/DataStructuresAndAlgorithms/38%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%85%B6%E5%AE%83%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/" rel="prev" title="动态规划的其它优化技巧">
+      <i class="fa fa-chevron-left"></i> 动态规划的其它优化技巧
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E6%95%B0%E7%BB%84%E8%BE%BE%E5%88%B0%E8%A7%84%E5%AE%9A%E7%B4%AF%E5%8A%A0%E5%92%8C%E7%9A%84%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E7%B3%BB%E5%88%97%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text"> 子数组达到规定累加和的最大长度系列问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E5%85%AB"><span class="nav-number">1.1.</span> <span class="nav-text"> 题目八</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

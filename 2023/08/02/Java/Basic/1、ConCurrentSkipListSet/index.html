@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="mask-icon" href="https://www.goodserendipity.com/asserts/favicon.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ConCurrentSkipListSet是一个基于ConCurrentSkipListMap实现的可扩展的NavigableSet。set中的元素按照自然顺序、构造函数传入的Comparator排序。JDK中的这个类是由Doug Lea实现的，这个实现提供了contains、add、remove操作预期的平均时间复杂度Θ(logn)\Theta(logn)Θ(logn)，并且是线程安全的。I">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConCurrentSkipListSet">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="ConCurrentSkipListSet是一个基于ConCurrentSkipListMap实现的可扩展的NavigableSet。set中的元素按照自然顺序、构造函数传入的Comparator排序。JDK中的这个类是由Doug Lea实现的，这个实现提供了contains、add、remove操作预期的平均时间复杂度Θ(logn)\Theta(logn)Θ(logn)，并且是线程安全的。I">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-02T01:33:03.000Z">
+<meta property="article:modified_time" content="2023-08-02T10:10:28.114Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="Basic">
+<meta property="article:tag" content="ConCurrentSkipListSet">
+<meta property="article:tag" content="ConCurrentSkipListMap">
+<meta property="article:tag" content="NavigableSet">
+<meta property="article:tag" content="NavigableMap">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ConCurrentSkipListSet | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ConCurrentSkipListSet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-02 09:33:03 / Modified: 18:10:28" itemprop="dateCreated datePublished" datetime="2023-08-02T09:33:03+08:00">2023-08-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  ConCurrentSkipListSet是一个基于ConCurrentSkipListMap实现的可扩展的NavigableSet。set中的元素按照自然顺序、构造函数传入的Comparator排序。JDK中的这个类是由<a target="_blank" rel="noopener" href="https://gee.cs.oswego.edu/">Doug Lea</a>实现的，这个实现提供了contains、add、remove操作预期的平均时间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，并且是线程安全的。<font color="red">Iterator和Spliterator是弱一致的，升序视图和迭代器比降序要快。(为什么？Spliterator是什么？)</font></p>
+<p>  与多数集合不同，size方法不是常数时间复杂度。因为并发集合的异步特点，确定当前集合数量需要遍历元素，所以在集合正在被修改时遍历元素会报告不准确的结果。批量操作addAll、removeAll、retainAll、containsAll、equals、toArray不保证以原子方式执行。例如迭代器遍历和addAll同时进行时可能仅查看到部分添加的元素。这个类实现了Set、Iterator接口的所有可选方法，和其他大多数并发集合一样，不支持新增null元素，因为null作为key或者返回值不能和缺少元素区可靠地分开。</p>
+<p>  ConCurrentSkipListMap是SkipList的并发变种实现，containsKey、get、put、remove等其他变种操作的期望平均时间复杂度都是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>。插入、删除、更新和访问操作都支持多线程安全地并发执行，基于多层链表向右、向下的特点，是一种无锁并发实现。所有这个类中的方法返回的Map.Entry键值对和视图表示当时的快照，不支持Entry.setValue方法，但是可以使用put、putIfAbsent或者replace修改。</p>
+<p>  ConCurrentSkipListMap实现了一个树状二维链接跳跃列表，其中索引级别在与保存数据的基本节点不同的节点中表示。 采用这种方法而不是通常的基于数组的结构有两个原因：1）基于数组的实现似乎会遇到更多的复杂性和开销2）对于频繁遍历的索引列表，我们可以使用比基本列表更便宜的算法。</p>
+<figure class="highlight java"><figcaption><span>Doc</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Head nodes          Index nodes</span><br><span class="line">+-+    right        +-+                      +-+</span><br><span class="line">|<span class="number">2</span>|----------------&gt;| |---------------------&gt;| |-&gt;<span class="literal">null</span></span><br><span class="line">+-+                 +-+                      +-+</span><br><span class="line">| down              |                        |</span><br><span class="line">v                   v                        v</span><br><span class="line">+-+            +-+  +-+       +-+            +-+       +-+</span><br><span class="line">|<span class="number">1</span>|-----------&gt;| |-&gt;| |------&gt;| |-----------&gt;| |------&gt;| |-&gt;<span class="literal">null</span></span><br><span class="line">+-+            +-+  +-+       +-+            +-+       +-+</span><br><span class="line">v              |    |         |              |         |</span><br><span class="line">Nodes  next     v    v         v              v         v</span><br><span class="line">+-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+</span><br><span class="line">| |-&gt;|A|-&gt;|B|-&gt;|C|-&gt;|D|-&gt;|E|-&gt;|F|-&gt;|G|-&gt;|H|-&gt;|I|-&gt;|J|-&gt;|K|-&gt;<span class="literal">null</span></span><br><span class="line">+-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+</span><br></pre></td></tr></table></figure>
+<p>  基础列表使用HM算法的变种(a variant of the HM linked ordered set algorithm)，参考Tim Harris <a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/research/srg/netos/papers/2001-caslists.pdf">A pragmatic implementation of non-blocking linked lists</a>和Maged Michael <a target="_blank" rel="noopener" href="https://docs.rs/crate/crossbeam/0.2.4/source/hash-and-skip.pdf">High Performance Dynamic Lock-Free Hash Tables and List-Based Sets</a>。这些列表的基本思想是标记已删除节点的next指针，避插入时的并发冲突，以及遍历时跟踪三元组（前驱节点、当前节点、后继节点）以便检测何时以及如何取消链接这些已删除的节点。</p>
+<p>  节点使用直接可CAS的next指针而不是使用标记位来标记列表删除（使用 AtomicMarkedReference 会很慢并且占用空间）。删除时，它们拼接到另一个可以被认为代表一个标记指针的节点中（通过使用其他不可能的字段值表示），而不是标记一个指针。使用普通节点大致类似于标记指针的&quot;装箱&quot;实现，但仅在删除节点时才使用新节点，而不是每个节点都使用新节点关联。这需要更少的空间并支持更快遍历。即使JVM更好地支持标记引用，使用这种技术的遍历可能仍然更快，因为任何搜索只需要比其他所需的节点（检查尾随标记）多预读一个节点，而不是在每次读取时取消屏蔽标记位或其他内容。</p>
+<p>  这种方法保留了 HM 算法中所需的基本属性，即更改已删除节点的下一个指针，以便该节点的任何其他 CAS 都会失败，但通过更改指针以指向不同的节点来实现该想法，而不是通过标记它 。虽然可以通过定义不具有键/值字段的标记节点来进一步压缩空间，但不值得额外的类型测试开销。 删除标记在遍历过程中很少遇到，并且通常会很快被垃圾收集。（请注意，此技术在没有垃圾收集的系统中无法正常工作。）</p>
+<p>  除了使用删除标记之外，列表还使用值字段的空值来指示删除，其风格类似于典型的延迟删除方案。如果节点的值为 null，则即使它仍然可访问，它也会被视为逻辑上已删除并被忽略。这可以保持对并发替换与删除操作的正确控制——如果删除通过使字段为空，则replace的尝试必须失败，并且删除必须返回字段中保存的最后一个非空值。 （注意：此处使用 Null，而不是某些特殊标记，因为它恰好符合 Map API 的要求，即如果没有映射，则方法 get 返回 null，这允许节点即使在删除时仍保持并发可读 .在这里使用任何其他标记值在最坏情况下会很混乱。）</p>
+<p>  删除带有前驱节点b，后继节点f的节点n的事件，初始状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+       +------+      +------+</span><br><span class="line">...  |   b  |------&gt;|   n  |-----&gt;|   f  | ...</span><br><span class="line">     +------+       +------+      +------+</span><br></pre></td></tr></table></figure>
+<ol>
+<li>CAS操作n 的 value 字段从非 null 变为 null。从此时起，遇到该节点的任何公共操作都不会认为此映射存在。但是，其他正在进行的插入和删除操作仍可能会修改 n 的next指针。</li>
+<li>CAS操作n的next指针指向新的标记节点。从此时起，n 上不能再添加其他节点。这避免了基于 CAS 的链表中的删除错误。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+       +------+      +------+       +------+</span><br><span class="line">...  |   b  |------&gt;|   n  |-----&gt;|marker|------&gt;|   f  | ...</span><br><span class="line">     +------+       +------+      +------+       +------+</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>CAS操作 b 的下一个指针位于 n 及其标记上。从此时起，不再有新的遍历遇到n，并且n和marker最终可以被GC。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+                                    +------+</span><br><span class="line">...  |   b  |-----------------------------------&gt;|   f  | ...</span><br><span class="line">     +------+                                    +------+</span><br></pre></td></tr></table></figure>
+<p>  步骤 1 的失败会导致简单的重试，因为与其他操作的竞争失败。 步骤 2-3 可能会失败，因为其他一些线程在遍历期间注意到具有空值的节点并通过标记和/或取消链接来帮助解决。 这种帮助确保没有线程会因等待删除线程的进度而卡住。标记节点的使用使帮助代码稍微复杂化，因为遍历必须跟踪最多四个节点（b，n，marker，f）的一致读取，而不仅仅是（b，n，f），尽管标记的下一个字段是不可变的，并且一旦下一个字段被CAS操作指向a 标记，它永远不会再改变，所以这需要较少的关注。</p>
+<p>  跳过列表向该方案添加索引，以便基本级别遍历从靠近被发现、插入或删除的位置开始——通常基本级别遍历仅遍历几个节点。 这不会改变基本算法，除了需要确保基本遍历从未（结构上）删除的前辈（此处为 b）开始，否则在处理删除后重试。</p>
+<p>  索引层级被维护为具有volatile修饰的next字段的列表，使用 CAS 进行链接和取消链接。索引列表操作中允许存在竞争，这些竞争（很少）可能无法链接到新索引节点或删除索引节点。（当然，我们不能对数据节点执行此操作。）但是，即使发生这种情况，索引列表仍保持有序，因此可以正确地用作索引。这可能会影响性能，但由于跳跃列表是概率性的，因此最终结果是在争用情况下，有效“p”值可能低于其标称值。而且竞争窗口保持得足够小，因此在实践中，即使在很多竞争的情况下，这些失败也很少见。</p>
+<p>  由于索引，重试（对于基列表和索引列表）相对便宜，这一事实允许对重试逻辑进行一些小的简化。遍历重新启动是在大多数“帮助”CAS 后执行的。 这并不总是绝对必要的，但隐式回退往往有助于减少其他下游失败的 CAS，足以超过重新启动成本。这使最坏的情况变得更糟，但似乎甚至改善了激烈竞争的情况。</p>
+<p>  与大多数跳跃列表实现不同，这里的索引插入和删除需要在基本级别操作之后发生单独的遍历，以添加或删除索引节点。 这增加了单线程开销，但通过缩小干扰窗口来提高竞争的多线程性能，并允许删除以确保从公共删除操作返回时所有索引节点都将变得不可访问，从而避免不必要的垃圾保留。 这在这里比在其他一些数据结构中更重要，因为我们无法将引用用户键的节点字段清空，因为它们可能仍会被其他正在进行的遍历读取。</p>
+<p>  索引使用跳过列表参数，在使用比平常稀疏的索引的同时保持良好的搜索性能：硬连线参数 k=1，p=0.5（参见方法 doPut）意味着大约四分之一的节点具有索引。 在那些这样做的人中，一半有一个级别，四分之一有两个级别，依此类推（参见 Pugh 的 Skip List Cookbook，第 3.4 节）。 映射的预期总空间需求略小于 java.util.TreeMap 的当前实现。</p>
+<p>  更改索引的级别（即树状结构的高度）也使用 CAS。 头部索引的初始级别/高度为 1。 创建高度大于当前级别的索引时，会通过在新的最顶层头部上执行 CAS 操作，为头部索引添加一个级别。 为了在大量删除后保持良好的性能，如果最顶层似乎是空的，删除方法会试探性地尝试降低高度。这可能会遇到可能（但很少见）降低并“丢失”一个级别的竞争。 即将包含一个索引（这样就永远不会遇到）。 这不会造成结构性损害，而且在实践中似乎是比允许水平不受限制增长更好的选择。</p>
+<p>  所有这些的代码比您想要的更冗长。 大多数操作需要定位元素（或插入元素的位置）。 执行此操作的代码无法很好地分解出来，因为后续使用需要前驱和/或后继和/或值字段的快照，而这些字段无法一次全部返回，至少在不创建另一个对象来保存它们的情况下无法返回 – 对于基本的内部搜索操作来说，创建如此小的对象是一个特别糟糕的主意，因为它会增加 GC 开销。 （这是我为数不多的希望 Java 有宏的情况之一。）相反，一些遍历代码在插入和删除操作中交错进行。 处理所有重试条件的控制逻辑有时是曲折的。 大多数搜索分为两部分。 findPredecessor() 仅搜索索引节点，返回键的基本级前驱。 findNode() 完成基本级别的搜索。 即使进行了这种分解，仍然存在大量近乎重复的代码来处理变体。</p>
+<p>  为了生成随机值而不跨线程干扰，我们使用 JDK 内线程本地随机支持（通过“二级种子”，以避免干扰用户级 ThreadLocalRandom。）</p>
+<p>  该类的早期版本将不可比较的键与其比较器一起包装，以在使用比较器与可比较对象时模拟可比较对象。 然而，JVM 现在似乎可以更好地处理将比较器与可比较的选择注入搜索循环中。 静态方法 cpr(comparator, x, y) 用于所有比较，只要比较器参数设置在循环之外（因此有时作为参数传递给内部方法），该方法就可以很好地工作，以避免字段重新读取。</p>
+<p>  与该算法功能相似的论文，<a target="_blank" rel="noopener" href="http://www.cse.yorku.ca/~ruppert/Mikhail.pdf">Mikhail Fomitchev的论文</a>，<a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Keir Fraser的论文</a>, <a target="_blank" rel="noopener" href="https://research.chalmers.se/en/person/phs">Hakan Sundell的论文</a>。</p>
+<p>  鉴于使用了树状索引节点，您可能想知道为什么不使用某种搜索树来代替，这将支持更快的搜索操作。原因是没有已知的有效的搜索树无锁插入和删除算法。索引节点“向下”链接的不变性（与真实树中可变的“左”字段相反）使得仅使用 CAS 操作即可处理此问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 变量的解释</span></span><br><span class="line">Node:         b, n, f    <span class="keyword">for</span>  predecessor, node, successor</span><br><span class="line">Index:        q, r, d    <span class="keyword">for</span> index node, right, down.</span><br><span class="line">              t          <span class="keyword">for</span> another index node</span><br><span class="line">Head:         h</span><br><span class="line">Levels:       j</span><br><span class="line">Keys:         k, key</span><br><span class="line">Values:       v, value</span><br><span class="line">Comparisons:  c</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SkipList的节点</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Node</span>&lt;K,V&gt; &#123;</span><br><span class="line">        <span class="keyword">final</span> K key;</span><br><span class="line">        <span class="keyword">volatile</span> Object value;</span><br><span class="line">        <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示链表层级的节点</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Index</span>&lt;K,V&gt; &#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;K,V&gt; node;</span><br><span class="line">        <span class="keyword">final</span> Index&lt;K,V&gt; down;</span><br><span class="line">        <span class="keyword">volatile</span> Index&lt;K,V&gt; right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  Java语法中break outer，break splice的用法？</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Basic/" rel="tag"># Basic</a>
+              <a href="/tags/ConCurrentSkipListSet/" rel="tag"># ConCurrentSkipListSet</a>
+              <a href="/tags/ConCurrentSkipListMap/" rel="tag"># ConCurrentSkipListMap</a>
+              <a href="/tags/NavigableSet/" rel="tag"># NavigableSet</a>
+              <a href="/tags/NavigableMap/" rel="tag"># NavigableMap</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/01/DataStructuresAndAlgorithms/33%E3%80%81%E5%AF%B9%E6%95%B0%E5%99%A8%E5%92%8C%E5%88%86%E6%B2%BB1/" rel="prev" title="解题规律">
+      <i class="fa fa-chevron-left"></i> 解题规律
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/08/07/Other/1%E3%80%81Idea%E7%9A%84vim%E6%8F%92%E4%BB%B6/" rel="next" title="Idea的vim插件">
+      Idea的vim插件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>
