@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="后缀数组 介绍用DC3算法生成后缀数组的流程 字符串mississippi oi-wiki.org关于后缀数组的介绍 题目一 https:&#x2F;&#x2F;leetcode.com&#x2F;problems&#x2F;last-substring-in-lexicographical-order&#x2F;  题目一 给定两个字符串str1和str2， 想把str2整体插入到str1中的某个位置 形成最大的字典序 返回字典序最大的结果 s">
+  <meta name="description" content="后缀数组是字符串所有后缀的排序数组。 它是一种用于全文索引、数据压缩算法和文献计量学等领域的数据结构。   Suffix Array由 Manber &amp; Myers (1990)的论文Suffix arrays a new method for on-line string searches 引入，作为后缀树的一种简单且节省空间的替代方案。 它们是由 Gaston Gonnet 于 1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Suffix Array">
 <meta property="og:url" content="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/39%E3%80%81Suffix%20Array/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="后缀数组 介绍用DC3算法生成后缀数组的流程 字符串mississippi oi-wiki.org关于后缀数组的介绍 题目一 https:&#x2F;&#x2F;leetcode.com&#x2F;problems&#x2F;last-substring-in-lexicographical-order&#x2F;  题目一 给定两个字符串str1和str2， 想把str2整体插入到str1中的某个位置 形成最大的字典序 返回字典序最大的结果 s">
+<meta property="og:description" content="后缀数组是字符串所有后缀的排序数组。 它是一种用于全文索引、数据压缩算法和文献计量学等领域的数据结构。   Suffix Array由 Manber &amp; Myers (1990)的论文Suffix arrays a new method for on-line string searches 引入，作为后缀树的一种简单且节省空间的替代方案。 它们是由 Gaston Gonnet 于 1">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/suffix%20array1.png">
 <meta property="article:published_time" content="2023-08-01T06:44:05.000Z">
-<meta property="article:modified_time" content="2023-08-10T08:40:08.134Z">
+<meta property="article:modified_time" content="2023-08-12T16:25:11.119Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="Suffix Array">
 <meta property="article:tag" content="后缀数组">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/suffix%20array1.png">
 
 <link rel="canonical" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/39%E3%80%81Suffix%20Array/">
 
@@ -202,7 +204,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-10 16:40:08" itemprop="dateModified" datetime="2023-08-10T16:40:08+08:00">2023-08-10</time>
+                <time title="Modified: 2023-08-13 00:25:11" itemprop="dateModified" datetime="2023-08-13T00:25:11+08:00">2023-08-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,26 +227,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>后缀数组<br />
-介绍用DC3算法生成后缀数组的流程<br />
-字符串mississippi<br />
-oi-wiki.org关于后缀数组的介绍</p>
-<p>题目一<br />
-<a target="_blank" rel="noopener" href="https://leetcode.com/problems/last-substring-in-lexicographical-order/">https://leetcode.com/problems/last-substring-in-lexicographical-order/</a><br />
-</br></p>
-<p>题目一<br />
-给定两个字符串str1和str2，<br />
-想把str2整体插入到str1中的某个位置<br />
-形成最大的字典序<br />
-返回字典序最大的结果<br />
-str1的长度远大于str2的长度</p>
-<p>题目二<br />
-给两个长度分别为M和N的整型数组nums1和nums2，其中每个值都不大于9，再给定一个正数K。 你可以在nums1和nums2中挑选数字，要求一共挑选K个，并且要从左到右挑。返回所有可能的结果中，代表最大数字的结果。</p>
-<p>题目三<br />
-最长公共子串问题是面试常见题目之一，假设str1长度N，str2长度M<br />
-一般在面试场上回答出O(N<em>M)的解法已经是比较优秀了<br />
-因为得到O(N</em>M)的解法，就已经需要用到动态规划了<br />
-但其实这个问题的最优解是O(N+M)，需要用到后缀数组+height数组</p>
+        <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/sa/">后缀数组</a>是字符串所有后缀的排序数组。 它是一种用于全文索引、数据压缩算法和文献计量学等领域的数据结构。</p>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Suffix_array">Suffix Array</a>由 Manber &amp; Myers (1990)的论文<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Suffix%20arrays%20a%20new%20method%20for%20on-line%20string%20searches.pdf">Suffix arrays a new method for on-line string searches</a> 引入，作为后缀树的一种简单且节省空间的替代方案。 它们是由 Gaston Gonnet 于 1987 年独立发现的，名为 PAT 阵列（Gonnet、Baeza-Yates &amp; Snider 1992）。</p>
+<p>  <a target="_blank" rel="noopener" href="https://zhizeli.github.io/">李志泽</a>、李建和霍红卫在2016年的论文<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Optimal_inplace_suffix_sorting_Zhize_Li.pdf">Optimal In-Place Suffix Sorting</a>给出了第一个时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、空间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord">1</span><span class="mclose">)</span></span></span></span> 的后缀数组构造算法，该算法在时间和空间上都是最优的。</p>
+<p>  增强型后缀数组 (ESA) 是带有附加表的后缀数组，可重现后缀树的完整功能，同时保留相同的时间和内存复杂性。字符串所有后缀的子集的后缀数组称为稀疏后缀数组。人们已经开发了多种概率算法来最大限度地减少额外的内存使用，包括最佳时间和内存算法。</p>
+<p>  后缀数组（Suffix Array）主要关系到两个数组：sa 和 rk。其中，sa[i] 表示将所有后缀排序后第 i 小的后缀的编号，也是所说的后缀数组，后文也称编号数组 sa；rk[i] 表示后缀 i 的排名，是重要的辅助数组，后文也称排名数组 rk。这两个数组满足性质：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>a</mi><mo stretchy="false">[</mo><mi>r</mi><mi>k</mi><mo stretchy="false">[</mo><mi>i</mi><mo stretchy="false">]</mo><mo stretchy="false">]</mo><mo>=</mo><mi>r</mi><mi>k</mi><mo stretchy="false">[</mo><mi>s</mi><mi>a</mi><mo stretchy="false">[</mo><mi>i</mi><mo stretchy="false">]</mo><mo stretchy="false">]</mo><mo>=</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">sa[rk[i]] = rk[sa[i]] = i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">a</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mopen">[</span><span class="mord mathnormal">i</span><span class="mclose">]</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mopen">[</span><span class="mord mathnormal">s</span><span class="mord mathnormal">a</span><span class="mopen">[</span><span class="mord mathnormal">i</span><span class="mclose">]</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/suffix%20array1.png" alt="sa和rk的示例" /></p>
+<p>  后缀数组有几种不同时间复杂度的实现，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n^2 \times logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo>×</mo><mi>l</mi><mi>o</mi><msup><mi>g</mi><mrow><mn>2</mn><mi>n</mi></mrow></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n \times log^{2n})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n \times logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> ，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 时间复杂度的算法有<a target="_blank" rel="noopener" href="https://riteme.site/blog/2016-6-19/sais.html">SA-IS</a>和DC3等。</p>
+<h3 id="leetcode1163-按字典序排在最后的子串"><a class="markdownIt-Anchor" href="#leetcode1163-按字典序排在最后的子串"></a> LeetCode1163 按字典序排在最后的子串</h3>
+<p>  给你一个字符串 s ，找出它的所有子串并按字典序排列，返回排在最后的那个子串。</p>
+<h3 id="最大字典序"><a class="markdownIt-Anchor" href="#最大字典序"></a> 最大字典序</h3>
+<p>  给定两个字符串str1和str2，想把str2整体插入到str1中的某个位置，形成最大的字典序返回字典序最大的结果。<font color="red">str1的长度远大于str2的长度?</font></p>
+<h3 id="k个正数拼接最大值"><a class="markdownIt-Anchor" href="#k个正数拼接最大值"></a> K个正数拼接最大值</h3>
+<p>  给两个长度分别为M和N的整型数组nums1和nums2，其中每个值都不大于9，再给定一个正数K。 你可以在nums1和nums2中挑选数字，要求一共挑选K个，并且要从左到右挑。返回所有可能的结果中，代表最大数字的结果。</p>
+<h3 id="最长公共子串"><a class="markdownIt-Anchor" href="#最长公共子串"></a> 最长公共子串</h3>
+<p>  最长公共子串问题是面试常见题目之一，假设str1长度N，str2长度M，求最长公共子串的长度。动态规划可以达到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>N</mi><mo>×</mo><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(N \times M)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span> 时间复杂度，但最优解后缀数组加height数组可以达到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>N</mi><mo>+</mo><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(N+M)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span> 时间复杂度。</p>
 
     </div>
 
@@ -268,8 +265,8 @@ str1的长度远大于str2的长度</p>
       <i class="fa fa-chevron-left"></i> B+Tree
     </a></div>
       <div class="post-nav-item">
-    <a href="/2023/08/01/DataStructuresAndAlgorithms/34%E3%80%81%E5%8D%A1%E7%89%B9%E5%85%B0%E6%95%B0/" rel="next" title="解题规律">
-      解题规律 <i class="fa fa-chevron-right"></i>
+    <a href="/2023/08/01/DataStructuresAndAlgorithms/34%E3%80%81%E5%8D%A1%E7%89%B9%E5%85%B0%E6%95%B0/" rel="next" title="卡特兰数">
+      卡特兰数 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -329,6 +326,7 @@ str1的长度远大于str2的长度</p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#leetcode1163-%E6%8C%89%E5%AD%97%E5%85%B8%E5%BA%8F%E6%8E%92%E5%9C%A8%E6%9C%80%E5%90%8E%E7%9A%84%E5%AD%90%E4%B8%B2"><span class="nav-number">1.</span> <span class="nav-text"> LeetCode1163 按字典序排在最后的子串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%AD%97%E5%85%B8%E5%BA%8F"><span class="nav-number">2.</span> <span class="nav-text"> 最大字典序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#k%E4%B8%AA%E6%AD%A3%E6%95%B0%E6%8B%BC%E6%8E%A5%E6%9C%80%E5%A4%A7%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text"> K个正数拼接最大值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E4%B8%B2"><span class="nav-number">4.</span> <span class="nav-text"> 最长公共子串</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -342,20 +340,20 @@ str1的长度远大于str2的长度</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

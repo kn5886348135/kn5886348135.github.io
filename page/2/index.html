@@ -165,6 +165,294 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/" class="post-title-link" itemprop="url">ConCurrentSkipListSet</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-02 09:33:03 / Modified: 18:10:28" itemprop="dateCreated datePublished" datetime="2023-08-02T09:33:03+08:00">2023-08-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  ConCurrentSkipListSet是一个基于ConCurrentSkipListMap实现的可扩展的NavigableSet。set中的元素按照自然顺序、构造函数传入的Comparator排序。JDK中的这个类是由<a target="_blank" rel="noopener" href="https://gee.cs.oswego.edu/">Doug Lea</a>实现的，这个实现提供了contains、add、remove操作预期的平均时间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，并且是线程安全的。<font color="red">Iterator和Spliterator是弱一致的，升序视图和迭代器比降序要快。(为什么？Spliterator是什么？)</font></p>
+<p>  与多数集合不同，size方法不是常数时间复杂度。因为并发集合的异步特点，确定当前集合数量需要遍历元素，所以在集合正在被修改时遍历元素会报告不准确的结果。批量操作addAll、removeAll、retainAll、containsAll、equals、toArray不保证以原子方式执行。例如迭代器遍历和addAll同时进行时可能仅查看到部分添加的元素。这个类实现了Set、Iterator接口的所有可选方法，和其他大多数并发集合一样，不支持新增null元素，因为null作为key或者返回值不能和缺少元素区可靠地分开。</p>
+<p>  ConCurrentSkipListMap是SkipList的并发变种实现，containsKey、get、put、remove等其他变种操作的期望平均时间复杂度都是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>。插入、删除、更新和访问操作都支持多线程安全地并发执行，基于多层链表向右、向下的特点，是一种无锁并发实现。所有这个类中的方法返回的Map.Entry键值对和视图表示当时的快照，不支持Entry.setValue方法，但是可以使用put、putIfAbsent或者replace修改。</p>
+<p>  ConCurrentSkipListMap实现了一个树状二维链接跳跃列表，其中索引级别在与保存数据的基本节点不同的节点中表示。 采用这种方法而不是通常的基于数组的结构有两个原因：1）基于数组的实现似乎会遇到更多的复杂性和开销2）对于频繁遍历的索引列表，我们可以使用比基本列表更便宜的算法。</p>
+<figure class="highlight java"><figcaption><span>Doc</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Head nodes          Index nodes</span><br><span class="line">+-+    right        +-+                      +-+</span><br><span class="line">|<span class="number">2</span>|----------------&gt;| |---------------------&gt;| |-&gt;<span class="literal">null</span></span><br><span class="line">+-+                 +-+                      +-+</span><br><span class="line">| down              |                        |</span><br><span class="line">v                   v                        v</span><br><span class="line">+-+            +-+  +-+       +-+            +-+       +-+</span><br><span class="line">|<span class="number">1</span>|-----------&gt;| |-&gt;| |------&gt;| |-----------&gt;| |------&gt;| |-&gt;<span class="literal">null</span></span><br><span class="line">+-+            +-+  +-+       +-+            +-+       +-+</span><br><span class="line">v              |    |         |              |         |</span><br><span class="line">Nodes  next     v    v         v              v         v</span><br><span class="line">+-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+</span><br><span class="line">| |-&gt;|A|-&gt;|B|-&gt;|C|-&gt;|D|-&gt;|E|-&gt;|F|-&gt;|G|-&gt;|H|-&gt;|I|-&gt;|J|-&gt;|K|-&gt;<span class="literal">null</span></span><br><span class="line">+-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+  +-+</span><br></pre></td></tr></table></figure>
+<p>  基础列表使用HM算法的变种(a variant of the HM linked ordered set algorithm)，参考Tim Harris <a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/research/srg/netos/papers/2001-caslists.pdf">A pragmatic implementation of non-blocking linked lists</a>和Maged Michael <a target="_blank" rel="noopener" href="https://docs.rs/crate/crossbeam/0.2.4/source/hash-and-skip.pdf">High Performance Dynamic Lock-Free Hash Tables and List-Based Sets</a>。这些列表的基本思想是标记已删除节点的next指针，避插入时的并发冲突，以及遍历时跟踪三元组（前驱节点、当前节点、后继节点）以便检测何时以及如何取消链接这些已删除的节点。</p>
+<p>  节点使用直接可CAS的next指针而不是使用标记位来标记列表删除（使用 AtomicMarkedReference 会很慢并且占用空间）。删除时，它们拼接到另一个可以被认为代表一个标记指针的节点中（通过使用其他不可能的字段值表示），而不是标记一个指针。使用普通节点大致类似于标记指针的&quot;装箱&quot;实现，但仅在删除节点时才使用新节点，而不是每个节点都使用新节点关联。这需要更少的空间并支持更快遍历。即使JVM更好地支持标记引用，使用这种技术的遍历可能仍然更快，因为任何搜索只需要比其他所需的节点（检查尾随标记）多预读一个节点，而不是在每次读取时取消屏蔽标记位或其他内容。</p>
+<p>  这种方法保留了 HM 算法中所需的基本属性，即更改已删除节点的下一个指针，以便该节点的任何其他 CAS 都会失败，但通过更改指针以指向不同的节点来实现该想法，而不是通过标记它 。虽然可以通过定义不具有键/值字段的标记节点来进一步压缩空间，但不值得额外的类型测试开销。 删除标记在遍历过程中很少遇到，并且通常会很快被垃圾收集。（请注意，此技术在没有垃圾收集的系统中无法正常工作。）</p>
+<p>  除了使用删除标记之外，列表还使用值字段的空值来指示删除，其风格类似于典型的延迟删除方案。如果节点的值为 null，则即使它仍然可访问，它也会被视为逻辑上已删除并被忽略。这可以保持对并发替换与删除操作的正确控制——如果删除通过使字段为空，则replace的尝试必须失败，并且删除必须返回字段中保存的最后一个非空值。 （注意：此处使用 Null，而不是某些特殊标记，因为它恰好符合 Map API 的要求，即如果没有映射，则方法 get 返回 null，这允许节点即使在删除时仍保持并发可读 .在这里使用任何其他标记值在最坏情况下会很混乱。）</p>
+<p>  删除带有前驱节点b，后继节点f的节点n的事件，初始状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+       +------+      +------+</span><br><span class="line">...  |   b  |------&gt;|   n  |-----&gt;|   f  | ...</span><br><span class="line">     +------+       +------+      +------+</span><br></pre></td></tr></table></figure>
+<ol>
+<li>CAS操作n 的 value 字段从非 null 变为 null。从此时起，遇到该节点的任何公共操作都不会认为此映射存在。但是，其他正在进行的插入和删除操作仍可能会修改 n 的next指针。</li>
+<li>CAS操作n的next指针指向新的标记节点。从此时起，n 上不能再添加其他节点。这避免了基于 CAS 的链表中的删除错误。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+       +------+      +------+       +------+</span><br><span class="line">...  |   b  |------&gt;|   n  |-----&gt;|marker|------&gt;|   f  | ...</span><br><span class="line">     +------+       +------+      +------+       +------+</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>CAS操作 b 的下一个指针位于 n 及其标记上。从此时起，不再有新的遍历遇到n，并且n和marker最终可以被GC。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">     +------+                                    +------+</span><br><span class="line">...  |   b  |-----------------------------------&gt;|   f  | ...</span><br><span class="line">     +------+                                    +------+</span><br></pre></td></tr></table></figure>
+<p>  步骤 1 的失败会导致简单的重试，因为与其他操作的竞争失败。 步骤 2-3 可能会失败，因为其他一些线程在遍历期间注意到具有空值的节点并通过标记和/或取消链接来帮助解决。 这种帮助确保没有线程会因等待删除线程的进度而卡住。标记节点的使用使帮助代码稍微复杂化，因为遍历必须跟踪最多四个节点（b，n，marker，f）的一致读取，而不仅仅是（b，n，f），尽管标记的下一个字段是不可变的，并且一旦下一个字段被CAS操作指向a 标记，它永远不会再改变，所以这需要较少的关注。</p>
+<p>  跳过列表向该方案添加索引，以便基本级别遍历从靠近被发现、插入或删除的位置开始——通常基本级别遍历仅遍历几个节点。 这不会改变基本算法，除了需要确保基本遍历从未（结构上）删除的前辈（此处为 b）开始，否则在处理删除后重试。</p>
+<p>  索引层级被维护为具有volatile修饰的next字段的列表，使用 CAS 进行链接和取消链接。索引列表操作中允许存在竞争，这些竞争（很少）可能无法链接到新索引节点或删除索引节点。（当然，我们不能对数据节点执行此操作。）但是，即使发生这种情况，索引列表仍保持有序，因此可以正确地用作索引。这可能会影响性能，但由于跳跃列表是概率性的，因此最终结果是在争用情况下，有效“p”值可能低于其标称值。而且竞争窗口保持得足够小，因此在实践中，即使在很多竞争的情况下，这些失败也很少见。</p>
+<p>  由于索引，重试（对于基列表和索引列表）相对便宜，这一事实允许对重试逻辑进行一些小的简化。遍历重新启动是在大多数“帮助”CAS 后执行的。 这并不总是绝对必要的，但隐式回退往往有助于减少其他下游失败的 CAS，足以超过重新启动成本。这使最坏的情况变得更糟，但似乎甚至改善了激烈竞争的情况。</p>
+<p>  与大多数跳跃列表实现不同，这里的索引插入和删除需要在基本级别操作之后发生单独的遍历，以添加或删除索引节点。 这增加了单线程开销，但通过缩小干扰窗口来提高竞争的多线程性能，并允许删除以确保从公共删除操作返回时所有索引节点都将变得不可访问，从而避免不必要的垃圾保留。 这在这里比在其他一些数据结构中更重要，因为我们无法将引用用户键的节点字段清空，因为它们可能仍会被其他正在进行的遍历读取。</p>
+<p>  索引使用跳过列表参数，在使用比平常稀疏的索引的同时保持良好的搜索性能：硬连线参数 k=1，p=0.5（参见方法 doPut）意味着大约四分之一的节点具有索引。 在那些这样做的人中，一半有一个级别，四分之一有两个级别，依此类推（参见 Pugh 的 Skip List Cookbook，第 3.4 节）。 映射的预期总空间需求略小于 java.util.TreeMap 的当前实现。</p>
+<p>  更改索引的级别（即树状结构的高度）也使用 CAS。 头部索引的初始级别/高度为 1。 创建高度大于当前级别的索引时，会通过在新的最顶层头部上执行 CAS 操作，为头部索引添加一个级别。 为了在大量删除后保持良好的性能，如果最顶层似乎是空的，删除方法会试探性地尝试降低高度。这可能会遇到可能（但很少见）降低并“丢失”一个级别的竞争。 即将包含一个索引（这样就永远不会遇到）。 这不会造成结构性损害，而且在实践中似乎是比允许水平不受限制增长更好的选择。</p>
+<p>  所有这些的代码比您想要的更冗长。 大多数操作需要定位元素（或插入元素的位置）。 执行此操作的代码无法很好地分解出来，因为后续使用需要前驱和/或后继和/或值字段的快照，而这些字段无法一次全部返回，至少在不创建另一个对象来保存它们的情况下无法返回 – 对于基本的内部搜索操作来说，创建如此小的对象是一个特别糟糕的主意，因为它会增加 GC 开销。 （这是我为数不多的希望 Java 有宏的情况之一。）相反，一些遍历代码在插入和删除操作中交错进行。 处理所有重试条件的控制逻辑有时是曲折的。 大多数搜索分为两部分。 findPredecessor() 仅搜索索引节点，返回键的基本级前驱。 findNode() 完成基本级别的搜索。 即使进行了这种分解，仍然存在大量近乎重复的代码来处理变体。</p>
+<p>  为了生成随机值而不跨线程干扰，我们使用 JDK 内线程本地随机支持（通过“二级种子”，以避免干扰用户级 ThreadLocalRandom。）</p>
+<p>  该类的早期版本将不可比较的键与其比较器一起包装，以在使用比较器与可比较对象时模拟可比较对象。 然而，JVM 现在似乎可以更好地处理将比较器与可比较的选择注入搜索循环中。 静态方法 cpr(comparator, x, y) 用于所有比较，只要比较器参数设置在循环之外（因此有时作为参数传递给内部方法），该方法就可以很好地工作，以避免字段重新读取。</p>
+<p>  与该算法功能相似的论文，<a target="_blank" rel="noopener" href="http://www.cse.yorku.ca/~ruppert/Mikhail.pdf">Mikhail Fomitchev的论文</a>，<a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Keir Fraser的论文</a>, <a target="_blank" rel="noopener" href="https://research.chalmers.se/en/person/phs">Hakan Sundell的论文</a>。</p>
+<p>  鉴于使用了树状索引节点，您可能想知道为什么不使用某种搜索树来代替，这将支持更快的搜索操作。原因是没有已知的有效的搜索树无锁插入和删除算法。索引节点“向下”链接的不变性（与真实树中可变的“左”字段相反）使得仅使用 CAS 操作即可处理此问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 变量的解释</span></span><br><span class="line">Node:         b, n, f    <span class="keyword">for</span>  predecessor, node, successor</span><br><span class="line">Index:        q, r, d    <span class="keyword">for</span> index node, right, down.</span><br><span class="line">              t          <span class="keyword">for</span> another index node</span><br><span class="line">Head:         h</span><br><span class="line">Levels:       j</span><br><span class="line">Keys:         k, key</span><br><span class="line">Values:       v, value</span><br><span class="line">Comparisons:  c</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SkipList的节点</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Node</span>&lt;K,V&gt; &#123;</span><br><span class="line">        <span class="keyword">final</span> K key;</span><br><span class="line">        <span class="keyword">volatile</span> Object value;</span><br><span class="line">        <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示链表层级的节点</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Index</span>&lt;K,V&gt; &#123;</span><br><span class="line">        <span class="keyword">final</span> Node&lt;K,V&gt; node;</span><br><span class="line">        <span class="keyword">final</span> Index&lt;K,V&gt; down;</span><br><span class="line">        <span class="keyword">volatile</span> Index&lt;K,V&gt; right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  Java语法中break outer，break splice的用法？</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/33%E3%80%81%E5%AF%B9%E6%95%B0%E5%99%A8%E5%92%8C%E5%88%86%E6%B2%BB1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/01/DataStructuresAndAlgorithms/33%E3%80%81%E5%AF%B9%E6%95%B0%E5%99%A8%E5%92%8C%E5%88%86%E6%B2%BB1/" class="post-title-link" itemprop="url">对数器和分治</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-08-01 14:46:24" itemprop="dateCreated datePublished" datetime="2023-08-01T14:46:24+08:00">2023-08-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-12 17:58:48" itemprop="dateModified" datetime="2023-08-12T17:58:48+08:00">2023-08-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="对数器找规律"><a class="markdownIt-Anchor" href="#对数器找规律"></a> 对数器找规律</h3>
+<ol>
+<li>输入参数类型简单，并且只有一个实际参数</li>
+<li>要求的返回值类型也简单，并且只有一个</li>
+<li>用暴力方法，把输入参数对应的返回值，打印出来看看，进而优化code</li>
+</ol>
+<h3 id="两个袋子装苹果"><a class="markdownIt-Anchor" href="#两个袋子装苹果"></a> 两个袋子装苹果</h3>
+<p>  小虎去买苹果，商店只提供两种类型的塑料袋，每种类型都有任意数量。这两种袋子分别是能装下6个苹果的袋子和能装下8个苹果的袋子。小虎可以自由使用两种袋子来装苹果，但是小虎有强迫症，他要求自己使用的袋子数量必须最少，且使用的每个袋子必须装满。<br />
+  给定一个正整数N，返回至少使用多少袋子。如果N无法让使用的每个袋子必须装满，返回-1。</p>
+<h3 id="牛和羊吃草"><a class="markdownIt-Anchor" href="#牛和羊吃草"></a> 牛和羊吃草</h3>
+<p>  给定一个正整数N，表示有N份青草统一堆放在仓库里。有一只牛和一只羊，牛先吃，羊后吃，它俩轮流吃草。不管是牛还是羊，每一轮能吃的草量必须是：1，4，16，64…(4的某次方)。谁最先把草吃完，谁获胜。假设牛和羊都绝顶聪明，都想赢，都会做出理性的决定。根据唯一的参数N，返回谁会赢。</p>
+<h3 id="连续正数和的数"><a class="markdownIt-Anchor" href="#连续正数和的数"></a> 连续正数和的数</h3>
+<p>  定义一种数：可以表示成若干（数量&gt;1）连续正数和的数。比如:5 = 2+3，5就是这样的数，12 = 3+4+5，12就是这样的数。1不是这样的数，因为要求数量大于1个、连续正数和。2 = 1 + 1，2也不是，因为等号右边不是连续正数。给定一个参数N，返回是不是可以表示成若干连续正数和的数。</p>
+<h3 id="根据数据规模猜解法"><a class="markdownIt-Anchor" href="#根据数据规模猜解法"></a> 根据数据规模猜解法</h3>
+<ol>
+<li>C/C++，1秒处理的指令条数为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>8</mn></msup></mrow><annotation encoding="application/x-tex">10^8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span></span></span></span></li>
+<li>Java等语言，1~4秒处理的指令条数为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>8</mn></msup></mrow><annotation encoding="application/x-tex">10^8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span></span></span></span></li>
+<li>利用数据规模判断处理时间</li>
+</ol>
+<h3 id="花钱最少打怪兽"><a class="markdownIt-Anchor" href="#花钱最少打怪兽"></a> 花钱最少打怪兽</h3>
+<p>  int[] d，d[i]：i号怪兽的能力，int[] p，p[i]：i号怪兽要求的钱。开始时你的能力是0，你的目标是从0号怪兽开始，通过所有的怪兽。如果你当前的能力，小于i号怪兽的能力，你必须付出p[i]的钱，贿赂这个怪兽，然后怪兽就会加入你，他的能力直接累加到你的能力上；如果你当前的能力，大于等于i号怪兽的能力，你可以选择直接通过，你的能力并不会下降，你也可以选择贿赂这个怪兽，然后怪兽就会加入你，他的能力直接累加到你的能力上。返回通过所有的怪兽，需要花的最小钱数。</p>
+<h3 id="根据数据状况猜解法续-以及分治"><a class="markdownIt-Anchor" href="#根据数据状况猜解法续-以及分治"></a> 根据数据状况猜解法（续）、以及分治</h3>
+<p><strong>分治算法的应用场景</strong></p>
+<ol>
+<li>数据量整体做尝试可能性太多，跑不完</li>
+<li>数据分成多个块（常见是两块）之后，各自的可能性并不算多</li>
+<li>合并多个块各自信息的整合过程不复杂</li>
+</ol>
+<h3 id="子序列累加和模m的最大值"><a class="markdownIt-Anchor" href="#子序列累加和模m的最大值"></a> 子序列累加和模m的最大值</h3>
+<p>  给定一个非负数组arr，和一个正数m。返回arr的所有子序列中累加和模m之后的最大值。</p>
+<h3 id="背包放零食"><a class="markdownIt-Anchor" href="#背包放零食"></a> 背包放零食</h3>
+<p>  牛牛家里一共有n袋零食, 第i袋零食体积为v[i]，背包容量为w。牛牛想知道在总体积不超过背包容量的情况下,一共有多少种零食放法，体积为0也算一种放法。1 ≤ n ≤ 30, 1 ≤ w ≤ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>1</mn><msup><mn>0</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2 \times 10^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>，v[i] (0 ≤ v[i] ≤ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">10^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/34%E3%80%81%E5%8D%A1%E7%89%B9%E5%85%B0%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/01/DataStructuresAndAlgorithms/34%E3%80%81%E5%8D%A1%E7%89%B9%E5%85%B0%E6%95%B0/" class="post-title-link" itemprop="url">卡特兰数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-08-01 14:46:24" itemprop="dateCreated datePublished" datetime="2023-08-01T14:46:24+08:00">2023-08-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-12 18:01:55" itemprop="dateModified" datetime="2023-08-12T18:01:55+08:00">2023-08-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="卡特兰数"><a class="markdownIt-Anchor" href="#卡特兰数"></a> 卡特兰数</h3>
+<p>  卡特兰数又称卡塔兰数，英文名Catalan number，是组合数学中一个常出现在各种计数问题中出现的数列。其前几项为：1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796, 58786, 208012, 742900, 2674440, 9694845, 35357670, 129644790, 477638700, 1767263190, 6564120420, 24466267020, 91482563640, 343059613650, 1289904147324, 4861946401452, …<br />
+  k(0) = 1, k(1) = 1时，如果接下来的项满足：k(n) = k(0) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> k(n - 1) + k(1) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> k(n - 2) + … + k(n - 2) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> k(1) + k(n - 1) <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">×</span></span></span></span> k(0)或者k(n) = C(2n, n) - C(2n, n-1)或者k(n) = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>C</mi><mo stretchy="false">(</mo><mn>2</mn><mi>n</mi><mo separator="true">,</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><mrow><mo stretchy="false">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{C(2n, n)}{(n + 1)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.53em;vertical-align:-0.52em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">C</span><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mord mathnormal mtight">n</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight">n</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，C是排列组合。就说这个表达式，满足卡特兰数，常用的是范式1和2，3几乎不会使用到。</p>
+<h3 id="前缀串1比0多"><a class="markdownIt-Anchor" href="#前缀串1比0多"></a> 前缀串1比0多</h3>
+<p>  假设给你N个0，和N个1，你必须用全部数字拼序列。返回有多少个序列满足：任何前缀串，1的数量都不少于0的数量。(0换成左括号(，1换成右括号))</p>
+<h3 id="不同二叉树数量"><a class="markdownIt-Anchor" href="#不同二叉树数量"></a> 不同二叉树数量</h3>
+<p>  有N个二叉树节点，每个节点彼此之间无任何差别。返回由N个二叉树节点，组成的不同结构数量是多少？</p>
+<p>  卡特兰数的算法原型在解决问题时需要观察(人员站队问题、出栈入栈问题)</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/39%E3%80%81Suffix%20Array/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -196,7 +484,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-10 16:40:08" itemprop="dateModified" datetime="2023-08-10T16:40:08+08:00">2023-08-10</time>
+                <time title="Modified: 2023-08-13 00:25:11" itemprop="dateModified" datetime="2023-08-13T00:25:11+08:00">2023-08-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,26 +507,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>后缀数组<br />
-介绍用DC3算法生成后缀数组的流程<br />
-字符串mississippi<br />
-oi-wiki.org关于后缀数组的介绍</p>
-<p>题目一<br />
-<a target="_blank" rel="noopener" href="https://leetcode.com/problems/last-substring-in-lexicographical-order/">https://leetcode.com/problems/last-substring-in-lexicographical-order/</a><br />
-</br></p>
-<p>题目一<br />
-给定两个字符串str1和str2，<br />
-想把str2整体插入到str1中的某个位置<br />
-形成最大的字典序<br />
-返回字典序最大的结果<br />
-str1的长度远大于str2的长度</p>
-<p>题目二<br />
-给两个长度分别为M和N的整型数组nums1和nums2，其中每个值都不大于9，再给定一个正数K。 你可以在nums1和nums2中挑选数字，要求一共挑选K个，并且要从左到右挑。返回所有可能的结果中，代表最大数字的结果。</p>
-<p>题目三<br />
-最长公共子串问题是面试常见题目之一，假设str1长度N，str2长度M<br />
-一般在面试场上回答出O(N<em>M)的解法已经是比较优秀了<br />
-因为得到O(N</em>M)的解法，就已经需要用到动态规划了<br />
-但其实这个问题的最优解是O(N+M)，需要用到后缀数组+height数组</p>
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/string/sa/">后缀数组</a>是字符串所有后缀的排序数组。 它是一种用于全文索引、数据压缩算法和文献计量学等领域的数据结构。</p>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Suffix_array">Suffix Array</a>由 Manber &amp; Myers (1990)的论文<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Suffix%20arrays%20a%20new%20method%20for%20on-line%20string%20searches.pdf">Suffix arrays a new method for on-line string searches</a> 引入，作为后缀树的一种简单且节省空间的替代方案。 它们是由 Gaston Gonnet 于 1987 年独立发现的，名为 PAT 阵列（Gonnet、Baeza-Yates &amp; Snider 1992）。</p>
+<p>  <a target="_blank" rel="noopener" href="https://zhizeli.github.io/">李志泽</a>、李建和霍红卫在2016年的论文<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Optimal_inplace_suffix_sorting_Zhize_Li.pdf">Optimal In-Place Suffix Sorting</a>给出了第一个时间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、空间复杂度 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord">1</span><span class="mclose">)</span></span></span></span> 的后缀数组构造算法，该算法在时间和空间上都是最优的。</p>
+<p>  增强型后缀数组 (ESA) 是带有附加表的后缀数组，可重现后缀树的完整功能，同时保留相同的时间和内存复杂性。字符串所有后缀的子集的后缀数组称为稀疏后缀数组。人们已经开发了多种概率算法来最大限度地减少额外的内存使用，包括最佳时间和内存算法。</p>
+<p>  后缀数组（Suffix Array）主要关系到两个数组：sa 和 rk。其中，sa[i] 表示将所有后缀排序后第 i 小的后缀的编号，也是所说的后缀数组，后文也称编号数组 sa；rk[i] 表示后缀 i 的排名，是重要的辅助数组，后文也称排名数组 rk。这两个数组满足性质：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>a</mi><mo stretchy="false">[</mo><mi>r</mi><mi>k</mi><mo stretchy="false">[</mo><mi>i</mi><mo stretchy="false">]</mo><mo stretchy="false">]</mo><mo>=</mo><mi>r</mi><mi>k</mi><mo stretchy="false">[</mo><mi>s</mi><mi>a</mi><mo stretchy="false">[</mo><mi>i</mi><mo stretchy="false">]</mo><mo stretchy="false">]</mo><mo>=</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">sa[rk[i]] = rk[sa[i]] = i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">a</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mopen">[</span><span class="mord mathnormal">i</span><span class="mclose">]</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mopen">[</span><span class="mord mathnormal">s</span><span class="mord mathnormal">a</span><span class="mopen">[</span><span class="mord mathnormal">i</span><span class="mclose">]</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/suffix%20array1.png" alt="sa和rk的示例" /></p>
+<p>  后缀数组有几种不同时间复杂度的实现，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n^2 \times logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo>×</mo><mi>l</mi><mi>o</mi><msup><mi>g</mi><mrow><mn>2</mn><mi>n</mi></mrow></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n \times log^{2n})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo>×</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n \times logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 、<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> ，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 时间复杂度的算法有<a target="_blank" rel="noopener" href="https://riteme.site/blog/2016-6-19/sais.html">SA-IS</a>和DC3等。</p>
+<h3 id="leetcode1163-按字典序排在最后的子串"><a class="markdownIt-Anchor" href="#leetcode1163-按字典序排在最后的子串"></a> LeetCode1163 按字典序排在最后的子串</h3>
+<p>  给你一个字符串 s ，找出它的所有子串并按字典序排列，返回排在最后的那个子串。</p>
+<h3 id="最大字典序"><a class="markdownIt-Anchor" href="#最大字典序"></a> 最大字典序</h3>
+<p>  给定两个字符串str1和str2，想把str2整体插入到str1中的某个位置，形成最大的字典序返回字典序最大的结果。<font color="red">str1的长度远大于str2的长度?</font></p>
+<h3 id="k个正数拼接最大值"><a class="markdownIt-Anchor" href="#k个正数拼接最大值"></a> K个正数拼接最大值</h3>
+<p>  给两个长度分别为M和N的整型数组nums1和nums2，其中每个值都不大于9，再给定一个正数K。 你可以在nums1和nums2中挑选数字，要求一共挑选K个，并且要从左到右挑。返回所有可能的结果中，代表最大数字的结果。</p>
+<h3 id="最长公共子串"><a class="markdownIt-Anchor" href="#最长公共子串"></a> 最长公共子串</h3>
+<p>  最长公共子串问题是面试常见题目之一，假设str1长度N，str2长度M，求最长公共子串的长度。动态规划可以达到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>N</mi><mo>×</mo><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(N \times M)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span> 时间复杂度，但最优解后缀数组加height数组可以达到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>N</mi><mo>+</mo><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(N+M)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span> 时间复杂度。</p>
 
       
     </div>
@@ -289,7 +572,7 @@ str1的长度远大于str2的长度</p>
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-10 16:03:47" itemprop="dateModified" datetime="2023-08-10T16:03:47+08:00">2023-08-10</time>
+                <time title="Modified: 2023-08-12 20:42:21" itemprop="dateModified" datetime="2023-08-12T20:42:21+08:00">2023-08-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -312,7 +595,7 @@ str1的长度远大于str2的长度</p>
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/bplus-tree/">B+ 树</a>(<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/B-tree">B+Tree</a>)是一种 m 叉排序树，每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。<a target="_blank" rel="noopener" href="https://github.com/begeekmyfriend/bplustree">B+Tree的C++实现bplustree</a>。</p>
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/bplus-tree/">B+ 树</a>(<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/B-tree">B+Tree</a>)是一种 m 叉排序树，降低了索引结构的深度，避免传统二叉树结构中绝大部分的随机访问操作，从而有效减少了磁盘磁头的寻道次数，降低了外存访问延迟对性能的影响。每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+树是1970年Rudolf Bayer教授在<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Organization%20and%20maintenance%20of%20large%20ordered%20indices.pdf">Organization and Maintenance of Large Ordered Indices</a>中提出的。<a target="_blank" rel="noopener" href="https://github.com/begeekmyfriend/bplustree">B+Tree的C++实现bplustree</a>。</p>
 <p>  B+ 树可以被视为 B 树，但每个节点仅包含键（而不是键值对），并且在底部添加了具有链接叶子节点的指针。</p>
 <p>  B+ 树的主要价值在于存储数据，以便在面向块的存储上下文（特别是文件系统）中进行高效检索。 这主要是因为与二叉搜索树不同，B+ 树具有非常高的扇出（节点中指向子节点的指针数量，通常约为 100 或更多），这减少了在树中找到一个元素所需的 I/O 操作次数。B+ 树比 B 树更适合实际应用中操作系统的文件索引和数据库索引。目前现代关系型数据库最广泛的支持索引结构就是 B+ 树。</p>
 <p>  B+ 树的特点是能够保持数据稳定有序，其插入与修改拥有较稳定的对数时间复杂度。B+ 树元素自底向上插入，这与二叉树恰好相反。</p>
@@ -321,7 +604,7 @@ str1的长度远大于str2的长度</p>
 <li>有 n 棵子树的节点中含有 n-1 个关键字（即将区间分为 n 个子区间，每个子区间对应一棵子树）。</li>
 <li>所有叶子节点中包含了全部关键字的信息，及指向含这些关键字记录的指针，且叶子节点本身依关键字的大小自小而大顺序链接。</li>
 <li>所有的非叶子节点可以看成是索引部分，节点中仅含有其子树（根节点）中的最大（或最小）关键字。</li>
-<li>除根节点外，其他所有节点中所含关键字的个数最少有 $ \lceil \dfrac{m}{2} \rceil $（注意：B 树中除根以外的所有非叶子节点至少有 $ \lceil \dfrac{m}{2} \rceil $ 棵子树）。</li>
+<li>除根节点外，其他所有节点中所含关键字的个数最少有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>m</mi><mn>2</mn></mfrac></mstyle><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \dfrac{m}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>（注意：B 树中除根以外的所有非叶子节点至少有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>m</mi><mn>2</mn></mfrac></mstyle><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \dfrac{m}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span> 棵子树）。</li>
 <li>B+ 树为了方便范围查询，叶子节点之间还用指针串联起来。</li>
 </ol>
 <h3 id="b-树相比于-b-树的优势"><a class="markdownIt-Anchor" href="#b-树相比于-b-树的优势"></a> B+ 树相比于 B 树的优势</h3>
@@ -339,6 +622,19 @@ str1的长度远大于str2的长度</p>
 <h3 id="b-tree的删除"><a class="markdownIt-Anchor" href="#b-tree的删除"></a> B+ Tree的删除</h3>
 <p>// TODO</p>
 <h3 id="btree的并发控制"><a class="markdownIt-Anchor" href="#btree的并发控制"></a> B+Tree的并发控制</h3>
+<p>  索引结构作为影响系统性能的关键因素之一，对数据库系统在高并发场景下的性能表现具有重大的影响。从1970年B+树提出至今，学术界有大量论文尝试优化B+树在多线程场景下的性能，这些文章被广泛发表在数据库/系统领域顶级会议VLDB/SIGMOD/EuroSys上。<br />
+<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/414141859">B+树并发控制机制的前世今生</a>讲述了B+树的并发控制历史，参考文献</p>
+<ol>
+<li>Bayer R, Mccreight E. <a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Organization%20and%20maintenance%20of%20large%20ordered%20indices.pdf">Organization and Maintenance of Large Ordered Indices</a>// ACM Sigfidet. ACM, 1970:107-141.</li>
+<li>Samadi B. B-trees in a system with multiple users ☆[J]. Information Processing Letters, 1976, 5(4):107-112.</li>
+<li>Bayer R, Schkolnick M. Concurrency of operations on B -trees[J]. Acta Informatica, 1977, 9(1):1-21.</li>
+<li>Lehman P L, Yao S B. Efficient locking for concurrent operations on B-trees[J]. Acm Transactions on Database Systems, 1981, 6(4):650-670.</li>
+<li>Memory Latencies on Intel® Xeon® Processor E5-4600 and E7-4800 product families <a target="_blank" rel="noopener" href="https://software.intel.com/en-us/blogs/2014/01/28/memory-latencies-on-intel-xeon-processor-e5-4600-and-e7-4800-product-families">https://software.intel.com/en-us/blogs/2014/01/28/memory-latencies-on-intel-xeon-processor-e5-4600-and-e7-4800-product-families</a></li>
+<li>Cha S K, Hwang S, Kim K, et al. Cache-Conscious Concurrency Control of Main-Memory Indexes on Shared-Memory Multiprocessor Systems[J]. Proc of Vldb, 2001:181–190.</li>
+<li>K. Fraser. Practical lock-freedom. Technical Report UCAM- CL-TR-579, University of Cambridge Computer Laboratory, 2004.</li>
+<li>Mao Y, Kohler E, Morris R T. Cache craftiness for fast multicore key-value storage[C]// ACM European Conference on Computer Systems. ACM, 2012:183-196.</li>
+</ol>
+<h4 id="并发控制机制的基本要求"><a class="markdownIt-Anchor" href="#并发控制机制的基本要求"></a> 并发控制机制的基本要求</h4>
 <ol>
 <li>正确的读操作：
 <ol>
@@ -349,7 +645,23 @@ str1的长度远大于str2的长度</p>
 <li>正确的写操作：两个写操作不会同时修改同一个键值对</li>
 <li>无死锁：不会出现死锁：两个或多个线程发生永久堵塞（等待），每个线程都在等待被其他线程占用并堵塞了的资源</li>
 </ol>
+<h4 id="锁分类"><a class="markdownIt-Anchor" href="#锁分类"></a> 锁分类</h4>
+<ol>
+<li>SL (Shared Lock): 共享锁 — 加锁</li>
+<li>SU (Shared Unlock): 共享锁 — 解锁</li>
+<li>XL (Exclusive Lock): 互斥锁 — 加锁</li>
+<li>XU (Exclusive Unlock): 互斥锁 — 解锁</li>
+<li>SXL (Shared Exclusive Lock): 共享互斥锁 — 加锁</li>
+<li>SXU (Shared Exclusive Unlock): 共享互斥锁 — 解锁</li>
+<li>safe nodes：判断依据为该节点上的当前操作是否会影响祖先节点。以传统B+树为例
+<ol>
+<li>对于插入操作，当键值对的数量小于M时，插入操作不会触发分裂操作，该节点属于safe node；反之当键值对数量等于M时，该节点属于unsafe node；</li>
+<li>对于删除操作，当键值对的数量大于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>M</mi><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{M}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 时，不会触发合并操作，该节点属于safe node；反之当键值对数量等于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>M</mi><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{M}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 时，该节点属于unsafe node。当然，对于MySQL而言，一个节点是否是安全节点取决于键值对的大小和页面剩余空间大小等多个因素，详细代码可查询MySQL5.7的btr_cur_will_modify_tree()函数。</li>
+</ol>
+</li>
+</ol>
 <h3 id="lsm"><a class="markdownIt-Anchor" href="#lsm"></a> LSM</h3>
+<p>  LSM Tree 则采取读写分离的策略，会优先保证写操作的性能；其数据首先存储内存中，而后需要定期 Flush 到硬盘上。LSM-Tree 通过内存插入与磁盘的顺序写，来达到最优的写性能，因为这会大大降低磁盘的寻道次数，一次磁盘 IO 可以写入多个索引块。HBase, Cassandra, RockDB, LevelDB, SQLite 等都是基于 LSM Tree 来构建索引的数据库；LSM Tree 的树节点可以分为两种，保存在内存中的称之为 MemTable, 保存在磁盘上的称之为 SSTable。</p>
 <h3 id="nv-tree"><a class="markdownIt-Anchor" href="#nv-tree"></a> NV-Tree</h3>
 <p>  传统B+树在NVM(non-volatile memory)上维护一致性的开销过高（相当一部分的原因是由 mfence 以及clflush 这两个指令造成的）。论文<a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/fast15/fast15-paper-yang.pdf">NV-Tree：Reducing Consistency Cost for NVM-based Single Level Systems</a>提出了一种新的B+Tree 结构：NV-Tree 以减少维护树结构consistency时系统的开销。<br />
   NV-Tree的节点被分成了三种类型，第一种是leaf node（LN），存储的是kv信息，也就是实实在在的数据，第二种是internal node（IN），存储的是重构信息，第三种是PLN，LN的父节点。主要操作有定位（locating）、插入、删除、更新、查找、分裂，替换以及合并（split，replace and merge）</p>
@@ -360,7 +672,7 @@ str1的长度远大于str2的长度</p>
 <li>优化INs在NVM中的组织结构</li>
 </ol>
 <h3 id="适应性哈希索引"><a class="markdownIt-Anchor" href="#适应性哈希索引"></a> 适应性哈希索引</h3>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/384939600">参考</a></p>
+<p>  MySQL为了提高查询效率，在InnoDB中，将查询频繁的条件和索引树结果做了一个Hash映射，减少搜索B+Tree的操作。这个Hash映射就叫做自适应哈希索引(Adaptive Hash Index)，简写AHI。</p>
 <h3 id="bw-tree"><a class="markdownIt-Anchor" href="#bw-tree"></a> Bw-Tree</h3>
 <p>  Bw-tree 是 2013 年微软发表的论文<a target="_blank" rel="noopener" href="https://15721.courses.cs.cmu.edu/spring2017/papers/08-oltpindexes2/bwtree-icde2013.pdf">The Bw-Tree: A B-Tree for New Hardware Platforms</a>提出的数据结构。考虑到多核机器和 SSD 日趋普及，结合两大存储引擎 B±tree 和 LSM-tree 特点，提出了这种 latch-free、delta update、log structured 的 B族树 —— Bw-tree。<a target="_blank" rel="noopener" href="https://github.com/wangziqi2013/BwTree">代码实现</a></p>
 <p>Bw tree 的主要特点</p>
@@ -424,7 +736,7 @@ str1的长度远大于str2的长度</p>
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-10 14:18:01" itemprop="dateModified" datetime="2023-08-10T14:18:01+08:00">2023-08-10</time>
+                <time title="Modified: 2023-08-12 18:06:22" itemprop="dateModified" datetime="2023-08-12T18:06:22+08:00">2023-08-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -459,7 +771,7 @@ str1的长度远大于str2的长度</p>
 <h3 id="b-tree的性质"><a class="markdownIt-Anchor" href="#b-tree的性质"></a> B-Tree的性质</h3>
 <ol>
 <li>每个节点最多有 m 个子节点。</li>
-<li>每一个非叶子节点（除根节点）最少有 $ \lceil \dfrac{m}{2} \rceil $ 个子节点。</li>
+<li>每一个非叶子节点（除根节点）最少有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>m</mi><mn>2</mn></mfrac></mstyle><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \dfrac{m}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span> 个子节点。</li>
 <li>如果根节点不是叶子节点，那么它至少有两个子节点。</li>
 <li>有 k 个子节点的非叶子节点拥有 k−1 个键，且升序排列，满足 k[i] &lt; k[i+1]。</li>
 <li>每个节点至多包含 2k-1 个键。</li>
@@ -539,8 +851,17 @@ str1的长度远大于str2的长度</p>
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-09 23:00:03" itemprop="dateModified" datetime="2023-08-09T23:00:03+08:00">2023-08-09</time>
+                <time title="Modified: 2023-08-12 18:10:20" itemprop="dateModified" datetime="2023-08-12T18:10:20+08:00">2023-08-12</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
 
           
 
@@ -579,24 +900,24 @@ str1的长度远大于str2的长度</p>
 <li>2-3-4树的每一个节点中:黑色节点必为父节点，红色节点为子节点(黑色在中间，红色在两边)</li>
 </ol>
 <h3 id="红黑树的时间复杂度证明"><a class="markdownIt-Anchor" href="#红黑树的时间复杂度证明"></a> 红黑树的时间复杂度证明</h3>
-<p>  通过数学归纳法证明<strong>定理：一棵含有n个节点的红黑树的高度至多为 $ 2 \times \Theta (log(n+1))$</strong>。它的逆否命题是 <strong>高度为h的红黑树，它的包含的内节点个数至少为 $ 2 ^ \frac{h}{2} - 1 $ 个</strong>。只需要证明逆否命题，即可证明原命题为真。</p>
+<p>  通过数学归纳法证明<strong>定理：一棵含有n个节点的红黑树的高度至多为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mo stretchy="false">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">2 \times \Theta (log(n+1))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span></strong>。它的逆否命题是 <strong>高度为h的红黑树，它的包含的内节点个数至少为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mfrac><mi>h</mi><mn>2</mn></mfrac></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2 ^ \frac{h}{2} - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.06235em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.97902em;"><span style="top:-3.363em;margin-right:0.05em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8800285714285714em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">h</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个</strong>。只需要证明逆否命题，即可证明原命题为真。</p>
 <p>  从某个节点x出发（不包括该节点）到达一个叶节点的任意一条路径上，黑色节点的个数称为该节点的黑高度(x’s black height)，记为bh(x)。关于bh(x):</p>
 <ol>
 <li>bh(x)的值是唯一的(红黑树的性质5，从一个节点到该节点的子孙节点的所有路径上包含相同数目的黑节点)</li>
-<li>bh(x) ≥ $ \frac{h}{2} $（根据红黑树的性质4，从节点x出发达到叶节点所经历的黑节点数目&gt;= 所经历的红节点的数目)</li>
+<li>bh(x) ≥ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>h</mi><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{h}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2251079999999999em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">h</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>（根据红黑树的性质4，从节点x出发达到叶节点所经历的黑节点数目 ≥ 所经历的红节点的数目)</li>
 </ol>
-<p>  只需证明<strong>高度为h的红黑树，它的包含的黑节点个数至少为 $ 2^{bh(x)} -1 $个</strong>即可，数学归纳法论证过程如下：</p>
+<p>  只需证明<strong>高度为h的红黑树，它的包含的黑节点个数至少为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个</strong>即可，数学归纳法论证过程如下：</p>
 <ol>
-<li>当树的高度h = 0时，内节点个数是0，bh(x) 为0，$ 2^{bh(x)} -1 $ 也为 0。显然，原命题成立。</li>
-<li>当h &gt; 0，且树的高度为 h-1 时，它包含的节点个数至少为 $ 2^{bh(x)-1} -1 $。</li>
+<li>当树的高度h = 0时，内节点个数是0，bh(x) 为0，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 也为 0。显然，原命题成立。</li>
+<li>当h &gt; 0，且树的高度为 h-1 时，它包含的节点个数至少为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)-1} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。</li>
 </ol>
 <blockquote>
-<p>由树的高度为 h-1 的已知条件推出“树的高度为 h 时，它所包含的节点树为 $ 2^{bh(x)} -1 $”。<br />
+<p>由树的高度为 h-1 的已知条件推出“树的高度为 h 时，它所包含的节点树为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 。<br />
 当树的高度为 h 时，<br />
 对于节点x(x为根节点)，其黑高度为bh(x)。<br />
 对于节点x的左右子树，它们黑高度为 bh(x) 或者 bh(x)-1。<br />
-x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 $ 2^{bh(x)-1} -1 $；<br />
-所以，节点x所包含的节点至少为 ( $ 2^{bh(x)-1} -1 $ ) + ( $ 2^{bh(x)-1} -1 $ ) + 1 = $ 2^{bh(x)} -1 $。即节点x所包含的节点至少为 $ 2^{bh(x)} -1 $。<br />
+x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)-1} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> ；<br />
+所以，节点x所包含的节点至少为 ( <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)-1} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> ) + ( <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)-1} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> ) + 1 = <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。即节点x所包含的节点至少为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>b</mi><mi>h</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{bh(x)} -1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight">h</span><span class="mopen mtight">(</span><span class="mord mathnormal mtight">x</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。<br />
 因此，原命题成立。</p>
 </blockquote>
 <h3 id="红黑树插入操作"><a class="markdownIt-Anchor" href="#红黑树插入操作"></a> 红黑树插入操作</h3>
@@ -712,7 +1033,7 @@ x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 $ 2^
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-04 11:04:42" itemprop="dateModified" datetime="2023-08-04T11:04:42+08:00">2023-08-04</time>
+                <time title="Modified: 2023-08-12 18:06:58" itemprop="dateModified" datetime="2023-08-12T18:06:58+08:00">2023-08-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -846,10 +1167,16 @@ x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 $ 2^
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-07-25 19:41:03 / Modified: 20:03:26" itemprop="dateCreated datePublished" datetime="2023-07-25T19:41:03+08:00">2023-07-25</time>
+              <time title="Created: 2023-07-25 19:41:03" itemprop="dateCreated datePublished" datetime="2023-07-25T19:41:03+08:00">2023-07-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-13 12:40:46" itemprop="dateModified" datetime="2023-08-13T12:40:46+08:00">2023-08-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -871,236 +1198,32 @@ x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 $ 2^
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>一个文本文件，有1W行，每行一个词，要求统计最频繁出现的10个词<br />
-1G大小的文件，每一行是一个次，词的大小不超过16字节，内存限制1M。返回频数最高的100个词<br />
-1000W字符串，去除重复的字符串<br />
-热门查询，搜索引擎记录用户每次检索的关键字1000W个，去重后不超过300W。要求统计出现频率最高的10个查询串，内存不能超过1G。<br />
-bitmap<br />
-hashmap<br />
-trie树统计每个词出现的次数<br />
-堆</p>
-<p>最长回文<br />
-后缀树(算法实现复杂并且空间开销大)</p>
-<p>字符串S是否包含子串S1<br />
-在S的后缀树中查找S1</p>
-<p>找出字符串S的最长重复子串S1</p>
-<p>找出S1和S2的最长公共子串<br />
-最长公共子串和最长公共子序列的区别，子串是连续的，子序列是不连续的但是不更改在原字符串中的顺序。<br />
-后缀树<br />
-动态规划</p>
-<p>Ziv-Lampel无损压缩算法<br />
-后缀树的形式存储字符串和压缩码值的字典，因为编码数据存在大量的重复字符串</p>
-<p>多模式串的匹配问题<br />
-后缀数组加二分</p>
-<p>后缀树的构造方法<br />
-Ukkonen</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/07/25/Rule%20Engine/Camunda/1%E3%80%81Camunda/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/25/Rule%20Engine/Camunda/1%E3%80%81Camunda/" class="post-title-link" itemprop="url">Camunda</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-07-25 09:57:42 / Modified: 10:15:45" itemprop="dateCreated datePublished" datetime="2023-07-25T09:57:42+08:00">2023-07-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rule-Engine/" itemprop="url" rel="index"><span itemprop="name">Rule Engine</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  <a target="_blank" rel="noopener" href="https://github.com/camunda/">Camunda</a> 提供了一个可扩展的流程自动化和编排平台。 它可以自我管理或按需服务形式提供。 Camunda 为 BPMN 流程和 DMN 决策带来了强大的执行引擎，并配备了用于协作建模、操作和分析的工具。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/07/25/Rule%20Engine/1%E3%80%81Rule%20Engine/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/25/Rule%20Engine/1%E3%80%81Rule%20Engine/" class="post-title-link" itemprop="url">Rule Engine</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-07-25 09:54:51 / Modified: 10:16:32" itemprop="dateCreated datePublished" datetime="2023-07-25T09:54:51+08:00">2023-07-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Rule-Engine/" itemprop="url" rel="index"><span itemprop="name">Rule Engine</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  JSR-94是Java规则引擎API的Java规范请求。它由Java Community Process (JCP)制定。定义了规则引擎的Java运行时API，使规则引擎可以通过简单的API被Java平台访问。这个标准提供了JSR-94的综览和如何让商业规则技术和Java应用程序结合运行。同时它也提供了开发基于规则的应用程序的示例代码。<br />
-  规则引擎的实现主要有Drools、Camunda等</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/07/25/Architecture/COLA/1%E3%80%81COLA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/25/Architecture/COLA/1%E3%80%81COLA/" class="post-title-link" itemprop="url">COLA</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-07-25 09:40:12 / Modified: 09:51:35" itemprop="dateCreated datePublished" datetime="2023-07-25T09:40:12+08:00">2023-07-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://github.com/alibaba/COLA">COLA</a> 是 Clean Object-Oriented and Layered Architecture的缩写，代表“整洁面向对象分层架构”。<br />
-<img src="https://www.goodserendipity.com/asserts/architecture/cola%20architecture.png" alt="cola架构图" /></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建web工程</span></span><br><span class="line">mvn archetype:generate \</span><br><span class="line">    -DgroupId=com.alibaba.cola.demo.web \</span><br><span class="line">    -DartifactId=demo-web \</span><br><span class="line">    -Dversion=1.0.0-SNAPSHOT \</span><br><span class="line">    -Dpackage=com.alibaba.demo \</span><br><span class="line">    -DarchetypeArtifactId=cola-framework-archetype-web \</span><br><span class="line">    -DarchetypeGroupId=com.alibaba.cola \</span><br><span class="line">    -DarchetypeVersion=4.3.2</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建service工程</span></span><br><span class="line">mvn archetype:generate \</span><br><span class="line">    -DgroupId=com.alibaba.cola.demo.service \</span><br><span class="line">    -DartifactId=demo-service \</span><br><span class="line">    -Dversion=1.0.0-SNAPSHOT \</span><br><span class="line">    -Dpackage=com.alibaba.demo \</span><br><span class="line">    -DarchetypeArtifactId=cola-framework-archetype-service \</span><br><span class="line">    -DarchetypeGroupId=com.alibaba.cola \</span><br><span class="line">    -DarchetypeVersion=4.3.2</span><br></pre></td></tr></table></figure>
+          <h3 id="词频统计"><a class="markdownIt-Anchor" href="#词频统计"></a> 词频统计</h3>
+<p>  一个文本文件，有1W行，每行一个词，要求统计最频繁出现的10个词。</p>
+<h3 id="原地词频统计"><a class="markdownIt-Anchor" href="#原地词频统计"></a> 原地词频统计</h3>
+<p>  1G大小的文件，每一行是一个词，词的大小不超过16字节，内存限制1M。返回频数最高的100个词。</p>
+<h3 id="字符串去重"><a class="markdownIt-Anchor" href="#字符串去重"></a> 字符串去重</h3>
+<p>  1000W字符串，去除重复的字符串。</p>
+<h3 id="搜索引擎词频统计"><a class="markdownIt-Anchor" href="#搜索引擎词频统计"></a> 搜索引擎词频统计</h3>
+<p>  热门查询，搜索引擎记录用户每次检索的关键字1000W个，去重后不超过300W。要求统计出现频率最高的10个查询串，内存不能超过1G。<br />
+  考虑bitmap、hashmap、trie树统计每个词出现的次数、堆</p>
+<h3 id="最长回文子串"><a class="markdownIt-Anchor" href="#最长回文子串"></a> 最长回文子串</h3>
+<p>  后缀树(算法实现复杂并且空间开销大)</p>
+<h3 id="字符串包含"><a class="markdownIt-Anchor" href="#字符串包含"></a> 字符串包含</h3>
+<p>  字符串S是否包含子串S1<br />
+  在S的后缀树中查找S1</p>
+<h3 id="最长重复子串"><a class="markdownIt-Anchor" href="#最长重复子串"></a> 最长重复子串</h3>
+<p>  找出字符串S的最长重复子串S1</p>
+<h3 id="最长公共子串"><a class="markdownIt-Anchor" href="#最长公共子串"></a> 最长公共子串</h3>
+<p>  找出S1和S2的最长公共子串<br />
+  最长公共子串和最长公共子序列的区别，子串是连续的，子序列是不连续的但是不更改在原字符串中的顺序。<br />
+  考虑后缀树、动态规划</p>
+<h3 id="ziv-lampel无损压缩算法"><a class="markdownIt-Anchor" href="#ziv-lampel无损压缩算法"></a> Ziv-Lampel无损压缩算法</h3>
+<p>  后缀树的形式存储字符串和压缩码值的字典，因为编码数据存在大量的重复字符串</p>
+<h3 id="多模式串的匹配问题"><a class="markdownIt-Anchor" href="#多模式串的匹配问题"></a> 多模式串的匹配问题</h3>
+<p>  后缀数组加二分</p>
+<h3 id="后缀树的构造方法"><a class="markdownIt-Anchor" href="#后缀树的构造方法"></a> 后缀树的构造方法</h3>
+<p>  Ukkonen</p>
 
       
     </div>
@@ -1185,20 +1308,20 @@ Ukkonen</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

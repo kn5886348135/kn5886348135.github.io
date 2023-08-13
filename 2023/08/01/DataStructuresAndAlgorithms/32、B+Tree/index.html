@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="B+ 树(B+Tree)是一种 m 叉排序树，每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+Tree的C++实现bplustree。   B+ 树可以被视为 B 树，但每个节点仅包含键（而不是键值对），并且在底部添加了具有链接叶子节点的指针。   B+ 树的主要价值在于存储数据，以便在面向块的存储上下文（特">
+  <meta name="description" content="B+ 树(B+Tree)是一种 m 叉排序树，降低了索引结构的深度，避免传统二叉树结构中绝大部分的随机访问操作，从而有效减少了磁盘磁头的寻道次数，降低了外存访问延迟对性能的影响。每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+树是1970年Rudolf Bayer教授在Organization and Mai">
 <meta property="og:type" content="article">
 <meta property="og:title" content="B+Tree">
 <meta property="og:url" content="https://www.goodserendipity.com/2023/08/01/DataStructuresAndAlgorithms/32%E3%80%81B+Tree/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="B+ 树(B+Tree)是一种 m 叉排序树，每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+Tree的C++实现bplustree。   B+ 树可以被视为 B 树，但每个节点仅包含键（而不是键值对），并且在底部添加了具有链接叶子节点的指针。   B+ 树的主要价值在于存储数据，以便在面向块的存储上下文（特">
+<meta property="og:description" content="B+ 树(B+Tree)是一种 m 叉排序树，降低了索引结构的深度，避免传统二叉树结构中绝大部分的随机访问操作，从而有效减少了磁盘磁头的寻道次数，降低了外存访问延迟对性能的影响。每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+树是1970年Rudolf Bayer教授在Organization and Mai">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-08-01T06:35:05.000Z">
-<meta property="article:modified_time" content="2023-08-10T08:03:47.684Z">
+<meta property="article:modified_time" content="2023-08-12T12:42:21.681Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="B+Tree">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-10 16:03:47" itemprop="dateModified" datetime="2023-08-10T16:03:47+08:00">2023-08-10</time>
+                <time title="Modified: 2023-08-12 20:42:21" itemprop="dateModified" datetime="2023-08-12T20:42:21+08:00">2023-08-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -224,7 +224,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/bplus-tree/">B+ 树</a>(<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/B-tree">B+Tree</a>)是一种 m 叉排序树，每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。<a target="_blank" rel="noopener" href="https://github.com/begeekmyfriend/bplustree">B+Tree的C++实现bplustree</a>。</p>
+        <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/bplus-tree/">B+ 树</a>(<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/B-tree">B+Tree</a>)是一种 m 叉排序树，降低了索引结构的深度，避免传统二叉树结构中绝大部分的随机访问操作，从而有效减少了磁盘磁头的寻道次数，降低了外存访问延迟对性能的影响。每个节点的子节点数量可变，但通常有大量子节点。B+ 树由根、内部节点和叶子组成。根可以是叶子，也可以是具有两个或更多子节点的节点。B+树是1970年Rudolf Bayer教授在<a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Organization%20and%20maintenance%20of%20large%20ordered%20indices.pdf">Organization and Maintenance of Large Ordered Indices</a>中提出的。<a target="_blank" rel="noopener" href="https://github.com/begeekmyfriend/bplustree">B+Tree的C++实现bplustree</a>。</p>
 <p>  B+ 树可以被视为 B 树，但每个节点仅包含键（而不是键值对），并且在底部添加了具有链接叶子节点的指针。</p>
 <p>  B+ 树的主要价值在于存储数据，以便在面向块的存储上下文（特别是文件系统）中进行高效检索。 这主要是因为与二叉搜索树不同，B+ 树具有非常高的扇出（节点中指向子节点的指针数量，通常约为 100 或更多），这减少了在树中找到一个元素所需的 I/O 操作次数。B+ 树比 B 树更适合实际应用中操作系统的文件索引和数据库索引。目前现代关系型数据库最广泛的支持索引结构就是 B+ 树。</p>
 <p>  B+ 树的特点是能够保持数据稳定有序，其插入与修改拥有较稳定的对数时间复杂度。B+ 树元素自底向上插入，这与二叉树恰好相反。</p>
@@ -233,7 +233,7 @@
 <li>有 n 棵子树的节点中含有 n-1 个关键字（即将区间分为 n 个子区间，每个子区间对应一棵子树）。</li>
 <li>所有叶子节点中包含了全部关键字的信息，及指向含这些关键字记录的指针，且叶子节点本身依关键字的大小自小而大顺序链接。</li>
 <li>所有的非叶子节点可以看成是索引部分，节点中仅含有其子树（根节点）中的最大（或最小）关键字。</li>
-<li>除根节点外，其他所有节点中所含关键字的个数最少有 $ \lceil \dfrac{m}{2} \rceil $（注意：B 树中除根以外的所有非叶子节点至少有 $ \lceil \dfrac{m}{2} \rceil $ 棵子树）。</li>
+<li>除根节点外，其他所有节点中所含关键字的个数最少有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>m</mi><mn>2</mn></mfrac></mstyle><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \dfrac{m}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>（注意：B 树中除根以外的所有非叶子节点至少有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>m</mi><mn>2</mn></mfrac></mstyle><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \dfrac{m}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.7935600000000003em;vertical-align:-0.686em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10756em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span> 棵子树）。</li>
 <li>B+ 树为了方便范围查询，叶子节点之间还用指针串联起来。</li>
 </ol>
 <h3 id="b-树相比于-b-树的优势"><a class="markdownIt-Anchor" href="#b-树相比于-b-树的优势"></a> B+ 树相比于 B 树的优势</h3>
@@ -251,6 +251,19 @@
 <h3 id="b-tree的删除"><a class="markdownIt-Anchor" href="#b-tree的删除"></a> B+ Tree的删除</h3>
 <p>// TODO</p>
 <h3 id="btree的并发控制"><a class="markdownIt-Anchor" href="#btree的并发控制"></a> B+Tree的并发控制</h3>
+<p>  索引结构作为影响系统性能的关键因素之一，对数据库系统在高并发场景下的性能表现具有重大的影响。从1970年B+树提出至今，学术界有大量论文尝试优化B+树在多线程场景下的性能，这些文章被广泛发表在数据库/系统领域顶级会议VLDB/SIGMOD/EuroSys上。<br />
+<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/414141859">B+树并发控制机制的前世今生</a>讲述了B+树的并发控制历史，参考文献</p>
+<ol>
+<li>Bayer R, Mccreight E. <a href="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/Organization%20and%20maintenance%20of%20large%20ordered%20indices.pdf">Organization and Maintenance of Large Ordered Indices</a>// ACM Sigfidet. ACM, 1970:107-141.</li>
+<li>Samadi B. B-trees in a system with multiple users ☆[J]. Information Processing Letters, 1976, 5(4):107-112.</li>
+<li>Bayer R, Schkolnick M. Concurrency of operations on B -trees[J]. Acta Informatica, 1977, 9(1):1-21.</li>
+<li>Lehman P L, Yao S B. Efficient locking for concurrent operations on B-trees[J]. Acm Transactions on Database Systems, 1981, 6(4):650-670.</li>
+<li>Memory Latencies on Intel® Xeon® Processor E5-4600 and E7-4800 product families <a target="_blank" rel="noopener" href="https://software.intel.com/en-us/blogs/2014/01/28/memory-latencies-on-intel-xeon-processor-e5-4600-and-e7-4800-product-families">https://software.intel.com/en-us/blogs/2014/01/28/memory-latencies-on-intel-xeon-processor-e5-4600-and-e7-4800-product-families</a></li>
+<li>Cha S K, Hwang S, Kim K, et al. Cache-Conscious Concurrency Control of Main-Memory Indexes on Shared-Memory Multiprocessor Systems[J]. Proc of Vldb, 2001:181–190.</li>
+<li>K. Fraser. Practical lock-freedom. Technical Report UCAM- CL-TR-579, University of Cambridge Computer Laboratory, 2004.</li>
+<li>Mao Y, Kohler E, Morris R T. Cache craftiness for fast multicore key-value storage[C]// ACM European Conference on Computer Systems. ACM, 2012:183-196.</li>
+</ol>
+<h4 id="并发控制机制的基本要求"><a class="markdownIt-Anchor" href="#并发控制机制的基本要求"></a> 并发控制机制的基本要求</h4>
 <ol>
 <li>正确的读操作：
 <ol>
@@ -261,7 +274,23 @@
 <li>正确的写操作：两个写操作不会同时修改同一个键值对</li>
 <li>无死锁：不会出现死锁：两个或多个线程发生永久堵塞（等待），每个线程都在等待被其他线程占用并堵塞了的资源</li>
 </ol>
+<h4 id="锁分类"><a class="markdownIt-Anchor" href="#锁分类"></a> 锁分类</h4>
+<ol>
+<li>SL (Shared Lock): 共享锁 — 加锁</li>
+<li>SU (Shared Unlock): 共享锁 — 解锁</li>
+<li>XL (Exclusive Lock): 互斥锁 — 加锁</li>
+<li>XU (Exclusive Unlock): 互斥锁 — 解锁</li>
+<li>SXL (Shared Exclusive Lock): 共享互斥锁 — 加锁</li>
+<li>SXU (Shared Exclusive Unlock): 共享互斥锁 — 解锁</li>
+<li>safe nodes：判断依据为该节点上的当前操作是否会影响祖先节点。以传统B+树为例
+<ol>
+<li>对于插入操作，当键值对的数量小于M时，插入操作不会触发分裂操作，该节点属于safe node；反之当键值对数量等于M时，该节点属于unsafe node；</li>
+<li>对于删除操作，当键值对的数量大于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>M</mi><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{M}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 时，不会触发合并操作，该节点属于safe node；反之当键值对数量等于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>M</mi><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{M}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 时，该节点属于unsafe node。当然，对于MySQL而言，一个节点是否是安全节点取决于键值对的大小和页面剩余空间大小等多个因素，详细代码可查询MySQL5.7的btr_cur_will_modify_tree()函数。</li>
+</ol>
+</li>
+</ol>
 <h3 id="lsm"><a class="markdownIt-Anchor" href="#lsm"></a> LSM</h3>
+<p>  LSM Tree 则采取读写分离的策略，会优先保证写操作的性能；其数据首先存储内存中，而后需要定期 Flush 到硬盘上。LSM-Tree 通过内存插入与磁盘的顺序写，来达到最优的写性能，因为这会大大降低磁盘的寻道次数，一次磁盘 IO 可以写入多个索引块。HBase, Cassandra, RockDB, LevelDB, SQLite 等都是基于 LSM Tree 来构建索引的数据库；LSM Tree 的树节点可以分为两种，保存在内存中的称之为 MemTable, 保存在磁盘上的称之为 SSTable。</p>
 <h3 id="nv-tree"><a class="markdownIt-Anchor" href="#nv-tree"></a> NV-Tree</h3>
 <p>  传统B+树在NVM(non-volatile memory)上维护一致性的开销过高（相当一部分的原因是由 mfence 以及clflush 这两个指令造成的）。论文<a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/fast15/fast15-paper-yang.pdf">NV-Tree：Reducing Consistency Cost for NVM-based Single Level Systems</a>提出了一种新的B+Tree 结构：NV-Tree 以减少维护树结构consistency时系统的开销。<br />
   NV-Tree的节点被分成了三种类型，第一种是leaf node（LN），存储的是kv信息，也就是实实在在的数据，第二种是internal node（IN），存储的是重构信息，第三种是PLN，LN的父节点。主要操作有定位（locating）、插入、删除、更新、查找、分裂，替换以及合并（split，replace and merge）</p>
@@ -272,7 +301,7 @@
 <li>优化INs在NVM中的组织结构</li>
 </ol>
 <h3 id="适应性哈希索引"><a class="markdownIt-Anchor" href="#适应性哈希索引"></a> 适应性哈希索引</h3>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/384939600">参考</a></p>
+<p>  MySQL为了提高查询效率，在InnoDB中，将查询频繁的条件和索引树结果做了一个Hash映射，减少搜索B+Tree的操作。这个Hash映射就叫做自适应哈希索引(Adaptive Hash Index)，简写AHI。</p>
 <h3 id="bw-tree"><a class="markdownIt-Anchor" href="#bw-tree"></a> Bw-Tree</h3>
 <p>  Bw-tree 是 2013 年微软发表的论文<a target="_blank" rel="noopener" href="https://15721.courses.cs.cmu.edu/spring2017/papers/08-oltpindexes2/bwtree-icde2013.pdf">The Bw-Tree: A B-Tree for New Hardware Platforms</a>提出的数据结构。考虑到多核机器和 SSD 日趋普及，结合两大存储引擎 B±tree 和 LSM-tree 特点，提出了这种 latch-free、delta update、log structured 的 B族树 —— Bw-tree。<a target="_blank" rel="noopener" href="https://github.com/wangziqi2013/BwTree">代码实现</a></p>
 <p>Bw tree 的主要特点</p>
@@ -369,7 +398,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#btree%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.</span> <span class="nav-text"> B+Tree的性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E6%A0%91%E7%9B%B8%E6%AF%94%E4%BA%8E-b-%E6%A0%91%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">2.</span> <span class="nav-text"> B+ 树相比于 B 树的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E6%9F%A5%E6%89%BE"><span class="nav-number">3.</span> <span class="nav-text"> B+ Tree的查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E9%81%8D%E5%8E%86"><span class="nav-number">4.</span> <span class="nav-text"> B+ Tree的遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E6%8F%92%E5%85%A5"><span class="nav-number">5.</span> <span class="nav-text"> B+ Tree的插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E5%88%A0%E9%99%A4"><span class="nav-number">6.</span> <span class="nav-text"> B+ Tree的删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#btree%E7%9A%84%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-number">7.</span> <span class="nav-text"> B+Tree的并发控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lsm"><span class="nav-number">8.</span> <span class="nav-text"> LSM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nv-tree"><span class="nav-number">9.</span> <span class="nav-text"> NV-Tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E5%BA%94%E6%80%A7%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="nav-number">10.</span> <span class="nav-text"> 适应性哈希索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bw-tree"><span class="nav-number">11.</span> <span class="nav-text"> Bw-Tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#utree"><span class="nav-number">12.</span> <span class="nav-text"> uTree</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#btree%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.</span> <span class="nav-text"> B+Tree的性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E6%A0%91%E7%9B%B8%E6%AF%94%E4%BA%8E-b-%E6%A0%91%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">2.</span> <span class="nav-text"> B+ 树相比于 B 树的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E6%9F%A5%E6%89%BE"><span class="nav-number">3.</span> <span class="nav-text"> B+ Tree的查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E9%81%8D%E5%8E%86"><span class="nav-number">4.</span> <span class="nav-text"> B+ Tree的遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E6%8F%92%E5%85%A5"><span class="nav-number">5.</span> <span class="nav-text"> B+ Tree的插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E7%9A%84%E5%88%A0%E9%99%A4"><span class="nav-number">6.</span> <span class="nav-text"> B+ Tree的删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#btree%E7%9A%84%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="nav-number">7.</span> <span class="nav-text"> B+Tree的并发控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%9C%BA%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%A6%81%E6%B1%82"><span class="nav-number">7.1.</span> <span class="nav-text"> 并发控制机制的基本要求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%94%81%E5%88%86%E7%B1%BB"><span class="nav-number">7.2.</span> <span class="nav-text"> 锁分类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lsm"><span class="nav-number">8.</span> <span class="nav-text"> LSM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nv-tree"><span class="nav-number">9.</span> <span class="nav-text"> NV-Tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E5%BA%94%E6%80%A7%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="nav-number">10.</span> <span class="nav-text"> 适应性哈希索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bw-tree"><span class="nav-number">11.</span> <span class="nav-text"> Bw-Tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#utree"><span class="nav-number">12.</span> <span class="nav-text"> uTree</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -383,20 +412,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="图的概念  由点的集合和边的集合构成 虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达 边上可能带有权值    图的表示方法邻接表法、邻接矩阵法等。题目会以各种方式给出图的表达方式，可以将它转化为一种熟悉的表达方式，方便操作。可以将图表示为节点和边的集合，例如Graph。 123456789101112131415161718192021222324252627282930313233">
+  <meta name="description" content="交通运输、社交网络、互联网、工作安排、脑区活动、程序状态执行等场景可以使用图这种数据结构。常用的图算法有网络拓扑排序、OSPF路由协议(最短路径)、最小生成树、网络流建模(最大流、dinic)、游戏开发中的路径搜索算法(BFS、DFS、A*)、导航软件(最短路径、路径搜索算法)、网络bridge的STP协议用到最小生成树算法、网页排名的PageRank算法。  图的概念  由点的集合和边的集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="图">
 <meta property="og:url" content="https://www.goodserendipity.com/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="图的概念  由点的集合和边的集合构成 虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达 边上可能带有权值    图的表示方法邻接表法、邻接矩阵法等。题目会以各种方式给出图的表达方式，可以将它转化为一种熟悉的表达方式，方便操作。可以将图表示为节点和边的集合，例如Graph。 123456789101112131415161718192021222324252627282930313233">
+<meta property="og:description" content="交通运输、社交网络、互联网、工作安排、脑区活动、程序状态执行等场景可以使用图这种数据结构。常用的图算法有网络拓扑排序、OSPF路由协议(最短路径)、最小生成树、网络流建模(最大流、dinic)、游戏开发中的路径搜索算法(BFS、DFS、A*)、导航软件(最短路径、路径搜索算法)、网络bridge的STP协议用到最小生成树算法、网页排名的PageRank算法。  图的概念  由点的集合和边的集合">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-13T14:11:32.000Z">
-<meta property="article:modified_time" content="2023-04-13T14:35:13.520Z">
+<meta property="article:modified_time" content="2023-08-12T16:06:21.231Z">
 <meta property="article:author" content="Louis">
 <meta property="article:tag" content="图">
 <meta property="article:tag" content="topological">
@@ -194,10 +194,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-04-13 22:11:32 / Modified: 22:35:13" itemprop="dateCreated datePublished" datetime="2023-04-13T22:11:32+08:00">2023-04-13</time>
+              <time title="Created: 2023-04-13 22:11:32" itemprop="dateCreated datePublished" datetime="2023-04-13T22:11:32+08:00">2023-04-13</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-13 00:06:21" itemprop="dateModified" datetime="2023-08-13T00:06:21+08:00">2023-08-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -219,7 +225,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h4 id="图的概念"><a class="markdownIt-Anchor" href="#图的概念"></a> 图的概念</h4>
+        <p>  交通运输、社交网络、互联网、工作安排、脑区活动、程序状态执行等场景可以使用图这种数据结构。常用的图算法有网络拓扑排序、OSPF路由协议(最短路径)、最小生成树、网络流建模(最大流、dinic)、游戏开发中的路径搜索算法(BFS、DFS、A*)、导航软件(最短路径、路径搜索算法)、网络bridge的STP协议用到最小生成树算法、网页排名的PageRank算法。</p>
+<h4 id="图的概念"><a class="markdownIt-Anchor" href="#图的概念"></a> 图的概念</h4>
 <ul>
 <li>由点的集合和边的集合构成</li>
 <li>虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达</li>
@@ -377,20 +384,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

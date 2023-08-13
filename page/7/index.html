@@ -165,6 +165,431 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/11/DataStructuresAndAlgorithms/7%E3%80%81%E4%BA%8C%E5%8F%89%E6%A0%91/" class="post-title-link" itemprop="url">二叉树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-11 17:46:23" itemprop="dateCreated datePublished" datetime="2023-04-11T17:46:23+08:00">2023-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-04 11:45:37" itemprop="dateModified" datetime="2023-08-04T11:45:37+08:00">2023-08-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_tree">二叉树</a>是一种很基础的数据结构，二叉树仅要求左右节点和父节点。搜索二叉树要求左节点小于父节点、右节点大于父节点，有序表对搜索二叉树的要求更严格，避免搜索二叉树退化成链表。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>要求左右子树的高度差不超过1，<a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/sbt/">Size-balanced tree</a>要求左右子树的节点个数相差不超过两倍，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">红黑树</a>的限制更复杂，在调整平衡的时候需要考虑的场景更多。AVL Tree每次变更节点时都需要调整平衡，Size balance Tree在删除的时候可以不调整平衡，红黑树调整平衡的次数很少、均摊时间复杂度是O(1)。<br />
+  完全二叉树，只有叶子节点最右侧是空的。平衡二叉树，左右子树高度差不超过1</p>
+<h4 id="二叉树的遍历"><a class="markdownIt-Anchor" href="#二叉树的遍历"></a> 二叉树的遍历</h4>
+<p>  可以用递归和非递归方式实现二叉树的先序、中序、后序遍历。二叉树的递归序，每一个节点都会经过3次，先序、中序、后序都可以基于递归序实现，第一次到达一个节点就打印就是先序、第二次打印即中序、第三次即后序。<br />
+  利用Stack或者Queue实现系统的弹栈压栈操作，可以非递归方式实现二叉树的先序、中序、后序遍历。也可以使用morris实现二叉树的先序、中序、后序遍历。<br />
+  <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/452139663"><font color="red">一种无需队列的层序遍历算法IDDFS</font></a></p>
+<ul>
+<li>先序：头、左、右</li>
+<li>中序：左、头、右</li>
+<li>后序：左、右、头</li>
+</ul>
+<h4 id="二叉树的递归套路"><a class="markdownIt-Anchor" href="#二叉树的递归套路"></a> 二叉树的递归套路</h4>
+<ul>
+<li>假设以X节点为头，并且可以获取左子树和右子树的信息</li>
+<li>计算以X为头节点的树，得到答案的可能性</li>
+<li>列出所有可能性后，确定到底需要向左树和右树要什么样的信息</li>
+<li>把左树信息和右树信息求全集，就是任何一棵子树都需要返回的信息S</li>
+<li>递归函数都返回S</li>
+<li>在代码中考虑如何把左树的信息和右树信息整合出整棵树的信息</li>
+</ul>
+<h4 id="实现二叉树的按层遍历"><a class="markdownIt-Anchor" href="#实现二叉树的按层遍历"></a> 实现二叉树的按层遍历</h4>
+<ul>
+<li>宽度优先遍历，用队列</li>
+<li>依次出队列level层的节点，并入队列level+1层的left、right节点</li>
+</ul>
+<h4 id="实现二叉树的序列化和反序列化"><a class="markdownIt-Anchor" href="#实现二叉树的序列化和反序列化"></a> 实现二叉树的序列化和反序列化</h4>
+<ul>
+<li>先序遍历序列化和反序列化</li>
+<li>后序遍历序列化和反序列化</li>
+<li>按层方式序列化和反序列化</li>
+<li>中序遍历无法找到root，不同的二叉树中序结果可能相同，所以不能反序列化</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root 2 、left 1 的中序结果是null 1 null 2 null</span><br><span class="line">root 1 、right 2 的中序结果也是null 1 null 2 null</span><br></pre></td></tr></table></figure>
+<h4 id="将多叉树编码为二叉树-leetcode431"><a class="markdownIt-Anchor" href="#将多叉树编码为二叉树-leetcode431"></a> 将多叉树编码为二叉树 LeetCode431</h4>
+<ul>
+<li>收费题目，多叉树的每一层以null分割。</li>
+<li>深度优先遍历，将多叉树的X节点的所有子节点作为二叉树X的右节点，拉长成一个链表</li>
+<li>解码的时候也是递归，将链表的元素收集作为子节点</li>
+</ul>
+<h4 id="二叉树的宽度"><a class="markdownIt-Anchor" href="#二叉树的宽度"></a> 二叉树的宽度</h4>
+<p>  求二叉树最宽的层有多少个节点</p>
+<h4 id="找出某个节点的后继节点"><a class="markdownIt-Anchor" href="#找出某个节点的后继节点"></a> 找出某个节点的后继节点</h4>
+<p>  二叉树结构如下定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class Node &#123;</span><br><span class="line"> V value;</span><br><span class="line"> Node left;</span><br><span class="line"> Node right;</span><br><span class="line"> Node parent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  给你二叉树中的某个节点，返回该节点的后继节点。前驱节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的前一个节点;后继节点是指对一棵二叉树进行中序遍历，遍历后的顺序，当前节点的后一个节点。</p>
+<ul>
+<li>右子树的最左节点即是答案</li>
+<li>右子树为空，并且当前节点是parent的左节点，parent也是答案</li>
+</ul>
+<h4 id="折纸问题"><a class="markdownIt-Anchor" href="#折纸问题"></a> 折纸问题</h4>
+<p>  请把一段纸条竖着放在桌子上，然后从纸条的下边向上方对折1次，压出折痕后展开。此时折痕是凹下去的，即折痕突起的方向指向纸条的背面。 如果从纸条的下边向上方连续对折2次，压出折痕后展开，此时有三条折痕，从上到下依次是下折痕、下折痕和上折痕。<br />
+  给定一个输入参数N，代表纸条都从下边向上方连续对折N次。 请从上到下打印所有折痕的方向。例如:N=1时，打印: down N=2时，打印: down down up。</p>
+<ul>
+<li>中序打印凹凸</li>
+</ul>
+<h4 id="判断两颗二叉树是否相同-leetcode100"><a class="markdownIt-Anchor" href="#判断两颗二叉树是否相同-leetcode100"></a> 判断两颗二叉树是否相同 LeetCode100</h4>
+<ul>
+<li>判断当前节点是否为空，值是否相等</li>
+<li>递归比较左右节点</li>
+</ul>
+<h4 id="判断一个二叉树是否对称-leetcode101"><a class="markdownIt-Anchor" href="#判断一个二叉树是否对称-leetcode101"></a> 判断一个二叉树是否对称 LeetCode101</h4>
+<ul>
+<li>node1 = node.left、node2 = node.right</li>
+<li>node1.left == node2.right &amp;&amp; node1.right == node2.left</li>
+<li>递归比较</li>
+</ul>
+<h4 id="获取一个二叉树的高度-leetcode104"><a class="markdownIt-Anchor" href="#获取一个二叉树的高度-leetcode104"></a> 获取一个二叉树的高度 LeetCode104</h4>
+<ul>
+<li>递归获取左子树的高度和右子树的高度</li>
+</ul>
+<h4 id="用先序数组和中序数组重建一个二叉树-leetcode105"><a class="markdownIt-Anchor" href="#用先序数组和中序数组重建一个二叉树-leetcode105"></a> 用先序数组和中序数组重建一个二叉树 LeetCode105</h4>
+<p>  先序遍历的第一个元素是头结点，先序遍历剩余部分左边是左节点的先序，右边是右节点的先序，中序遍历左边是左节点的中序，右边是右节点的中序。递归构建二叉树，递归函数入参为先序遍历的起止index，中序遍历的起止index，返回头结点。</p>
+<h4 id="祖先节点-先序遍历和后序遍历的交集"><a class="markdownIt-Anchor" href="#祖先节点-先序遍历和后序遍历的交集"></a> 祖先节点   先序遍历和后序遍历的交集</h4>
+<p>  X是一棵二叉树的某一个节点，A是二叉树先序遍历X的左边部分，B是二叉树后序遍历X右边部分，AB相交的结果是且仅是X的所有父节点。</p>
+<ol>
+<li>X的所有父节点在先序遍历的左边，X的所有父节点在后序遍历的右边，交集一定包含所有父节点</li>
+<li>X的所有子节点在先序遍历的左边，X的所有子节点在后序遍历的左边，交集一定不包含所有子节点</li>
+<li>A不包含所有祖先节点的右兄弟节点，B不包含所有祖先节点的左兄弟节点</li>
+</ol>
+<p>  X的所有祖先节点、X自己、X的子节点、X或者X的父节点作为左树的右兄节点、X或者X的父节点作为右树的左兄节点。</p>
+<h4 id="二叉树按层遍历收集节点-leetcode107-leetcode102"><a class="markdownIt-Anchor" href="#二叉树按层遍历收集节点-leetcode107-leetcode102"></a> 二叉树按层遍历收集节点 LeetCode107 LeetCode102</h4>
+<p>  使用LinkedList(有序，快速插入)，递归将每一层的节点入队、出队。</p>
+<h4 id="平衡二叉树-leetcode110"><a class="markdownIt-Anchor" href="#平衡二叉树-leetcode110"></a> 平衡二叉树 LeetCode110</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是平衡二叉树。<br />
+  判断二叉树是否是平衡二叉树，左子树的高度和右子树的高度相差不超过1，则称为平衡二叉树。</p>
+<h4 id="搜索二叉树-leetcode98"><a class="markdownIt-Anchor" href="#搜索二叉树-leetcode98"></a> 搜索二叉树 LeetCode98</h4>
+<p>  判断二叉树是否是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Binary_search_tree">搜索二叉树</a>。用递归或者morris遍历解决。</p>
+<h4 id="路径总和-leetcode112"><a class="markdownIt-Anchor" href="#路径总和-leetcode112"></a> 路径总和 LeetCode112</h4>
+<ul>
+<li>递归计算路径和</li>
+<li>左子树和右子树分别递归</li>
+</ul>
+<h4 id="达标路径总和-leetcode113"><a class="markdownIt-Anchor" href="#达标路径总和-leetcode113"></a> 达标路径总和 LeetCode113</h4>
+<p>  同LeetCode112，收集所有达标路径并返回。</p>
+<h4 id="二叉树的最大距离"><a class="markdownIt-Anchor" href="#二叉树的最大距离"></a> 二叉树的最大距离</h4>
+<p>  给定一颗二叉树的头结点，任何两个节点之间都存在距离，返回整颗二叉树的最大距离。</p>
+<h4 id="判断完全二叉树"><a class="markdownIt-Anchor" href="#判断完全二叉树"></a> 判断完全二叉树</h4>
+<p>  判断二叉树是否是完全二叉树<br />
+  按照二叉树的定义判断，逐行遍历</p>
+<h4 id="满二叉树"><a class="markdownIt-Anchor" href="#满二叉树"></a> 满二叉树</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树是不是满二叉树。</p>
+<h4 id="最大的二叉搜索子树"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树"></a> 最大的二叉搜索子树</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的头节点。</p>
+<h4 id="最大的二叉搜索子树大小"><a class="markdownIt-Anchor" href="#最大的二叉搜索子树大小"></a> 最大的二叉搜索子树大小</h4>
+<p>  给定一棵二叉树的头节点head，返回这颗二叉树中最大的二叉搜索子树的大小。</p>
+<h4 id="最低公共祖先"><a class="markdownIt-Anchor" href="#最低公共祖先"></a> 最低公共祖先</h4>
+<p>  给定一棵二叉树的头节点head，和另外两个节点a和b。返回a和b的最低公共祖先。a、b可能在head的左右子树，也可能在同一棵子树。</p>
+<ul>
+<li>遍历整棵树，用map保存所有节点的父节点</li>
+<li>遍历a的所有父节点，用set保存</li>
+<li>遍历b的所有父节点，看set中是否存在</li>
+<li>后序遍历递归套路</li>
+</ul>
+<h4 id="派对的最大快乐值"><a class="markdownIt-Anchor" href="#派对的最大快乐值"></a> 派对的最大快乐值</h4>
+<p>  员工信息的定义如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Employee</span> &#123;</span><br><span class="line">    <span class="comment">// 快乐值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> happy;</span><br><span class="line">    <span class="comment">// 直接下级</span></span><br><span class="line">    List&lt;Employee&gt; subordinates;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  公司的每个员工都符合 Employee 类的描述。整个公司的人员结构可以看作是一棵标准的、 没有环的多叉树。树的头节点是公司唯一的老板。除老板之外的每个员工都有唯一的直接上级。 叶节点是没有任何下属的基层员工(subordinates列表为空)，除基层员工外，每个员工都有一个或多个直接下级。<br />
+  这个公司现在要办party，你可以决定哪些员工来，哪些员工不来，规则：</p>
+<ol>
+<li>如果某个员工来了，那么这个员工的所有直接下级都不能来</li>
+<li>派对的整体快乐值是所有到场员工快乐值的累加</li>
+<li>你的目标是让派对的整体快乐值尽量大</li>
+</ol>
+<p>  给定一棵多叉树的头节点boss，请返回派对的最大快乐值。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/10/DataStructuresAndAlgorithms/6%E3%80%81%E5%89%8D%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">前缀树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-10 21:51:33" itemprop="dateCreated datePublished" datetime="2023-04-10T21:51:33+08:00">2023-04-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-11 17:43:25" itemprop="dateModified" datetime="2023-04-11T17:43:25+08:00">2023-04-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Trie">前缀树</a>(prefix tree/trie tree)是多叉树，便于处理字符串前缀相关的问题。比如短信、搜索等场景的关键字过滤，黑名单白名单绿坝等。前缀树一般储存静态数据，适用于大量查询，很少新增、删除的场景。</p>
+<ul>
+<li>单个字符串中，字符从前到后的加到一棵多叉树上</li>
+<li>字符放在路上，节点上有专属的数据项（常见的是pass和end值）</li>
+<li>所有样本都这样添加，如果没有路就新建，如有路就复用</li>
+<li>沿途节点的pass值增加1，每个字符串结束时来到的节点end值增加1</li>
+</ul>
+<h4 id="前缀树结构"><a class="markdownIt-Anchor" href="#前缀树结构"></a> 前缀树结构</h4>
+<p>  前缀树的主要操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 添加某个字符串，可以重复添加，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 查询某个字符串在结构中还有几个</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">search</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">// 删掉某个字符串，可以重复删除，每次算1个</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(String str)</span></span><br><span class="line"><span class="comment">//   查询有多少个字符串，是以str做前缀的</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">prefixNumber</span><span class="params">(String str)</span></span><br></pre></td></tr></table></figure>
+<p>  前缀树路的实现可以用固定数组或者哈希表。每个节点的pass、end表示经过、结束的字符串个数，通过pass、end判断目标字符串是否存在。</p>
+<ul>
+<li>固定数组，子节点保存在Node[]数组中</li>
+<li>哈希表，子节点保存在map中</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/10/DataStructuresAndAlgorithms/5%E3%80%81%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-10 04:43:50 / Modified: 21:47:00" itemprop="dateCreated datePublished" datetime="2023-04-10T04:43:50+08:00">2023-04-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heap_(data_structure)">堆</a>是一棵树，其每个节点都有一个键值，且每个节点的键值都大于等于/小于等于其父亲的键值。每个节点的键值都大于等于其父亲键值的堆叫做小根堆，否则叫做大根堆。<br />
+  （小根）堆主要支持的操作有：插入一个数、查询最小值、删除最小值、合并两个堆、减小一个元素的值。<br />
+  一些功能强大的堆（可并堆）还能（高效地）支持 merge 等操作。一些功能更强大的堆还支持可持久化，也就是对任意历史版本进行查询或者操作，产生新的版本</p>
+<h4 id="堆的特点"><a class="markdownIt-Anchor" href="#堆的特点"></a> 堆的特点</h4>
+<ul>
+<li>堆结构就是用数组实现的完全二叉树结构</li>
+<li>完全二叉树中如果每棵子树的最大值都在顶部就是大根堆</li>
+<li>完全二叉树中如果每棵子树的最小值都在顶部就是小根堆</li>
+<li>堆结构的heapInsert与heapify操作</li>
+<li>堆结构的增大和减少</li>
+<li>优先级队列结构，就是堆结构</li>
+<li>堆的父子节点有大小关系，左右节点没有大小限制。</li>
+</ul>
+<h4 id="堆排序"><a class="markdownIt-Anchor" href="#堆排序"></a> 堆排序</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Heapsort">堆排序</a>的逻辑</p>
+<ul>
+<li>先让整个数组都变成大根堆结构，建立堆的过程
+<ul>
+<li>从上到下的方法，时间复杂度为O(N*logN)</li>
+<li>从下到上的方法，时间复杂度为O(N)</li>
+</ul>
+</li>
+<li>把堆的最大值和堆末尾的值交换，然后减少堆的大小之后，递归调整堆，时间复杂度为O(N*logN)</li>
+<li>堆的大小减小成0之后，排序完成。</li>
+</ul>
+<h4 id="改写堆"><a class="markdownIt-Anchor" href="#改写堆"></a> 改写堆</h4>
+<p>  JDK的堆(PriorityQueue)无法做到</p>
+<ul>
+<li>已经入堆的元素，如果参与排序的指标方法变化，系统提供的堆无法做到时间复杂度O(logN)调整，都是O(N)的调整。</li>
+<li>系统提供的堆只能弹出堆顶，做不到自由删除任何一个堆中的元素，无法在时间复杂度O(logN)内完成，一定会高于O(logN)。根本原因是无反向索引表。</li>
+</ul>
+<p>  改写堆的要点</p>
+<ul>
+<li>建立反向索引表indexMap</li>
+<li>建立比较器</li>
+<li>push需要heapify、pop需要heapify，remove先将节点交换到heapSize位置，移除后调整。所有操作都要更新indexMap。</li>
+</ul>
+<hr />
+<h5 id="乱序不超过k长度的数组排序"><a class="markdownIt-Anchor" href="#乱序不超过k长度的数组排序"></a> 乱序不超过k长度的数组排序</h5>
+<p>  已知一个几乎有序的数组。几乎有序是指，如果把数组排好顺序的话，每个元素移动的距离一定不超过k，并且k相对于数组长度来说是比较小的。请选择一个合适的排序策略，对这个数组进行排序。<br />
+  将前k个元素放入ProritityQueue，保证数组在k长度有序，遍历完数组即为整体有序。</p>
+<h5 id="最大线段重合问题"><a class="markdownIt-Anchor" href="#最大线段重合问题"></a> 最大线段重合问题</h5>
+<p>  给定很多线段，每个线段都有两个数[start, end]，表示线段开始位置和结束位置，左右都是闭区间。</p>
+<ul>
+<li>线段的开始和结束位置一定都是整数值</li>
+<li>线段重合区域的长度必须&gt;=1</li>
+<li>返回线段最多重合区域中，包含了几条线段？</li>
+</ul>
+<ol>
+<li>将所有线段按照start升序排序</li>
+<li>构造堆，保存当前重合所有重合线段的end, heap的size就是当前重合线段的数量</li>
+<li>遍历所有线段，如果出现不重合线段则弹出不重合的线段，如果重合则加入end</li>
+</ol>
+<h5 id="给购买次数最多的前k名用户颁奖"><a class="markdownIt-Anchor" href="#给购买次数最多的前k名用户颁奖"></a> 给购买次数最多的前K名用户颁奖</h5>
+<p>  给定一个整型数组，int[] arr；和一个布尔类型数组，boolean[] op。两个数组一定等长，假设长度为N，arr[i]表示客户编号，op[i]表示客户操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">arr = [ 3, 3, 1, 2, 1, 2, 5…</span><br><span class="line">op  = [ T, T, T, T, F, T, F…</span><br></pre></td></tr></table></figure>
+<p>  依次表示：3用户购买了一件商品，3用户购买了一件商品，1用户购买了一件商品，2用户购买了一件商品，1用户退货了一件商品，2用户购买了一件商品，5用户退货了一件商品…</p>
+<p>  一对arr[i]和op[i]就代表一个事件：用户号为arr[i]，op[i] == T就代表这个用户购买了一件商品，op[i] == F就代表这个用户退货了一件商品。现在你作为电商平台负责人，你想在每一个事件到来的时候，都给购买次数最多的前K名用户颁奖。所以每个事件发生后，你都需要一个得奖名单（得奖区）。</p>
+<p>  得奖系统的规则：</p>
+<ol>
+<li>如果某个用户购买商品数为0，但是又发生了退货事件，则认为该事件无效，得奖名单和上一个事件发生后一致，例子中的5用户</li>
+<li>某用户发生购买商品事件，购买商品数+1，发生退货事件，购买商品数-1</li>
+<li>每次都是最多K个用户得奖，K也为传入的参数。如果根据全部规则，得奖人数确实不够K个，那就以不够的情况输出结果</li>
+<li>得奖系统分为得奖区和候选区，任何用户只要购买数&gt;0，一定在这两个区域中的一个</li>
+<li>购买数最大的前K名用户进入得奖区，在最初时如果得奖区没有到达K个用户，那么新来的用户直接进入得奖区</li>
+<li>如果购买数不足以进入得奖区的用户，进入候选区</li>
+<li>如果候选区购买数最多的用户，已经足以进入得奖区，该用户就会替换得奖区中购买数最少的用户（大于才能替换），如果得奖区中购买数最少的用户有多个，就替换最早进入得奖区的用户，如果候选区中购买数最多的用户有多个，机会会给最早进入候选区的用户</li>
+<li>候选区和得奖区是两套时间，因用户只会在其中一个区域，所以只会有一个区域的时间，另一个没有。从得奖区出来进入候选区的用户，得奖区时间删除，进入候选区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i，从候选区出来进入得奖区的用户，候选区时间删除，进入得奖区的时间就是当前事件的时间（可以理解为arr[i]和op[i]中的i</li>
+<li>如果某用户购买数==0，不管在哪个区域都离开，区域时间删除，离开是指彻底离开，哪个区域也不会找到该用户。如果下次该用户又发生购买行为，产生&gt;0的购买数，会再次根据之前规则回到某个区域中，进入区域的时间重记<br />
+  请遍历arr数组和op数组，遍历每一步输出一个得奖名单</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt;  <span class="title function_">topK</span> <span class="params">(<span class="type">int</span>[] arr, <span class="type">boolean</span>[] op, <span class="type">int</span> k)</span></span><br></pre></td></tr></table></figure>
+<p>  自定义堆，添加反向索引表。按照业务逻辑进行遍历，调整中奖区、候选区。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/08/DataStructuresAndAlgorithms/4%E3%80%81%E6%8E%92%E5%BA%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1329,20 +1754,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

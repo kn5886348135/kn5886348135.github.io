@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="动态规划的其他优化 题目一 给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下: 1)如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 LXR。 2)如果被打爆气球的左边有没被打爆的气球，找到离被打爆">
+  <meta name="description" content="打爆气球   给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下:  如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 L×X×RL \times X \times RL×X×R。 如果被打爆气球的左">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动态规划的其它优化技巧">
 <meta property="og:url" content="https://www.goodserendipity.com/2023/08/10/DataStructuresAndAlgorithms/38%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%85%B6%E5%AE%83%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/index.html">
 <meta property="og:site_name" content="缘分天注定">
-<meta property="og:description" content="动态规划的其他优化 题目一 给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下: 1)如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 LXR。 2)如果被打爆气球的左边有没被打爆的气球，找到离被打爆">
+<meta property="og:description" content="打爆气球   给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下:  如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 L×X×RL \times X \times RL×X×R。 如果被打爆气球的左">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-08-10T08:44:48.000Z">
-<meta property="article:modified_time" content="2023-08-10T08:45:43.877Z">
+<meta property="article:modified_time" content="2023-08-12T09:54:34.257Z">
 <meta property="article:author" content="Louis">
-<meta property="article:tag" content="动态规划">
+<meta property="article:tag" content="动态规划的优化">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://www.goodserendipity.com/2023/08/10/DataStructuresAndAlgorithms/38%E3%80%81%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%85%B6%E5%AE%83%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/">
@@ -193,10 +193,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-08-10 16:44:48 / Modified: 16:45:43" itemprop="dateCreated datePublished" datetime="2023-08-10T16:44:48+08:00">2023-08-10</time>
+              <time title="Created: 2023-08-10 16:44:48" itemprop="dateCreated datePublished" datetime="2023-08-10T16:44:48+08:00">2023-08-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-12 17:54:34" itemprop="dateModified" datetime="2023-08-12T17:54:34+08:00">2023-08-12</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -218,54 +224,37 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="动态规划的其他优化"><a class="markdownIt-Anchor" href="#动态规划的其他优化"></a> 动态规划的其他优化</h3>
-<p>题目一<br />
-给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下: 1)如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 L<em>X</em>R。 2)如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边所有气球都已经被打爆。获得分数为 L<em>X。 3)如果被打爆气球的左边所有的气球都已经被打爆;如果被打爆气球的右边有没被打爆的 气球，找到离被打爆气球最近的气球，假设分数为 R;如果被打爆气球的右边所有气球都 已经 被打爆。获得分数为 X</em>R。 4)如果被打爆气球的左边和右边所有的气球都已经被打爆。获得分数为 X。<br />
-目标是打爆所有气球，获得每次打爆的分数。通过选择打爆气球的顺序，可以得到不同的总分，请返回能获得的最大分数。<br />
-【举例】<br />
-arr = {3,2,5} 如果先打爆3，获得3<em>2;再打爆2，获得2</em>5;最后打爆5，获得5;最后总分21 如果先打爆3，获得3<em>2;再打爆5，获得2</em>5;最后打爆2，获得2;最后总分18 如果先打爆2，获得3<em>2</em>5;再打爆3，获得3<em>5;最后打爆5，获得5;最后总分50 如果先打爆2，获得3</em>2<em>5;再打爆5，获得3</em>5;最后打爆3，获得3;最后总分48 如果先打爆5，获得2<em>5;再打爆3，获得3</em>2;最后打爆2，获得2;最后总分18 如果先打爆5，获得2<em>5;再打爆2，获得3</em>2;最后打爆3，获得3;最后总分19 返回能获得的最大分数为50</p>
-<p>题目二<br />
-<a target="_blank" rel="noopener" href="https://leetcode.com/problems/remove-boxes/">https://leetcode.com/problems/remove-boxes/</a></p>
-<p>题目三<br />
-如果一个字符相邻的位置没有相同字符，那么这个位置的字符出现不能被消掉。比如:“ab”，其中a和b都不能被消掉<br />
-如果一个字符相邻的位置有相同字符，就可以一起消掉。比如:“abbbc”，中间一串的b是可以被消掉的，<br />
-消除之后剩下“ac”。某些字符如果消掉了，剩下的字符认为重新靠在一起<br />
-给定一个字符串，你可以决定每一步消除的顺序，目标是请尽可能多的消掉字符，返回最少的剩余字符数量<br />
-比如：“aacca”, 如果先消掉最左侧的&quot;aa&quot;，那么将剩下&quot;cca&quot;，然后把&quot;cc&quot;消掉，剩下的&quot;a&quot;将无法再消除，返回1<br />
-但是如果先消掉中间的&quot;cc&quot;，那么将剩下&quot;aaa&quot;，最后都消掉就一个字符也不剩了，返回0，这才是最优解。<br />
-再比如：“baaccabb”，如果先消除最左侧的两个a，剩下&quot;bccabb&quot;，如果再消除最左侧的两个c，剩下&quot;babb&quot;，<br />
-最后消除最右侧的两个b，剩下&quot;ba&quot;无法再消除，返回2<br />
-而最优策略是：先消除中间的两个c，剩下&quot;baaabb&quot;，再消除中间的三个a，剩下&quot;bbb&quot;，最后消除三个b，<br />
-不留下任何字符，返回0，这才是最优解</p>
-<p>题目四<br />
-给定一个数组arr，和一个正数M，<br />
-返回在arr的子数组在长度不超过M的情况下，最大的累加和</p>
-<p>题目五<br />
-哈夫曼树详解</p>
-</br>
-题目一
-https://leetcode.com/problems/strange-printer/
-<p>题目二<br />
-整型数组arr长度为n(3 &lt;= n &lt;= 10^4)，最初每个数字是&lt;=200的正数且满足如下条件：</p>
+        <h3 id="打爆气球"><a class="markdownIt-Anchor" href="#打爆气球"></a> 打爆气球</h3>
+<p>  给定一个数组 arr，代表一排有分数的气球。每打爆一个气球都能获得分数，假设打爆气 球 的分数为 X，获得分数的规则如下:</p>
 <ol>
-<li>arr[0] &lt;= arr[1]<br />
-2.arr[n-1] &lt;= arr[n-2]</li>
-<li>arr[i] &lt;= max(arr[i-1], arr[i+1])<br />
-但是在arr有些数字丢失了，比如k位置的数字之前是正数，<br />
-丢失之后k位置的数字为0。<br />
-请你根据上述条件， 计算可能有多少种不同的arr可以满足以上条件。<br />
-比如 [6,0,9] 只有还原成 [6,9,9]满足全部三个条件，所以返回1种。</li>
+<li>如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R。 获得分数为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>×</mo><mi>X</mi><mo>×</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">L \times X \times R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span></span></span>。</li>
+<li>如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 L;如果被打爆气球的右边所有气球都已经被打爆。获得分数为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>×</mo><mi>X</mi></mrow><annotation encoding="application/x-tex">L \times X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span></span></span></span>。</li>
+<li>如果被打爆气球的左边所有的气球都已经被打爆;如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为 R;如果被打爆气球的右边所有气球都 已经 被打爆。获得分数为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>×</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">X \times R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span></span></span>。</li>
+<li>如果被打爆气球的左边和右边所有的气球都已经被打爆。获得分数为 X。</li>
 </ol>
-<p>题目三<br />
-最大网络流算法之dinic算法详解<br />
-无向图是特殊的有向图<br />
-最大网络流算法是解决有向图问题的，也可以解决无向图问题<br />
-深度优先遍历可能会得不到正确的答案<br />
-dinic算法补一个反向边，不会让答案变大，但是会把错过的正确答案找回来<br />
-<a target="_blank" rel="noopener" href="http://xn--oi-wiki-m15k72n0xgdw2dld0dp55a.org">具体证明参考oi-wiki.org</a><br />
-优化<br />
-1、用BFS建立高度，然后DFS，避免在同一层来回走<br />
-2、用一个数组记录已经使用了的线路</p>
+<p>  目标是打爆所有气球，获得每次打爆的分数。通过选择打爆气球的顺序，可以得到不同的总分，请返回能获得的最大分数。<br />
+  例如arr = {3,2,5} 如果先打爆3，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">3 \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span> ;再打爆2，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;最后打爆5，获得5;最后总分21 如果先打爆3，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">3 \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span> ;再打爆5，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;最后打爆2，获得2;最后总分18 如果先打爆2，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">3 \times 2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;再打爆3，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">3 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;最后打爆5，获得5;最后总分50 如果先打爆2，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">3 \times 2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;再打爆5，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">3 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;最后打爆3，获得3;最后总分48 如果先打爆5，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span> ;再打爆3，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">3 \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span> ;最后打爆2，获得2;最后总分18 如果先打爆5，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">2 \times 5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">5</span></span></span></span>;再打爆2，获得 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">3 \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>;最后打爆3，获得3;最后总分19 返回能获得的最大分数为50</p>
+<h3 id="移除盒子"><a class="markdownIt-Anchor" href="#移除盒子"></a> 移除盒子</h3>
+<p>  给出一些不同颜色的盒子 boxes ，盒子的颜色由不同的正数表示。你将经过若干轮操作去去掉盒子，直到所有的盒子都去掉为止。每一轮你可以移除具有相同颜色的连续 k 个盒子（k ≥ 1），这样一轮之后你将得到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">k \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span> 个积分。返回 你能获得的最大积分和 。</p>
+<h3 id="消除字符"><a class="markdownIt-Anchor" href="#消除字符"></a> 消除字符</h3>
+<p>  如果一个字符相邻的位置没有相同字符，那么这个位置的字符出现不能被消掉。比如:“ab”，其中a和b都不能被消掉。如果一个字符相邻的位置有相同字符，就可以一起消掉。比如:“abbbc”，中间一串的b是可以被消掉的，消除之后剩下“ac”。某些字符如果消掉了，剩下的字符认为重新靠在一起。给定一个字符串，你可以决定每一步消除的顺序，目标是请尽可能多的消掉字符，返回最少的剩余字符数量。比如：“aacca”, 如果先消掉最左侧的&quot;aa&quot;，那么将剩下&quot;cca&quot;，然后把&quot;cc&quot;消掉，剩下的&quot;a&quot;将无法再消除，返回1。但是如果先消掉中间的&quot;cc&quot;，那么将剩下&quot;aaa&quot;，最后都消掉就一个字符也不剩了，返回0，这才是最优解。再比如：“baaccabb”，如果先消除最左侧的两个a，剩下&quot;bccabb&quot;，如果再消除最左侧的两个c，剩下&quot;babb&quot;，最后消除最右侧的两个b，剩下&quot;ba&quot;无法再消除，返回2。而最优策略是：先消除中间的两个c，剩下&quot;baaabb&quot;，再消除中间的三个a，剩下&quot;bbb&quot;，最后消除三个b，不留下任何字符，返回0，这才是最优解。</p>
+<h3 id="子数组最大累加和"><a class="markdownIt-Anchor" href="#子数组最大累加和"></a> 子数组最大累加和</h3>
+<p>  给定一个数组arr，和一个正数M，返回在arr的子数组在长度不超过M的情况下，最大的累加和。</p>
+<h3 id="leetcode664-奇怪的打印机"><a class="markdownIt-Anchor" href="#leetcode664-奇怪的打印机"></a> LeetCode664 奇怪的打印机</h3>
+<p>  有台奇怪的打印机有以下两个特殊要求：</p>
+<ol>
+<li>打印机每次只能打印由 同一个字符 组成的序列。</li>
+<li>每次可以在从起始到结束的任意位置打印新字符，并且会覆盖掉原来已有的字符。</li>
+</ol>
+<p>  给你一个字符串 s ，你的任务是计算这个打印机打印它需要的最少打印次数。</p>
+<h3 id="还原数组"><a class="markdownIt-Anchor" href="#还原数组"></a> 还原数组</h3>
+<p>  整型数组arr长度为n(3 ≤ n ≤ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">10^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span>)，最初每个数字是 ≤ 200的正数且满足如下条件：</p>
+<ol>
+<li>arr[0] ≤ arr[1]</li>
+<li>arr[n-1] ≤ arr[n-2]</li>
+<li>arr[i] ≤ max(arr[i-1], arr[i+1])</li>
+</ol>
+<p>  但是在arr有些数字丢失了，比如k位置的数字之前是正数，丢失之后k位置的数字为0。请你根据上述条件， 计算可能有多少种不同的arr可以满足以上条件。比如 [6,0,9] 只有还原成 [6,9,9]满足全部三个条件，所以返回1种。</p>
 
     </div>
 
@@ -275,7 +264,7 @@ dinic算法补一个反向边，不会让答案变大，但是会把错过的正
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag"># 动态规划</a>
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E4%BC%98%E5%8C%96/" rel="tag"># 动态规划的优化</a>
           </div>
 
         
@@ -349,7 +338,7 @@ dinic算法补一个反向边，不会让答案变大，但是会把错过的正
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%85%B6%E4%BB%96%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text"> 动态规划的其他优化</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E7%88%86%E6%B0%94%E7%90%83"><span class="nav-number">1.</span> <span class="nav-text"> 打爆气球</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E7%9B%92%E5%AD%90"><span class="nav-number">2.</span> <span class="nav-text"> 移除盒子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E9%99%A4%E5%AD%97%E7%AC%A6"><span class="nav-number">3.</span> <span class="nav-text"> 消除字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E6%95%B0%E7%BB%84%E6%9C%80%E5%A4%A7%E7%B4%AF%E5%8A%A0%E5%92%8C"><span class="nav-number">4.</span> <span class="nav-text"> 子数组最大累加和</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#leetcode664-%E5%A5%87%E6%80%AA%E7%9A%84%E6%89%93%E5%8D%B0%E6%9C%BA"><span class="nav-number">5.</span> <span class="nav-text"> LeetCode664 奇怪的打印机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%98%E5%8E%9F%E6%95%B0%E7%BB%84"><span class="nav-number">6.</span> <span class="nav-text"> 还原数组</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -363,20 +352,20 @@ dinic算法补一个反向边，不会让答案变大，但是会把错过的正
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
