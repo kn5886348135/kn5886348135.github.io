@@ -165,6 +165,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/" class="post-title-link" itemprop="url">bfprt</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-18 19:37:33" itemprop="dateCreated datePublished" datetime="2023-04-18T19:37:33+08:00">2023-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-26 17:51:37" itemprop="dateModified" datetime="2023-04-26T17:51:37+08:00">2023-04-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="bfprt算法"><a class="markdownIt-Anchor" href="#bfprt算法"></a> bfprt算法</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Median_of_medians">中位数的中位数</a> 也叫bfprt算法，利用中位数的中位数确定荷兰国旗问题的pivot，用于求解第k大数的问题，时间复杂度为O(N)。</p>
+<ol>
+<li>将整个序列划分为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>5</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{N}{5}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 组，每组元素数不超过5个；</li>
+<li>寻找每组元素的中位数（因为元素个数较少，可以直接使用插入排序 等算法）；</li>
+<li>找出这组元素中位数中的中位数。将该元素作为每次partition时的分界值pivot；</li>
+<li>按照荷兰国旗问题的partition过程确定k。</li>
+</ol>
+<hr />
+<h5 id="在无序数组中求第k小的数"><a class="markdownIt-Anchor" href="#在无序数组中求第k小的数"></a> 在无序数组中求第K小的数</h5>
+<ul>
+<li>大根堆 O(N)
+<ul>
+<li>数组的前k个元素入堆</li>
+<li>遍历数组，堆顶比当前元素小则弹出堆顶，并且当前元素入堆</li>
+<li>返回堆顶</li>
+</ul>
+</li>
+<li>改写快排 O(N)
+<ul>
+<li>在left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right区间随机获取pivot</li>
+<li>根据pivot进行荷兰国旗问题partition</li>
+<li>k在小于区域则递归对左边进行partition</li>
+<li>k在大于区域则递归对右边进行partition</li>
+<li>k在等于区域则返回等于区域边界</li>
+<li>时间复杂度的证明涉及计算概率期望值</li>
+</ul>
+</li>
+<li>bfprt算法 O(N)
+<ul>
+<li>和改写快排相同，但是使用中位数的中位数作为pivot；</li>
+<li>获取中位数的中位数的过程中，不改变原数组，只有在partition过程中才产生交换。bfprt每次交换后都会排除 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>3</mn><mo>×</mo><mi>N</mi></mrow><mn>10</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{3 \times N}{10}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 个元素；</li>
+<li>时间复杂度的<a target="_blank" rel="noopener" href="https://next.oi-wiki.org/basic/quick-sort/#%E6%94%B9%E8%BF%9B%E4%B8%AD%E4%BD%8D%E6%95%B0%E4%B8%AD%E7%9A%84%E4%B8%AD%E4%BD%8D%E6%95%B0">证明</a>。</li>
+</ul>
+</li>
+</ul>
+<h5 id="topk"><a class="markdownIt-Anchor" href="#topk"></a> topK</h5>
+<p>  给定一个无序数组arr中，长度为N，给定一个正数k，返回top k个最大的数。</p>
+<ul>
+<li>O(N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logN)   升序排序，取最大的k个</li>
+<li>O(N + K <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logN) 自定义大根堆，从希望上建立大根堆，将最大的k个数交换到数组末尾</li>
+<li>O(n + k <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logk)  拿到第len-k小的数num，遍历数组收集大于num的数，补齐等于num的数</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/17%E3%80%81manacher/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1232,110 +1348,6 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/12/DataStructuresAndAlgorithms/8%E3%80%81%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/12/DataStructuresAndAlgorithms/8%E3%80%81%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">贪心算法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-12 19:41:23" itemprop="dateCreated datePublished" datetime="2023-04-12T19:41:23+08:00">2023-04-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-13 22:17:30" itemprop="dateModified" datetime="2023-04-13T22:17:30+08:00">2023-04-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="贪心算法"><a class="markdownIt-Anchor" href="#贪心算法"></a> 贪心算法</h4>
-<ul>
-<li>最自然智慧的算法</li>
-<li>用一种局部最功利的标准，总是做出在当前看来是最好的选择</li>
-<li>难点在于证明局部最优解可以得到全局最优解</li>
-<li>贪心算法主要靠经验</li>
-</ul>
-<h4 id="贪心求解的标准过程"><a class="markdownIt-Anchor" href="#贪心求解的标准过程"></a> 贪心求解的标准过程</h4>
-<ol>
-<li>分析业务</li>
-<li>根据业务逻辑找到不同的贪心策略</li>
-<li>对于能举出反例的策略直接跳过，不能举出反例的策略要证明有效性这往往是特别困难的，要求数学能力很高且不具有统一的技巧性</li>
-<li>用对数器证明正确性</li>
-</ol>
-<hr />
-<h5 id="最小字典序"><a class="markdownIt-Anchor" href="#最小字典序"></a> 最小字典序</h5>
-<p>  给定一个由字符串组成的数组strs，必须把所有的字符串拼接起来，返回所有可能的拼接结果中，字典序最小的结果。<br />
-  a+b&lt;b+a并且b+c&lt;c+b 得到a+c&lt;c+a，比较的传递性，可以证明。</p>
-<h5 id="分割金条"><a class="markdownIt-Anchor" href="#分割金条"></a> 分割金条</h5>
-<p>  分割金条，60长度分成10、20、30。一块金条切成两半，是需要花费和长度数值一样的铜板的。比如长度为20的金条，不管怎么切，都要花费20个铜板。 一群人想整分整块金条，怎么分最省铜板?</p>
-<p>  例如,给定数组{10,20,30}，代表一共三个人，整块金条长度为60，金条要分成10，20，30三个部分。如果先把长度60的金条分成10和50，花费60; 再把长度50的金条分成20和30，花费50;一共花费110铜板。但如果先把长度60的金条分成30和30，花费60;再把长度30金条分成10和20， 花费30;一共花费90铜板。</p>
-<p>  输入一个数组，返回分割的最小代价。暂不考虑切割的顺序，如果考虑切割顺序需要使用动态规划和四边形不等式。</p>
-<p>  暴力尝试，双层循环将i和j合并，递归得到花费，最后将最小的花费返回。</p>
-<p>  将所有分割后的长度放入小根堆，每次获取两个长度相加然后放回小根堆，重复直到小根堆只剩一个元素。<br />
-  每次都切割最大长度的反例97、98  和  100、99。正确操作是第一次切割成100+99和98+97，而不是切割成100和99+98+97。<font color="red">反例的证明就是哈夫曼编码。</font></p>
-<h5 id="点灯"><a class="markdownIt-Anchor" href="#点灯"></a> 点灯</h5>
-<p>  给定一个字符串str，只由‘X’和‘.’两种字符构成。‘X’表示墙，不能放灯，也不需要点亮。‘.’表示居民点，可以放灯，需要点亮。如果灯放在i位置，可以让i-1，i和i+1三个位置被点亮。返回如果点亮str中所有需要点亮的位置，至少需要几盏灯。</p>
-<h5 id="安排会议室"><a class="markdownIt-Anchor" href="#安排会议室"></a> 安排会议室</h5>
-<p>  一些项目要占用一个会议室宣讲，会议室不能同时容纳两个项目的宣讲。给你每一个项目开始的时间和结束的时间，你来安排宣讲的日程，要求会议室进行的宣讲的场次最多。返回最多的宣讲场次。</p>
-<h5 id="ipo"><a class="markdownIt-Anchor" href="#ipo"></a> IPO</h5>
-<p>  输入正数数组costs、正数数组profits、正数K、正数M，costs[i]表示i号项目的花费，profits[i]表示i号项目在扣除花费之后还能挣到的钱(利润)，K表示你只能串行的最多做k个项目，M表示你初始的资金。说明: 每做完一个项目，马上获得的收益，可以支持你去做下一个项目。不能并行的做项目。输出：你最后获得的最大钱数。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1405,20 +1417,20 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

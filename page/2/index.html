@@ -165,6 +165,311 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/07/Other/1%E3%80%81Idea%E7%9A%84vim%E6%8F%92%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/07/Other/1%E3%80%81Idea%E7%9A%84vim%E6%8F%92%E4%BB%B6/" class="post-title-link" itemprop="url">Idea的vim插件</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-07 10:31:34 / Modified: 11:20:32" itemprop="dateCreated datePublished" datetime="2023-08-07T10:31:34+08:00">2023-08-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index"><span itemprop="name">其它</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  idea的vim插件操作，dd删除当前行，上方插入一行 Shift + o，下方插入一行 o，u撤销最近的一个修改动作，h、j、k、l左、下、上、右移动一个字符，查找可以使用idea自带的查找功能。</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>命令</th>
+<th>含义</th>
+<th>解释</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>x</td>
+<td>删除字符</td>
+<td>删除后是命令模式</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>s</td>
+<td>删除字符</td>
+<td>删除后是插入模式</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>dw</td>
+<td>删除单词</td>
+<td>删除当前位置至单词结尾</td>
+<td>单词分割符为非字母数字下划线，如空格、感叹号、问号等</td>
+</tr>
+<tr>
+<td>4</td>
+<td>diw</td>
+<td>删除当前单词</td>
+<td>保留分隔符，删除后仍然是命令模式</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>daw</td>
+<td>删除当前单词</td>
+<td>不保留分隔符，删除后仍然是命令模式</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>ciw</td>
+<td>删除当前单词</td>
+<td>保留分隔符，删除后是插入模式</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>caw</td>
+<td>删除当前单词</td>
+<td>不保留分隔符，删除后是插入模式</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>d$</td>
+<td>删除行</td>
+<td>删除当前位置至行尾</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>d0</td>
+<td>删除行</td>
+<td>删除当前位置至行首</td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td>ci{</td>
+<td>删除代码块</td>
+<td>删除当前嵌套代码块</td>
+<td></td>
+</tr>
+<tr>
+<td>11</td>
+<td>c2i{</td>
+<td>删除代码块</td>
+<td>如果是删除两层嵌套代码块</td>
+<td>删除3层代码块类推</td>
+</tr>
+<tr>
+<td>12</td>
+<td>cip</td>
+<td>删除段</td>
+<td>删除当前位置到段尾</td>
+<td>段与段之间用空行分隔</td>
+</tr>
+<tr>
+<td>13</td>
+<td>dG</td>
+<td>删除段</td>
+<td>删除当前位置到文件结尾</td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>dgg</td>
+<td>删除段</td>
+<td>删除当前位置到文件开头</td>
+<td></td>
+</tr>
+<tr>
+<td>15</td>
+<td>w</td>
+<td>正向移动</td>
+<td>右移一个单词位，光标在当前单词末尾的下一个字符位</td>
+<td>单词使用非字母数字下划线分隔，字串使用空格分隔</td>
+</tr>
+<tr>
+<td>16</td>
+<td>W</td>
+<td>正向移动</td>
+<td>右移一个字串位，光标在当前字串末尾的下一个字符位</td>
+<td></td>
+</tr>
+<tr>
+<td>17</td>
+<td>e</td>
+<td>正向移动</td>
+<td>右移一个单词位，光标在当前单词末尾的字符上</td>
+<td></td>
+</tr>
+<tr>
+<td>18</td>
+<td>E</td>
+<td>正向移动</td>
+<td>右移一个字串位，光标在当前字串末尾的字符上</td>
+<td></td>
+</tr>
+<tr>
+<td>19</td>
+<td>b</td>
+<td>反向移动</td>
+<td>左移一个单词位，光标在当前单词开头的字符上</td>
+<td></td>
+</tr>
+<tr>
+<td>20</td>
+<td>B</td>
+<td>反向移动</td>
+<td>左移一个字串位，光标在当前字串开头的字符上</td>
+<td></td>
+</tr>
+<tr>
+<td>21</td>
+<td>ge</td>
+<td>反向移动</td>
+<td>左移一个单词位，光标在当前单词开头的前一个字符位上</td>
+<td></td>
+</tr>
+<tr>
+<td>22</td>
+<td>gE</td>
+<td>反向移动</td>
+<td>左移一个字串位，光标在当前字串开头的前一个字符位上</td>
+<td></td>
+</tr>
+<tr>
+<td>23</td>
+<td>I</td>
+<td>移动光标</td>
+<td>移动到行首</td>
+<td></td>
+</tr>
+<tr>
+<td>24</td>
+<td>A</td>
+<td>移动光标</td>
+<td>移动到行尾</td>
+<td></td>
+</tr>
+<tr>
+<td>25</td>
+<td>{</td>
+<td>移动光标</td>
+<td>移动到段首</td>
+<td></td>
+</tr>
+<tr>
+<td>26</td>
+<td>}</td>
+<td>移动光标</td>
+<td>移动到段尾</td>
+<td></td>
+</tr>
+<tr>
+<td>27</td>
+<td>gg</td>
+<td>移动光标</td>
+<td>移动到开头</td>
+<td></td>
+</tr>
+<tr>
+<td>28</td>
+<td>G</td>
+<td>移动光标</td>
+<td>移动到结尾</td>
+<td></td>
+</tr>
+<tr>
+<td>29</td>
+<td>Ctrl + u</td>
+<td>翻页</td>
+<td>往上移动半屏</td>
+<td></td>
+</tr>
+<tr>
+<td>30</td>
+<td>Ctrl + d</td>
+<td>翻页</td>
+<td>往下移动半屏</td>
+<td></td>
+</tr>
+<tr>
+<td>31</td>
+<td>:%s/foo/bar/g</td>
+<td>查找替换</td>
+<td>:{作用范围}s/{目标}/{替换}/{替换标志}</td>
+<td>在全局范围(%)查找所有(g)foo并替换为bar</td>
+</tr>
+<tr>
+<td>32</td>
+<td>U</td>
+<td>撤销</td>
+<td>撤销当前行上的所有修改</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/02/Java/Basic/1%E3%80%81ConCurrentSkipListSet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1140,105 +1445,6 @@ x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 <spa
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/07/25/DataStructuresAndAlgorithms/42%E3%80%81%E5%90%8E%E7%BC%80%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/07/25/DataStructuresAndAlgorithms/42%E3%80%81%E5%90%8E%E7%BC%80%E6%A0%91/" class="post-title-link" itemprop="url">后缀树</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-07-25 19:41:03" itemprop="dateCreated datePublished" datetime="2023-07-25T19:41:03+08:00">2023-07-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-13 12:40:46" itemprop="dateModified" datetime="2023-08-13T12:40:46+08:00">2023-08-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="词频统计"><a class="markdownIt-Anchor" href="#词频统计"></a> 词频统计</h3>
-<p>  一个文本文件，有1W行，每行一个词，要求统计最频繁出现的10个词。</p>
-<h3 id="原地词频统计"><a class="markdownIt-Anchor" href="#原地词频统计"></a> 原地词频统计</h3>
-<p>  1G大小的文件，每一行是一个词，词的大小不超过16字节，内存限制1M。返回频数最高的100个词。</p>
-<h3 id="字符串去重"><a class="markdownIt-Anchor" href="#字符串去重"></a> 字符串去重</h3>
-<p>  1000W字符串，去除重复的字符串。</p>
-<h3 id="搜索引擎词频统计"><a class="markdownIt-Anchor" href="#搜索引擎词频统计"></a> 搜索引擎词频统计</h3>
-<p>  热门查询，搜索引擎记录用户每次检索的关键字1000W个，去重后不超过300W。要求统计出现频率最高的10个查询串，内存不能超过1G。<br />
-  考虑bitmap、hashmap、trie树统计每个词出现的次数、堆</p>
-<h3 id="最长回文子串"><a class="markdownIt-Anchor" href="#最长回文子串"></a> 最长回文子串</h3>
-<p>  后缀树(算法实现复杂并且空间开销大)</p>
-<h3 id="字符串包含"><a class="markdownIt-Anchor" href="#字符串包含"></a> 字符串包含</h3>
-<p>  字符串S是否包含子串S1<br />
-  在S的后缀树中查找S1</p>
-<h3 id="最长重复子串"><a class="markdownIt-Anchor" href="#最长重复子串"></a> 最长重复子串</h3>
-<p>  找出字符串S的最长重复子串S1</p>
-<h3 id="最长公共子串"><a class="markdownIt-Anchor" href="#最长公共子串"></a> 最长公共子串</h3>
-<p>  找出S1和S2的最长公共子串<br />
-  最长公共子串和最长公共子序列的区别，子串是连续的，子序列是不连续的但是不更改在原字符串中的顺序。<br />
-  考虑后缀树、动态规划</p>
-<h3 id="ziv-lampel无损压缩算法"><a class="markdownIt-Anchor" href="#ziv-lampel无损压缩算法"></a> Ziv-Lampel无损压缩算法</h3>
-<p>  后缀树的形式存储字符串和压缩码值的字典，因为编码数据存在大量的重复字符串</p>
-<h3 id="多模式串的匹配问题"><a class="markdownIt-Anchor" href="#多模式串的匹配问题"></a> 多模式串的匹配问题</h3>
-<p>  后缀数组加二分</p>
-<h3 id="后缀树的构造方法"><a class="markdownIt-Anchor" href="#后缀树的构造方法"></a> 后缀树的构造方法</h3>
-<p>  Ukkonen</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1308,20 +1514,20 @@ x的左右子树，即高度为 h-1 的节点，它包含的节点至少为 <spa
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

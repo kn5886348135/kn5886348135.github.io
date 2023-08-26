@@ -165,6 +165,118 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/" class="post-title-link" itemprop="url">hash</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-28 14:57:41" itemprop="dateCreated datePublished" datetime="2023-04-28T14:57:41+08:00">2023-04-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-07-26 16:48:28" itemprop="dateModified" datetime="2023-07-26T16:48:28+08:00">2023-07-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="hash函数的特点"><a class="markdownIt-Anchor" href="#hash函数的特点"></a> hash函数的特点</h4>
+<p>1、输入域无限、输出域相对有限，比如SHA256，可以输入任意字符串，输出定长字符串<br />
+2、没有任何随机，同一个输入、输出必定相同<br />
+3、存在hash碰撞(因为输入无限、输出有限)<br />
+4、输出域是均匀离散的</p>
+<p>  哈希函数作用,可以把数据根据不同值，几乎均匀的分开，比如java.util.HashMap。</p>
+<h4 id="布谷鸟过滤器"><a class="markdownIt-Anchor" href="#布谷鸟过滤器"></a> 布谷鸟过滤器</h4>
+<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cuckoo_filter">布谷鸟过滤器</a>(Cuckoo Filter)相对于布隆过滤器查询性能好、空间利用效率高、支持删除操作和计数，但是严格要求同一个元素不能被插入多次(k <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> b + 1)。所以布谷鸟过滤器是有条件支持删除操作的，实际使用场景非常有限。</p>
+<h4 id="布隆过滤器"><a class="markdownIt-Anchor" href="#布隆过滤器"></a> 布隆过滤器</h4>
+<p>  字符串str，经过三个hash函数得出3个结果，每个结果对mod取模结果index，bit[index]的结果都为1则证明str可能存在布隆过滤器中，只要有一个不为1，则str一定不在布隆过滤器中。</p>
+<ol>
+<li>利用哈希函数的性质</li>
+<li>每一条数据提取特征</li>
+<li>加入描黑库</li>
+</ol>
+<h4 id="布隆过滤器的公式"><a class="markdownIt-Anchor" href="#布隆过滤器的公式"></a> 布隆过滤器的公式</h4>
+<ol>
+<li>假设数据量为n，预期的失误率为p（布隆过滤器大小和每个样本的大小无关，因为将样本hash以后的大小是固定的，取模后映射到bit数组上）</li>
+<li>根据n和p，算出Bloom Filter一共需要多少个bit位，向上取整，记为m</li>
+<li>根据m和n，算出Bloom Filter需要多少个哈希函数，向上取整，记为k</li>
+<li>根据修正公式，算出真实的失误率p</li>
+</ol>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.15999999999999992em" columnalign="left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mo>=</mo><mo>−</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>l</mi><mi>n</mi><mi>p</mi></mrow><mrow><mo stretchy="false">(</mo><mi>l</mi><mi>n</mi><mn>2</mn><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow></mfrac><mspace width="34.14330708661417em"/></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>k</mi><mo>=</mo><mi>l</mi><mi>n</mi><mn>2</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac><mo>=</mo><mn>0.7</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>p</mi><mo>=</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mo>−</mo></msup><mo stretchy="false">(</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>k</mi></mrow><mi>m</mi></mfrac><mo stretchy="false">)</mo><msup><mo stretchy="false">)</mo><mi>k</mi></msup></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{array}{l}
+    m=-\frac{n \times lnp}{(ln2)^2} \hspace{12cm} \\
+    k=ln2\times\frac{m}{n}=0.7\times\frac{m}{n} \\
+    p=(1-e^-(\frac{n \times k}{m}))^k \\
+\end{array}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3.892324em;vertical-align:-1.6961620000000002em;"></span><span class="mord"><span class="mtable"><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.1961619999999997em;"><span style="top:-4.263946em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">−</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322159999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">n</span><span class="mord mtight">2</span><span class="mclose mtight"><span class="mclose mtight">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:34.14330708661417em;"></span></span></span><span style="top:-2.9039459999999995em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">n</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">7</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span style="top:-1.663838em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.771331em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.6961620000000002em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span></span></span></span></span></span></span></p>
+<p>  k个hash函数可以由i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> a + b得到，a、b是两个不同的hash函数，1 ≤ i ≤ k。a、b没有任何要求，hash结果是字符串，可以使用guava的BloomFilter拿到取模后的结果在redis进行bitmap的getbit操作，setbit操作要保证原子性。但是guava的BloomFilter是单机的，可以通过MurMurHash等hash算法拿到hashCode再进行redis的bitmap操作实现BloomFilter集群。也可以让redis加载<a target="_blank" rel="noopener" href="https://github.com/RedisBloom/RedisBloom">RedisBloom</a>，使用spring-data-redis客户端实现BloomFilter集群。redis的bitMap部分操作会阻塞，如果有必要可以进行缓存预热。某些场景可以将比较大的bitmap拆分成几个小的bitmap，并使用lua脚本进行操作。</p>
+<h4 id="一致性hash"><a class="markdownIt-Anchor" href="#一致性hash"></a> 一致性hash</h4>
+<p>  分布式存储结构最常见的结构</p>
+<ol>
+<li>哈希域变成环的设计</li>
+<li>虚拟节点技术</li>
+</ol>
+<p>  选择合适的hash key，将数据路由到对应的redis或者mysql上。hash key一定是要求均匀的，<br />
+中国的姓氏是不均匀的，如果以姓氏作为hash key，那么路由到大姓(李、王)的服务器数据一定是最多的。</p>
+<p>  当服务器数量发生变化的时候，需要重新hash，迁移全量的数据。一致性hash可以极大的减少迁移的数据量。</p>
+<p>  比如数据范围为0 - 2<sup>64</sup>-1，则想象有一个环，服务器的ip经过hash后放在环上。服务器hash后会发生冲突，但是概率极小，万一发生冲突了，冲突的机器都拿到一份数据/换一个ip。请求的hash key落在环上，路由到顺时针的第一台服务器上。扩容，在server5、server6中间增加server7，则将server6中hash值在server5、server7的值迁移到server7。缩容同理。<br />
+  使用虚拟节点保证server均匀分布在环上。每个server使用1000个虚拟节点，各个server的虚拟节点可以相互交叉，保存hashkey和server、server和虚拟节点的映射。虚拟节点因为数量多，所以分布相对均匀。数据迁移的时候每个server都要迁移部分数据。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/26/DataStructuresAndAlgorithms/23%E3%80%81AC%E8%87%AA%E5%8A%A8%E6%9C%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1519,122 +1631,6 @@ Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/" class="post-title-link" itemprop="url">bfprt</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-18 19:37:33" itemprop="dateCreated datePublished" datetime="2023-04-18T19:37:33+08:00">2023-04-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-26 17:51:37" itemprop="dateModified" datetime="2023-04-26T17:51:37+08:00">2023-04-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="bfprt算法"><a class="markdownIt-Anchor" href="#bfprt算法"></a> bfprt算法</h4>
-<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Median_of_medians">中位数的中位数</a> 也叫bfprt算法，利用中位数的中位数确定荷兰国旗问题的pivot，用于求解第k大数的问题，时间复杂度为O(N)。</p>
-<ol>
-<li>将整个序列划分为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>5</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{N}{5}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 组，每组元素数不超过5个；</li>
-<li>寻找每组元素的中位数（因为元素个数较少，可以直接使用插入排序 等算法）；</li>
-<li>找出这组元素中位数中的中位数。将该元素作为每次partition时的分界值pivot；</li>
-<li>按照荷兰国旗问题的partition过程确定k。</li>
-</ol>
-<hr />
-<h5 id="在无序数组中求第k小的数"><a class="markdownIt-Anchor" href="#在无序数组中求第k小的数"></a> 在无序数组中求第K小的数</h5>
-<ul>
-<li>大根堆 O(N)
-<ul>
-<li>数组的前k个元素入堆</li>
-<li>遍历数组，堆顶比当前元素小则弹出堆顶，并且当前元素入堆</li>
-<li>返回堆顶</li>
-</ul>
-</li>
-<li>改写快排 O(N)
-<ul>
-<li>在left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right区间随机获取pivot</li>
-<li>根据pivot进行荷兰国旗问题partition</li>
-<li>k在小于区域则递归对左边进行partition</li>
-<li>k在大于区域则递归对右边进行partition</li>
-<li>k在等于区域则返回等于区域边界</li>
-<li>时间复杂度的证明涉及计算概率期望值</li>
-</ul>
-</li>
-<li>bfprt算法 O(N)
-<ul>
-<li>和改写快排相同，但是使用中位数的中位数作为pivot；</li>
-<li>获取中位数的中位数的过程中，不改变原数组，只有在partition过程中才产生交换。bfprt每次交换后都会排除 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>3</mn><mo>×</mo><mi>N</mi></mrow><mn>10</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{3 \times N}{10}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 个元素；</li>
-<li>时间复杂度的<a target="_blank" rel="noopener" href="https://next.oi-wiki.org/basic/quick-sort/#%E6%94%B9%E8%BF%9B%E4%B8%AD%E4%BD%8D%E6%95%B0%E4%B8%AD%E7%9A%84%E4%B8%AD%E4%BD%8D%E6%95%B0">证明</a>。</li>
-</ul>
-</li>
-</ul>
-<h5 id="topk"><a class="markdownIt-Anchor" href="#topk"></a> topK</h5>
-<p>  给定一个无序数组arr中，长度为N，给定一个正数k，返回top k个最大的数。</p>
-<ul>
-<li>O(N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logN)   升序排序，取最大的k个</li>
-<li>O(N + K <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logN) 自定义大根堆，从希望上建立大根堆，将最大的k个数交换到数组末尾</li>
-<li>O(n + k <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> logk)  拿到第len-k小的数num，遍历数组收集大于num的数，补齐等于num的数</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1704,20 +1700,20 @@ Libpipeline 提供一个能够灵活、方便地操作子进程流水线的库�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

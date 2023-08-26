@@ -165,6 +165,158 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/28%E3%80%81Skip%20List/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/06/03/DataStructuresAndAlgorithms/28%E3%80%81Skip%20List/" class="post-title-link" itemprop="url">Skip List</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-06-03 01:40:13" itemprop="dateCreated datePublished" datetime="2023-06-03T01:40:13+08:00">2023-06-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-07 17:27:13" itemprop="dateModified" datetime="2023-08-07T17:27:13+08:00">2023-08-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Skip_list">SkipList</a>是一种概率数据结构，允许 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 平均搜索复杂度以及 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span> 在 n 个元素的有序序列中插入的平均复杂度。由William Pugh在<a target="_blank" rel="noopener" href="https://www.epaperpress.com/sortsearch/download/skiplist.pdf">Skip lists: a probabilistic alternative to balanced trees</a>发表。它可以获得排序数组（用于搜索）的最佳功能，同时保持允许插入的类似链表的结构，这对于静态数组来说是不可能的。通过维护子序列的链接层次结构可以实现快速搜索，每个连续的子序列跳过的元素比前一个序列少。从最稀疏的子序列开始搜索，直到找到两个连续的元素，一个小于或等于所搜索的元素，一个大于或等于所搜索的元素。通过链接的层次结构，这两个元素链接到下一个最稀疏子序列的元素，继续搜索直到最终在完整序列中搜索到。跳过的元素可以按概率或确定性进行选择，前者更为常见。</p>
+<h3 id="跳表的特点"><a class="markdownIt-Anchor" href="#跳表的特点"></a> 跳表的特点</h3>
+<ol>
+<li>跳表维护了一个多层级的链表结构，搜索二叉树无关</li>
+<li>利用随机概率分布来使得高层索引可以无视数据规律，做到整体性能优良</li>
+<li>思想是所有有序表中最先进的</li>
+<li>结构简单就是多级单链表</li>
+<li>查询平均时间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，插入和修改的期望时间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，期望空间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，最坏空间复杂度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>n</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(nlogn)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span>，<a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/skiplist/">SkipList的复杂度证明</a></li>
+<li>范围查找时，跳表的时间复杂度优于红黑树</li>
+</ol>
+<h3 id="跳表的实现"><a class="markdownIt-Anchor" href="#跳表的实现"></a> 跳表的实现</h3>
+<ol>
+<li>
+<p>使用一个list保存整列的节点</p>
+<ol>
+<li>新增
+<ul>
+<li>抛硬币决定当前节点node的高度</li>
+<li>从上到下，从左往右查找小于key的节点pre</li>
+<li>连接pre和node节点并填充node高度以下的节点</li>
+</ul>
+</li>
+<li>删除
+<ul>
+<li>判断要删除的key这个节点是否存在</li>
+<li>每一层找到最右小于key的节点pre</li>
+<li>pre在当前层指向pre的下一个节点</li>
+</ul>
+</li>
+<li>查询
+<ul>
+<li>从上到下，从左往右查找</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>
+<p>使用上下左右4个节点表达链表之间的关系</p>
+</li>
+<li>
+<p>JDK中ConCurrentSkipListMap对SkipList的实现</p>
+</li>
+</ol>
+<p>  Java 8 ConCurrentSkipListMap是对SkipList的一个变种的、无锁并发实现，无锁并发相关的论文Tim Harris <a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/research/srg/netos/papers/2001-caslists.pdf">A pragmatic implementation of non-blocking linked lists</a>和Maged Michael <a target="_blank" rel="noopener" href="https://docs.rs/crate/crossbeam/0.2.4/source/hash-and-skip.pdf">High Performance Dynamic Lock-Free Hash Tables and List-Based Sets</a>，<a target="_blank" rel="noopener" href="http://www.cse.yorku.ca/~ruppert/Mikhail.pdf">Mikhail Fomitchev的论文</a>，<a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Keir Fraser的论文</a>, <a target="_blank" rel="noopener" href="https://research.chalmers.se/en/person/phs">Hakan Sundell的论文</a></p>
+<h4 id="子数组累加和在某个区间的数量"><a class="markdownIt-Anchor" href="#子数组累加和在某个区间的数量"></a> 子数组累加和在某个区间的数量</h4>
+<p>  给定一个数组arr，和两个整数a和b（a&lt;=b）。求arr中有多少个子数组，累加和在[a,b]这个范围上，返回达标的子数组数量。</p>
+<blockquote>
+<ol>
+<li>归并排序</li>
+<li>前缀和数组</li>
+<li>暴力O(N<sup>3</sup>)</li>
+<li>改写SBT</li>
+</ol>
+</blockquote>
+<h4 id="滑动窗口的中位数"><a class="markdownIt-Anchor" href="#滑动窗口的中位数"></a> 滑动窗口的中位数</h4>
+<p>  求滑动窗口每一个窗口状态的中位数</p>
+<blockquote>
+<ol>
+<li>L是滑动窗口最左位置、R是滑动窗口最右位置，一开始LR都在数组左侧</li>
+<li>任何一步都可能R往右动，表示某个数进了窗口</li>
+<li>任何一步都可能L往右动，表示某个数出了窗口</li>
+</ol>
+</blockquote>
+<h4 id="设计thetalogn的数据结构"><a class="markdownIt-Anchor" href="#设计thetalogn的数据结构"></a> 设计<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logN)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span>的数据结构</h4>
+<p>  设计一个结构包含如下方法，要求时间复杂度都是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Θ</mi><mo stretchy="false">(</mo><mi>l</mi><mi>o</mi><mi>g</mi><mi>N</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\Theta(logN)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Θ</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose">)</span></span></span></span></p>
+<blockquote>
+<ol>
+<li>void add(int index, int num)：把num加入到index位置</li>
+<li>int get(int index) ：取出index位置的值</li>
+<li>void remove(int index) ：把index位置上的值删除</li>
+</ol>
+</blockquote>
+<h3 id="改写有序表的核心"><a class="markdownIt-Anchor" href="#改写有序表的核心"></a> 改写有序表的核心</h3>
+<ol>
+<li>增加某个数据项可以支持题目，例如子数组累加和在某个区间的数量的问题</li>
+<li>有序表一定要保持内部参与排序的key不重复</li>
+<li>平衡性调整时，正确更新增加的数据项</li>
+<li>在搜索二叉树上实现</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/06/03/DataStructuresAndAlgorithms/27%E3%80%81Size%20Balanced%20Tree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1635,118 +1787,6 @@ c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/28/DataStructuresAndAlgorithms/24%E3%80%81hash/" class="post-title-link" itemprop="url">hash</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-28 14:57:41" itemprop="dateCreated datePublished" datetime="2023-04-28T14:57:41+08:00">2023-04-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-07-26 16:48:28" itemprop="dateModified" datetime="2023-07-26T16:48:28+08:00">2023-07-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="hash函数的特点"><a class="markdownIt-Anchor" href="#hash函数的特点"></a> hash函数的特点</h4>
-<p>1、输入域无限、输出域相对有限，比如SHA256，可以输入任意字符串，输出定长字符串<br />
-2、没有任何随机，同一个输入、输出必定相同<br />
-3、存在hash碰撞(因为输入无限、输出有限)<br />
-4、输出域是均匀离散的</p>
-<p>  哈希函数作用,可以把数据根据不同值，几乎均匀的分开，比如java.util.HashMap。</p>
-<h4 id="布谷鸟过滤器"><a class="markdownIt-Anchor" href="#布谷鸟过滤器"></a> 布谷鸟过滤器</h4>
-<p>  <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cuckoo_filter">布谷鸟过滤器</a>(Cuckoo Filter)相对于布隆过滤器查询性能好、空间利用效率高、支持删除操作和计数，但是严格要求同一个元素不能被插入多次(k <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> b + 1)。所以布谷鸟过滤器是有条件支持删除操作的，实际使用场景非常有限。</p>
-<h4 id="布隆过滤器"><a class="markdownIt-Anchor" href="#布隆过滤器"></a> 布隆过滤器</h4>
-<p>  字符串str，经过三个hash函数得出3个结果，每个结果对mod取模结果index，bit[index]的结果都为1则证明str可能存在布隆过滤器中，只要有一个不为1，则str一定不在布隆过滤器中。</p>
-<ol>
-<li>利用哈希函数的性质</li>
-<li>每一条数据提取特征</li>
-<li>加入描黑库</li>
-</ol>
-<h4 id="布隆过滤器的公式"><a class="markdownIt-Anchor" href="#布隆过滤器的公式"></a> 布隆过滤器的公式</h4>
-<ol>
-<li>假设数据量为n，预期的失误率为p（布隆过滤器大小和每个样本的大小无关，因为将样本hash以后的大小是固定的，取模后映射到bit数组上）</li>
-<li>根据n和p，算出Bloom Filter一共需要多少个bit位，向上取整，记为m</li>
-<li>根据m和n，算出Bloom Filter需要多少个哈希函数，向上取整，记为k</li>
-<li>根据修正公式，算出真实的失误率p</li>
-</ol>
-<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.15999999999999992em" columnalign="left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>m</mi><mo>=</mo><mo>−</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>l</mi><mi>n</mi><mi>p</mi></mrow><mrow><mo stretchy="false">(</mo><mi>l</mi><mi>n</mi><mn>2</mn><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow></mfrac><mspace width="34.14330708661417em"/></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>k</mi><mo>=</mo><mi>l</mi><mi>n</mi><mn>2</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac><mo>=</mo><mn>0.7</mn><mo>×</mo><mfrac><mi>m</mi><mi>n</mi></mfrac></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>p</mi><mo>=</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mo>−</mo></msup><mo stretchy="false">(</mo><mfrac><mrow><mi>n</mi><mo>×</mo><mi>k</mi></mrow><mi>m</mi></mfrac><mo stretchy="false">)</mo><msup><mo stretchy="false">)</mo><mi>k</mi></msup></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{array}{l}
-    m=-\frac{n \times lnp}{(ln2)^2} \hspace{12cm} \\
-    k=ln2\times\frac{m}{n}=0.7\times\frac{m}{n} \\
-    p=(1-e^-(\frac{n \times k}{m}))^k \\
-\end{array}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3.892324em;vertical-align:-1.6961620000000002em;"></span><span class="mord"><span class="mtable"><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.1961619999999997em;"><span style="top:-4.263946em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">−</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322159999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">n</span><span class="mord mtight">2</span><span class="mclose mtight"><span class="mclose mtight">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:34.14330708661417em;"></span></span></span><span style="top:-2.9039459999999995em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">n</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">7</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span style="top:-1.663838em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.771331em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">×</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.6961620000000002em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span></span></span></span></span></span></span></p>
-<p>  k个hash函数可以由i <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> a + b得到，a、b是两个不同的hash函数，1 ≤ i ≤ k。a、b没有任何要求，hash结果是字符串，可以使用guava的BloomFilter拿到取模后的结果在redis进行bitmap的getbit操作，setbit操作要保证原子性。但是guava的BloomFilter是单机的，可以通过MurMurHash等hash算法拿到hashCode再进行redis的bitmap操作实现BloomFilter集群。也可以让redis加载<a target="_blank" rel="noopener" href="https://github.com/RedisBloom/RedisBloom">RedisBloom</a>，使用spring-data-redis客户端实现BloomFilter集群。redis的bitMap部分操作会阻塞，如果有必要可以进行缓存预热。某些场景可以将比较大的bitmap拆分成几个小的bitmap，并使用lua脚本进行操作。</p>
-<h4 id="一致性hash"><a class="markdownIt-Anchor" href="#一致性hash"></a> 一致性hash</h4>
-<p>  分布式存储结构最常见的结构</p>
-<ol>
-<li>哈希域变成环的设计</li>
-<li>虚拟节点技术</li>
-</ol>
-<p>  选择合适的hash key，将数据路由到对应的redis或者mysql上。hash key一定是要求均匀的，<br />
-中国的姓氏是不均匀的，如果以姓氏作为hash key，那么路由到大姓(李、王)的服务器数据一定是最多的。</p>
-<p>  当服务器数量发生变化的时候，需要重新hash，迁移全量的数据。一致性hash可以极大的减少迁移的数据量。</p>
-<p>  比如数据范围为0 - 2<sup>64</sup>-1，则想象有一个环，服务器的ip经过hash后放在环上。服务器hash后会发生冲突，但是概率极小，万一发生冲突了，冲突的机器都拿到一份数据/换一个ip。请求的hash key落在环上，路由到顺时针的第一台服务器上。扩容，在server5、server6中间增加server7，则将server6中hash值在server5、server7的值迁移到server7。缩容同理。<br />
-  使用虚拟节点保证server均匀分布在环上。每个server使用1000个虚拟节点，各个server的虚拟节点可以相互交叉，保存hashkey和server、server和虚拟节点的映射。虚拟节点因为数量多，所以分布相对均匀。数据迁移的时候每个server都要迁移部分数据。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1816,20 +1856,20 @@ c. 如果堆满并且大于堆中的最大的数则继续读取文件中的数�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
