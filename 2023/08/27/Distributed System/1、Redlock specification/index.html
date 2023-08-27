@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.goodserendipity.com/asserts/favicon.png">
+  <link rel="mask-icon" href="https://www.goodserendipity.com/asserts/favicon.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.goodserendipity.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="翻译redis官方文档的Distributed Locks with Redis，也就是Redlock specification。   分布式锁在许多不同的进程必须以互斥的方式操作共享资源的环境中是非常有用的基础工具。   有许多工具库和博客文章描述了如何使用 Redis 实现 DLM（分布式锁管理器），但每个库都使用不同的方法，并且许多使用一种简单的方式，与稍微复杂一点的模式相比，其若一致">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redlock specification">
+<meta property="og:url" content="https://www.goodserendipity.com/2023/08/27/Distributed%20System/1%E3%80%81Redlock%20specification/index.html">
+<meta property="og:site_name" content="缘分天注定">
+<meta property="og:description" content="翻译redis官方文档的Distributed Locks with Redis，也就是Redlock specification。   分布式锁在许多不同的进程必须以互斥的方式操作共享资源的环境中是非常有用的基础工具。   有许多工具库和博客文章描述了如何使用 Redis 实现 DLM（分布式锁管理器），但每个库都使用不同的方法，并且许多使用一种简单的方式，与稍微复杂一点的模式相比，其若一致">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-26T16:32:26.000Z">
+<meta property="article:modified_time" content="2023-08-27T06:56:21.104Z">
+<meta property="article:author" content="Louis">
+<meta property="article:tag" content="DLM">
+<meta property="article:tag" content="distributed locking">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.goodserendipity.com/2023/08/27/Distributed%20System/1%E3%80%81Redlock%20specification/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Redlock specification | 缘分天注定</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">缘分天注定</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">古之立大事者，不惟有超世之才，亦必有坚忍不拔之志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/27/Distributed%20System/1%E3%80%81Redlock%20specification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redlock specification
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-27 00:32:26 / Modified: 14:56:21" itemprop="dateCreated datePublished" datetime="2023-08-27T00:32:26+08:00">2023-08-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>  翻译redis官方文档的<a target="_blank" rel="noopener" href="https://redis.io/docs/manual/patterns/distributed-locks/">Distributed Locks with Redis</a>，也就是Redlock specification。</p>
+<p>  分布式锁在许多不同的进程必须以互斥的方式操作共享资源的环境中是非常有用的基础工具。</p>
+<p>  有许多工具库和博客文章描述了如何使用 Redis 实现 DLM（分布式锁管理器），但每个库都使用不同的方法，并且许多使用一种简单的方式，与稍微复杂一点的模式相比，其若一致性保证较低。</p>
+<p>  本页描述了使用 Redis 实现分布式锁的更规范的算法。我们提出了一种名为 Redlock 的算法，它实现了一个我们认为比普通的单节点方式更安全的DLM。我们希望社区能够对其进行分析、提供反馈，并将其用作实现或更复杂或替代设计的起点。</p>
+<p>  在描述算法之前，这里有一些已经可用的实现的链接，可供参考。有很多语言的实现版本，我们只关心Java版本的<a target="_blank" rel="noopener" href="https://github.com/redisson/redisson">Redisson</a>。</p>
+<h3 id="安全和活性保证"><a class="markdownIt-Anchor" href="#安全和活性保证"></a> 安全和活性保证</h3>
+<p>  我们将仅使用三个属性来对我们的设计进行建模，从我们的角度来看，这三个属性是有效使用分布式锁所需的最低保证。</p>
+<ol>
+<li>安全特性：互斥。 在任何给定时刻，只有一个客户端可以持有锁。</li>
+<li>活性属性A：无死锁。最终，即使锁定资源的客户端崩溃或分区(脑裂？)，也始终可以获取锁。</li>
+<li>活性属性B：容错性。只要大多数 Redis 节点正常运行，客户端就可以获取和释放锁。</li>
+</ol>
+<h3 id="为什么基于故障转移的实现还不够"><a class="markdownIt-Anchor" href="#为什么基于故障转移的实现还不够"></a> 为什么基于故障转移的实现还不够</h3>
+<p>  为了了解我们想要改进的地方，让我们分析一下大多数基于 Redis 的分布式锁库的现状。</p>
+<p>  使用 Redis 锁定资源的最简单方法是在实例中创建key。通常使用 Redis 过期功能来创建具有有限生存时间的key，以便最终它会被释放（我们列表中的属性 2）。当客户端需要释放资源时，它会删除该密钥。</p>
+<p>  表面上这工作得很好，但有一个问题：这是我们架构中的单点故障。如果 Redis master 宕机了会发生什么？好吧，让我们添加一个副本！如果master不可用，则使用slave节点。不幸的是，这是不可行的。通过这样做，我们无法实现互斥的安全属性，因为 Redis 复制是异步的。</p>
+<p>  该模型存在竞争条件：</p>
+<ol>
+<li>客户端A获取master中的锁。</li>
+<li>在对key的写入传输到副本之前，主服务器崩溃了。</li>
+<li>副本被提升为主节点。</li>
+<li>客户端 B 获取客户端 A 已持有锁的同一资源的锁。违反安全性！、</li>
+</ol>
+<p>  有时，在特殊情况下，例如在故障期间，多个客户端可以同时持有锁是完全可以的。如果是这种情况，您可以使用基于复制的解决方案。否则，我们建议实施本文档中描述的解决方案。</p>
+<h3 id="单节点的正确实现"><a class="markdownIt-Anchor" href="#单节点的正确实现"></a> 单节点的正确实现</h3>
+<p>  在尝试克服上述单实例设置的限制之前，让我们检查一下如何在这个简单的情况下正确执行此操作，因为在可以接受不时出现竞争条件的应用程序中，这实际上是一个可行的解决方案，并且因为锁定单个实例是我们将用于此处描述的分布式算法的基础。</p>
+<p>  要获取锁，方法如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET resource_name my_random_value NX PX <span class="number">30000</span></span><br></pre></td></tr></table></figure>
+<p>  仅当key尚不存在时，该命令才会设置密钥（NX 选项），过期时间为 30000 毫秒（PX 选项）。该键设置为值“my_random_value”。key在所有客户端和所有锁定请求中必须是唯一的。</p>
+<p>  基本上，使用随机值是为了以安全的方式释放锁，并使用一个脚本告诉 Redis：仅当key存在且存储在key中的值正是我期望的值时才删除该密钥。这是通过以下 Lua 脚本完成的：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> redis.call(<span class="string">&quot;get&quot;</span>,KEYS[<span class="number">1</span>]) == ARGV[<span class="number">1</span>] <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> redis.call(<span class="string">&quot;del&quot;</span>,KEYS[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>  这对于避免删除另一个客户端创建的锁非常重要。例如，客户端可能获取锁，在执行某些操作时被阻塞，时间比锁有效期（key过期的时间）长，然后删除已被其他客户端获取的锁。仅使用 DEL 并不安全，因为客户端可能会删除另一个客户端的锁。使用上面的脚本，每个锁都用随机字符串“签名”，因此只有当它仍然是客户端尝试删除它时设置的锁时，锁才会被删除。</p>
+<p>  这个随机字符串应该是什么？我们假设它来自 /dev/urandom 的 20 个字节，但您可以找到更廉价的方法来使其对于您的任务来说足够唯一。例如，一个安全的选择是使用 /dev/urandom 为 RC4 播种，并从中生成伪随机流。一个更简单的解决方案是使用微秒精度的 UNIX 时间戳，将时间戳与客户端 ID 连接起来。它不太安全，但对于大多数环境来说可能足够了。</p>
+<p>  “锁有效期”是我们用作key的生存时间的时间。它既是自动释放时间，也是客户端在另一个客户端能够再次获取锁之前执行所需操作的时间，而不会在技术上违反互斥保证，互斥保证仅限于给定的窗口从获取锁的那一刻起的时间。</p>
+<p>  现在我们有了一个获取和释放锁的好方法。使用此系统，推理由单个始终可用的实例组成的非分布式系统是安全的。让我们将这个概念扩展到没有这样保证的分布式系统。</p>
+<h3 id="redlock-算法"><a class="markdownIt-Anchor" href="#redlock-算法"></a> Redlock 算法</h3>
+<p>  在该算法的分布式版本中，我们假设我们有 N 个 Redis 主节点。这些节点是完全独立的，因此我们不使用复制或任何其他隐式协调系统。我们已经描述了如何在单个实例中安全地获取和释放锁。我们理所当然地认为算法将使用此方法在单个实例中获取和释放锁。在我们的示例中，我们设置 N=5，这是一个合理的值，因此我们需要在不同的计算机或虚拟机上运行 5 个 Redis master，以确保它们以基本独立的方式发生故障。</p>
+<p>  为了获取锁，客户端执行以下操作：</p>
+<ol>
+<li>它获取当前时间（以毫秒为单位）。</li>
+<li>它尝试在所有 N 个实例中顺序获取锁，在所有实例中使用相同的密钥名称和随机值。在步骤 2 中，在每个实例中设置锁时，客户端使用比总锁自动释放时间较小的超时来获取锁。例如，如果自动释放时间为 10 秒，则超时可能在 5-50 毫秒范围内。这可以防止客户端在尝试与已关闭的 Redis 节点通信时长时间处于阻塞状态：如果某个实例不可用，我们应该尽快尝试与下一个实例通信。</li>
+<li>客户端通过从当前时间减去步骤 1 中获得的时间戳来计算获取锁所花费的时间。当且仅当客户端能够在大多数实例（至少 3 个）中获取锁时，并且获取锁所花费的总时间小于锁的有效时间，则认为获取了锁。</li>
+<li>如果获取了锁，则其有效时间被视为初始有效时间减去经过的时间（如步骤 3 中计算的那样）。</li>
+<li>如果客户端由于某种原因未能获得锁（要么无法锁定 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2} +1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个实例，要么有效时间为负），它将尝试解锁所有实例（甚至是它认为没有锁定的实例）。</li>
+</ol>
+<h3 id="该算法是异步的吗"><a class="markdownIt-Anchor" href="#该算法是异步的吗"></a> 该算法是异步的吗？</h3>
+<p>  该算法依赖于这样的假设：虽然进程之间没有同步时钟，但每个进程中的本地时间以大致相同的速率更新，与锁的自动释放时间相比，误差幅度很小。这种假设与现实世界的计算机非常相似：每台计算机都有一个本地时钟，我们通常可以依靠不同的计算机来获得很小的时钟漂移。</p>
+<p>  此时我们需要更好地指定我们的互斥规则：只有持有锁的客户端在锁有效时间内（如步骤3中获得的）终止其工作，减去一些时间（只需几毫秒即可补偿进程之间的时钟漂移）。</p>
+<p>  这边文章<a href="https://www.goodserendipity.com/asserts/distributed-system/Leases%20An%20Efficient%20Fault-Tolerant%20Mechanism%20for%20Distributed%20File%20Cache%20Consistency.pdf">Leases: an efficient fault-tolerant mechanism for distributed file cache consistency</a>包含有关需要绑定时钟漂移的类似系统的更多信息。</p>
+<h3 id="失败重试"><a class="markdownIt-Anchor" href="#失败重试"></a> 失败重试</h3>
+<p>  当客户端无法获取锁时，它应该在随机延迟后重试，以尝试使多个客户端同时尝试获取同一资源的锁（这可能会导致没有人获胜的裂脑情况）去同步化。此外，客户端尝试获取大多数 Redis 实例中的锁的速度越快，脑裂情况的窗口（以及重试的需要）就越小，因此理想情况下，客户端应尝试采用复用的方式将 SET 命令同时发送到 N 个实例。</p>
+<p>  值得强调的是，对于未能获取大部分锁的客户端来说，尽快释放（部分）获取的锁是多么重要，这样就不需要等待key过期才能再次获取锁（但是，如果发生网络分区并且客户端不再能够与 Redis 实例通信，则在等待key过期时会产生可用性损失）。</p>
+<h3 id="释放锁"><a class="markdownIt-Anchor" href="#释放锁"></a> 释放锁</h3>
+<p>  释放锁很简单，并且无论客户端是否认为它能够成功锁定给定实例都可以执行。</p>
+<h3 id="安全论据"><a class="markdownIt-Anchor" href="#安全论据"></a> 安全论据</h3>
+<p>  算法安全吗？让我们看看不同场景下会发生什么。</p>
+<p>  首先，我们假设客户端能够获取多数实例的锁。所有实例都将包含一个具有相同生存时间的key。但是，key是在不同时间设置的，因此key也会在不同时间过期。但是，如果第一个key在最坏情况下在时间 T1（我们在联系第一台服务器之前采样的时间）设置，并且最后一个key在最坏情况下在时间 T2（我们从最后一个服务器获得回复的时间）设置，我们确信集合中第一个过期的key将至少存在 MIN_VALIDITY = TTL-(T2-T1)-CLOCK_DRIFT。所有其他key稍后都会过期，因此我们确信这些key将被同时设置最少这个时间。</p>
+<p>  在多数master节点被设置key的期间，另一个客户端将无法获取锁，因为如果 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个key已经存在，则 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个 SET NX 操作无法成功。因此，如果锁已经被获取，则不可能同时重新获取它（违反了互斥属性）。</p>
+<p>  然而，我们还想确保多个客户端尝试同时获取锁不能同时成功。</p>
+<p>  如果客户端锁定大多数实例的时间接近或大于锁最大有效时间（我们用于 SET 的 TTL），它将认为锁无效并解锁实例，因此我们只需要考虑客户端能够在小于有效时间的时间内锁定多数master实例的情况。在这种情况下，对于上面已经表达的参数，对于 MIN_VALIDITY，没有客户端应该能够重新获取锁。因此，只有当锁定多数master实例的时间大于 TTL 时间时，多个客户端才能同时锁定 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个实例（“时间”为步骤 2 的结束时间），从而使锁定无效。</p>
+<h3 id="活性参数"><a class="markdownIt-Anchor" href="#活性参数"></a> 活性参数</h3>
+<p>  系统活性基于三个主要特征：</p>
+<ol>
+<li>自动释放锁（因为key过期）：最终key可以再次被锁定。</li>
+<li>事实上，当没有获取锁时，或者当获取到锁并且工作终止时，客户端通常会配合删除锁，这使得我们不必等待key过期来重新获取锁。</li>
+<li>事实上，当客户端需要重试获取锁时，它会等待比获取多数master节点锁定所需的时间更长的时间，以便在概率上使资源争用期间不太可能出现脑裂情况。</li>
+</ol>
+<p>  然而，我们在网络分区上付出了等于 TTL 时间的可用性成本，因此如果存在连续分区，我们可以无限期地付出可用性成本。每当客户端获取锁并在能够删除锁之前被分区时，就会发生这种情况。</p>
+<p>  基本上，如果存在无限连续的网络分区，系统可能会在无限时间内变得不可用。</p>
+<h3 id="性能-崩溃恢复和-fsync"><a class="markdownIt-Anchor" href="#性能-崩溃恢复和-fsync"></a> 性能、崩溃恢复和 fsync</h3>
+<p>  许多使用 Redis 作为锁服务器的用户在获取和释放锁的延迟以及每秒可以执行的获取/释放操作的数量方面都需要高性能。为了满足这个要求，与 N 个Redis服务器通信以减少延迟的策略肯定是多路复用（将套接字置于非阻塞模式，发送所有命令，然后读取所有命令，假设客户端和每个Redis服务器实例之间的RTT都是接近的）。</p>
+<p>  然而，如果我们想要以崩溃恢复系统模型为目标，则还需要考虑持久性。</p>
+<p>  基本上为了看到这里的问题，我们假设我们根本没有配置 Redis 持久性。客户端在 5 个实例中的 3 个实例中获取了锁。客户端能够获取锁的实例之一被重新启动，此时我们又有可以再次锁定同一资源的3个实例，并且另一个客户端可以再次锁定它，这违反了锁独占性的安全属性。</p>
+<p>  如果我们启用 AOF 持久化，事情将会改善很多。例如，我们可以通过向服务器发送 SHUTDOWN 命令并重新启动来升级服务器。因为 Redis 过期是语义上的实现，所以当服务器关闭时时间仍然会流逝，所以我们的所有要求都满足。但是，只要干净关闭，一切都很好。停电了怎么办？如果 Redis 默认情况下配置为每秒在磁盘上同步一次，则重新启动后我们的key可能会丢失。理论上，如果我们想在任何类型的实例重启时保证锁的安全，我们需要在持久化设置中启用fsync=always。由于额外的同步开销，这将影响性能。</p>
+<p>  然而，事情比乍一看要好。基本上，只要实例在崩溃后重新启动时，它不再参与任何当前活动的锁，算法的安全性就会得到保留。这意味着实例重新启动时当前活动的一组锁都是通过锁定除重新加入系统之外的实例而获得的。</p>
+<p>  为了保证这一点，我们只需要让一个实例在崩溃后至少比我们使用的最大 TTL 长一点的时间内不可用。这是实例崩溃时存在的锁的所有键失效并自动释放所需的时间。</p>
+<p>  使用延迟重启，即使没有任何可用的 Redis 持久性，基本上也可以实现安全性，但请注意，这可能会转化为可用性损失。例如，如果多数实例崩溃，系统将变得全局不可用，无法达到 TTL（这里全局意味着在此期间根本没有资源可锁定）。</p>
+<h3 id="让算法更可靠扩展锁"><a class="markdownIt-Anchor" href="#让算法更可靠扩展锁"></a> 让算法更可靠：扩展锁</h3>
+<p>  如果客户端执行的工作由小步骤组成，则可以默认使用较小的锁有效时间，并扩展实现锁扩展机制的算法。基本上，如果在计算过程中，当锁有效性接近较低值时，客户端可以通过向所有扩展该键的 TTL 的实例发送 Lua 脚本来扩展锁，如果这个key存在并且其值仍然是获取锁时客户端分配的随机值。</p>
+<p>  仅当客户端能够将锁扩展到大多数实例并且在有效时间内（基本上使用的算法与获取锁时使用的算法非常相似）时，客户端才应该考虑重新获取锁。</p>
+<p>  然而，这在技术上并没有改变算法，因此应该限制锁重新获取尝试的最大次数，否则就会违反活性属性之一。</p>
+<h3 id="关于一致性的免责声明"><a class="markdownIt-Anchor" href="#关于一致性的免责声明"></a> 关于一致性的免责声明</h3>
+<p>  请考虑仔细阅读本页末尾的 Redlock 分析部分。Martin Kleppman 的文章和 antirez 的回答非常相关。如果您担心一致性和正确性，则应注意以下主题：</p>
+<ol>
+<li>您应该实现栅栏令牌。这对于可能花费大量时间并适用于任何分布式锁定系统的进程尤其重要。延长锁的生命周期也是一种选择，但不要假设只要获取锁的进程还活着，锁就会被保留。</li>
+<li>Redis 不使用单调时钟作为 TTL 过期机制。这意味着挂钟偏移可能会导致锁被多个进程获取。尽管可以通过阻止管理员手动设置服务器时间并正确设置 NTP 来缓解该问题，但在现实生活中仍然有可能发生此问题并影响一致性。</li>
+</ol>
+<h3 id="redlock的分析"><a class="markdownIt-Anchor" href="#redlock的分析"></a> Redlock的分析</h3>
+<p>  Martin Kleppmann 的 <a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a> 分析过 Redlock。与此分析相反的观点<a target="_blank" rel="noopener" href="http://antirez.com/news/101">Is Redlock safe?</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DLM/" rel="tag"># DLM</a>
+              <a href="/tags/distributed-locking/" rel="tag"># distributed locking</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/08/26/Distributed%20System/3%E3%80%81Is%20Redlock%20safe/" rel="prev" title="Is Redlock safe?">
+      <i class="fa fa-chevron-left"></i> Is Redlock safe?
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E5%92%8C%E6%B4%BB%E6%80%A7%E4%BF%9D%E8%AF%81"><span class="nav-number">1.</span> <span class="nav-text"> 安全和活性保证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9F%BA%E4%BA%8E%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E7%9A%84%E5%AE%9E%E7%8E%B0%E8%BF%98%E4%B8%8D%E5%A4%9F"><span class="nav-number">2.</span> <span class="nav-text"> 为什么基于故障转移的实现还不够</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E8%8A%82%E7%82%B9%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text"> 单节点的正确实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redlock-%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text"> Redlock 算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A5%E7%AE%97%E6%B3%95%E6%98%AF%E5%BC%82%E6%AD%A5%E7%9A%84%E5%90%97"><span class="nav-number">5.</span> <span class="nav-text"> 该算法是异步的吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B1%E8%B4%A5%E9%87%8D%E8%AF%95"><span class="nav-number">6.</span> <span class="nav-text"> 失败重试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8A%E6%94%BE%E9%94%81"><span class="nav-number">7.</span> <span class="nav-text"> 释放锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%AE%BA%E6%8D%AE"><span class="nav-number">8.</span> <span class="nav-text"> 安全论据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B4%BB%E6%80%A7%E5%8F%82%E6%95%B0"><span class="nav-number">9.</span> <span class="nav-text"> 活性参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD-%E5%B4%A9%E6%BA%83%E6%81%A2%E5%A4%8D%E5%92%8C-fsync"><span class="nav-number">10.</span> <span class="nav-text"> 性能、崩溃恢复和 fsync</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A9%E7%AE%97%E6%B3%95%E6%9B%B4%E5%8F%AF%E9%9D%A0%E6%89%A9%E5%B1%95%E9%94%81"><span class="nav-number">11.</span> <span class="nav-text"> 让算法更可靠：扩展锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E5%85%8D%E8%B4%A3%E5%A3%B0%E6%98%8E"><span class="nav-number">12.</span> <span class="nav-text"> 关于一致性的免责声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redlock%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-number">13.</span> <span class="nav-text"> Redlock的分析</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Louis</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">103</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Louis</span>
+  </br>
+<span>&nbsp;<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">鄂ICP备2023000734号-1</a></span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/contrib/copy-tex.min.css">
+
+
+  
+
+</body>
+</html>

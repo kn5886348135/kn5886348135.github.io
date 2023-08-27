@@ -165,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/16/Redis/1%E3%80%81How%20to%20do%20distributed%20locking/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/27/Distributed%20System/1%E3%80%81Redlock%20specification/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -179,7 +179,334 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/08/16/Redis/1%E3%80%81How%20to%20do%20distributed%20locking/" class="post-title-link" itemprop="url">How to do distributed locking</a>
+            <a href="/2023/08/27/Distributed%20System/1%E3%80%81Redlock%20specification/" class="post-title-link" itemprop="url">Redlock specification</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-08-27 00:32:26 / Modified: 14:56:21" itemprop="dateCreated datePublished" datetime="2023-08-27T00:32:26+08:00">2023-08-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  翻译redis官方文档的<a target="_blank" rel="noopener" href="https://redis.io/docs/manual/patterns/distributed-locks/">Distributed Locks with Redis</a>，也就是Redlock specification。</p>
+<p>  分布式锁在许多不同的进程必须以互斥的方式操作共享资源的环境中是非常有用的基础工具。</p>
+<p>  有许多工具库和博客文章描述了如何使用 Redis 实现 DLM（分布式锁管理器），但每个库都使用不同的方法，并且许多使用一种简单的方式，与稍微复杂一点的模式相比，其若一致性保证较低。</p>
+<p>  本页描述了使用 Redis 实现分布式锁的更规范的算法。我们提出了一种名为 Redlock 的算法，它实现了一个我们认为比普通的单节点方式更安全的DLM。我们希望社区能够对其进行分析、提供反馈，并将其用作实现或更复杂或替代设计的起点。</p>
+<p>  在描述算法之前，这里有一些已经可用的实现的链接，可供参考。有很多语言的实现版本，我们只关心Java版本的<a target="_blank" rel="noopener" href="https://github.com/redisson/redisson">Redisson</a>。</p>
+<h3 id="安全和活性保证"><a class="markdownIt-Anchor" href="#安全和活性保证"></a> 安全和活性保证</h3>
+<p>  我们将仅使用三个属性来对我们的设计进行建模，从我们的角度来看，这三个属性是有效使用分布式锁所需的最低保证。</p>
+<ol>
+<li>安全特性：互斥。 在任何给定时刻，只有一个客户端可以持有锁。</li>
+<li>活性属性A：无死锁。最终，即使锁定资源的客户端崩溃或分区(脑裂？)，也始终可以获取锁。</li>
+<li>活性属性B：容错性。只要大多数 Redis 节点正常运行，客户端就可以获取和释放锁。</li>
+</ol>
+<h3 id="为什么基于故障转移的实现还不够"><a class="markdownIt-Anchor" href="#为什么基于故障转移的实现还不够"></a> 为什么基于故障转移的实现还不够</h3>
+<p>  为了了解我们想要改进的地方，让我们分析一下大多数基于 Redis 的分布式锁库的现状。</p>
+<p>  使用 Redis 锁定资源的最简单方法是在实例中创建key。通常使用 Redis 过期功能来创建具有有限生存时间的key，以便最终它会被释放（我们列表中的属性 2）。当客户端需要释放资源时，它会删除该密钥。</p>
+<p>  表面上这工作得很好，但有一个问题：这是我们架构中的单点故障。如果 Redis master 宕机了会发生什么？好吧，让我们添加一个副本！如果master不可用，则使用slave节点。不幸的是，这是不可行的。通过这样做，我们无法实现互斥的安全属性，因为 Redis 复制是异步的。</p>
+<p>  该模型存在竞争条件：</p>
+<ol>
+<li>客户端A获取master中的锁。</li>
+<li>在对key的写入传输到副本之前，主服务器崩溃了。</li>
+<li>副本被提升为主节点。</li>
+<li>客户端 B 获取客户端 A 已持有锁的同一资源的锁。违反安全性！、</li>
+</ol>
+<p>  有时，在特殊情况下，例如在故障期间，多个客户端可以同时持有锁是完全可以的。如果是这种情况，您可以使用基于复制的解决方案。否则，我们建议实施本文档中描述的解决方案。</p>
+<h3 id="单节点的正确实现"><a class="markdownIt-Anchor" href="#单节点的正确实现"></a> 单节点的正确实现</h3>
+<p>  在尝试克服上述单实例设置的限制之前，让我们检查一下如何在这个简单的情况下正确执行此操作，因为在可以接受不时出现竞争条件的应用程序中，这实际上是一个可行的解决方案，并且因为锁定单个实例是我们将用于此处描述的分布式算法的基础。</p>
+<p>  要获取锁，方法如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET resource_name my_random_value NX PX <span class="number">30000</span></span><br></pre></td></tr></table></figure>
+<p>  仅当key尚不存在时，该命令才会设置密钥（NX 选项），过期时间为 30000 毫秒（PX 选项）。该键设置为值“my_random_value”。key在所有客户端和所有锁定请求中必须是唯一的。</p>
+<p>  基本上，使用随机值是为了以安全的方式释放锁，并使用一个脚本告诉 Redis：仅当key存在且存储在key中的值正是我期望的值时才删除该密钥。这是通过以下 Lua 脚本完成的：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> redis.call(<span class="string">&quot;get&quot;</span>,KEYS[<span class="number">1</span>]) == ARGV[<span class="number">1</span>] <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> redis.call(<span class="string">&quot;del&quot;</span>,KEYS[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>  这对于避免删除另一个客户端创建的锁非常重要。例如，客户端可能获取锁，在执行某些操作时被阻塞，时间比锁有效期（key过期的时间）长，然后删除已被其他客户端获取的锁。仅使用 DEL 并不安全，因为客户端可能会删除另一个客户端的锁。使用上面的脚本，每个锁都用随机字符串“签名”，因此只有当它仍然是客户端尝试删除它时设置的锁时，锁才会被删除。</p>
+<p>  这个随机字符串应该是什么？我们假设它来自 /dev/urandom 的 20 个字节，但您可以找到更廉价的方法来使其对于您的任务来说足够唯一。例如，一个安全的选择是使用 /dev/urandom 为 RC4 播种，并从中生成伪随机流。一个更简单的解决方案是使用微秒精度的 UNIX 时间戳，将时间戳与客户端 ID 连接起来。它不太安全，但对于大多数环境来说可能足够了。</p>
+<p>  “锁有效期”是我们用作key的生存时间的时间。它既是自动释放时间，也是客户端在另一个客户端能够再次获取锁之前执行所需操作的时间，而不会在技术上违反互斥保证，互斥保证仅限于给定的窗口从获取锁的那一刻起的时间。</p>
+<p>  现在我们有了一个获取和释放锁的好方法。使用此系统，推理由单个始终可用的实例组成的非分布式系统是安全的。让我们将这个概念扩展到没有这样保证的分布式系统。</p>
+<h3 id="redlock-算法"><a class="markdownIt-Anchor" href="#redlock-算法"></a> Redlock 算法</h3>
+<p>  在该算法的分布式版本中，我们假设我们有 N 个 Redis 主节点。这些节点是完全独立的，因此我们不使用复制或任何其他隐式协调系统。我们已经描述了如何在单个实例中安全地获取和释放锁。我们理所当然地认为算法将使用此方法在单个实例中获取和释放锁。在我们的示例中，我们设置 N=5，这是一个合理的值，因此我们需要在不同的计算机或虚拟机上运行 5 个 Redis master，以确保它们以基本独立的方式发生故障。</p>
+<p>  为了获取锁，客户端执行以下操作：</p>
+<ol>
+<li>它获取当前时间（以毫秒为单位）。</li>
+<li>它尝试在所有 N 个实例中顺序获取锁，在所有实例中使用相同的密钥名称和随机值。在步骤 2 中，在每个实例中设置锁时，客户端使用比总锁自动释放时间较小的超时来获取锁。例如，如果自动释放时间为 10 秒，则超时可能在 5-50 毫秒范围内。这可以防止客户端在尝试与已关闭的 Redis 节点通信时长时间处于阻塞状态：如果某个实例不可用，我们应该尽快尝试与下一个实例通信。</li>
+<li>客户端通过从当前时间减去步骤 1 中获得的时间戳来计算获取锁所花费的时间。当且仅当客户端能够在大多数实例（至少 3 个）中获取锁时，并且获取锁所花费的总时间小于锁的有效时间，则认为获取了锁。</li>
+<li>如果获取了锁，则其有效时间被视为初始有效时间减去经过的时间（如步骤 3 中计算的那样）。</li>
+<li>如果客户端由于某种原因未能获得锁（要么无法锁定 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2} +1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个实例，要么有效时间为负），它将尝试解锁所有实例（甚至是它认为没有锁定的实例）。</li>
+</ol>
+<h3 id="该算法是异步的吗"><a class="markdownIt-Anchor" href="#该算法是异步的吗"></a> 该算法是异步的吗？</h3>
+<p>  该算法依赖于这样的假设：虽然进程之间没有同步时钟，但每个进程中的本地时间以大致相同的速率更新，与锁的自动释放时间相比，误差幅度很小。这种假设与现实世界的计算机非常相似：每台计算机都有一个本地时钟，我们通常可以依靠不同的计算机来获得很小的时钟漂移。</p>
+<p>  此时我们需要更好地指定我们的互斥规则：只有持有锁的客户端在锁有效时间内（如步骤3中获得的）终止其工作，减去一些时间（只需几毫秒即可补偿进程之间的时钟漂移）。</p>
+<p>  这边文章<a href="https://www.goodserendipity.com/asserts/distributed-system/Leases%20An%20Efficient%20Fault-Tolerant%20Mechanism%20for%20Distributed%20File%20Cache%20Consistency.pdf">Leases: an efficient fault-tolerant mechanism for distributed file cache consistency</a>包含有关需要绑定时钟漂移的类似系统的更多信息。</p>
+<h3 id="失败重试"><a class="markdownIt-Anchor" href="#失败重试"></a> 失败重试</h3>
+<p>  当客户端无法获取锁时，它应该在随机延迟后重试，以尝试使多个客户端同时尝试获取同一资源的锁（这可能会导致没有人获胜的裂脑情况）去同步化。此外，客户端尝试获取大多数 Redis 实例中的锁的速度越快，脑裂情况的窗口（以及重试的需要）就越小，因此理想情况下，客户端应尝试采用复用的方式将 SET 命令同时发送到 N 个实例。</p>
+<p>  值得强调的是，对于未能获取大部分锁的客户端来说，尽快释放（部分）获取的锁是多么重要，这样就不需要等待key过期才能再次获取锁（但是，如果发生网络分区并且客户端不再能够与 Redis 实例通信，则在等待key过期时会产生可用性损失）。</p>
+<h3 id="释放锁"><a class="markdownIt-Anchor" href="#释放锁"></a> 释放锁</h3>
+<p>  释放锁很简单，并且无论客户端是否认为它能够成功锁定给定实例都可以执行。</p>
+<h3 id="安全论据"><a class="markdownIt-Anchor" href="#安全论据"></a> 安全论据</h3>
+<p>  算法安全吗？让我们看看不同场景下会发生什么。</p>
+<p>  首先，我们假设客户端能够获取多数实例的锁。所有实例都将包含一个具有相同生存时间的key。但是，key是在不同时间设置的，因此key也会在不同时间过期。但是，如果第一个key在最坏情况下在时间 T1（我们在联系第一台服务器之前采样的时间）设置，并且最后一个key在最坏情况下在时间 T2（我们从最后一个服务器获得回复的时间）设置，我们确信集合中第一个过期的key将至少存在 MIN_VALIDITY = TTL-(T2-T1)-CLOCK_DRIFT。所有其他key稍后都会过期，因此我们确信这些key将被同时设置最少这个时间。</p>
+<p>  在多数master节点被设置key的期间，另一个客户端将无法获取锁，因为如果 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个key已经存在，则 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个 SET NX 操作无法成功。因此，如果锁已经被获取，则不可能同时重新获取它（违反了互斥属性）。</p>
+<p>  然而，我们还想确保多个客户端尝试同时获取锁不能同时成功。</p>
+<p>  如果客户端锁定大多数实例的时间接近或大于锁最大有效时间（我们用于 SET 的 TTL），它将认为锁无效并解锁实例，因此我们只需要考虑客户端能够在小于有效时间的时间内锁定多数master实例的情况。在这种情况下，对于上面已经表达的参数，对于 MIN_VALIDITY，没有客户端应该能够重新获取锁。因此，只有当锁定多数master实例的时间大于 TTL 时间时，多个客户端才能同时锁定 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{N}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 个实例（“时间”为步骤 2 的结束时间），从而使锁定无效。</p>
+<h3 id="活性参数"><a class="markdownIt-Anchor" href="#活性参数"></a> 活性参数</h3>
+<p>  系统活性基于三个主要特征：</p>
+<ol>
+<li>自动释放锁（因为key过期）：最终key可以再次被锁定。</li>
+<li>事实上，当没有获取锁时，或者当获取到锁并且工作终止时，客户端通常会配合删除锁，这使得我们不必等待key过期来重新获取锁。</li>
+<li>事实上，当客户端需要重试获取锁时，它会等待比获取多数master节点锁定所需的时间更长的时间，以便在概率上使资源争用期间不太可能出现脑裂情况。</li>
+</ol>
+<p>  然而，我们在网络分区上付出了等于 TTL 时间的可用性成本，因此如果存在连续分区，我们可以无限期地付出可用性成本。每当客户端获取锁并在能够删除锁之前被分区时，就会发生这种情况。</p>
+<p>  基本上，如果存在无限连续的网络分区，系统可能会在无限时间内变得不可用。</p>
+<h3 id="性能-崩溃恢复和-fsync"><a class="markdownIt-Anchor" href="#性能-崩溃恢复和-fsync"></a> 性能、崩溃恢复和 fsync</h3>
+<p>  许多使用 Redis 作为锁服务器的用户在获取和释放锁的延迟以及每秒可以执行的获取/释放操作的数量方面都需要高性能。为了满足这个要求，与 N 个Redis服务器通信以减少延迟的策略肯定是多路复用（将套接字置于非阻塞模式，发送所有命令，然后读取所有命令，假设客户端和每个Redis服务器实例之间的RTT都是接近的）。</p>
+<p>  然而，如果我们想要以崩溃恢复系统模型为目标，则还需要考虑持久性。</p>
+<p>  基本上为了看到这里的问题，我们假设我们根本没有配置 Redis 持久性。客户端在 5 个实例中的 3 个实例中获取了锁。客户端能够获取锁的实例之一被重新启动，此时我们又有可以再次锁定同一资源的3个实例，并且另一个客户端可以再次锁定它，这违反了锁独占性的安全属性。</p>
+<p>  如果我们启用 AOF 持久化，事情将会改善很多。例如，我们可以通过向服务器发送 SHUTDOWN 命令并重新启动来升级服务器。因为 Redis 过期是语义上的实现，所以当服务器关闭时时间仍然会流逝，所以我们的所有要求都满足。但是，只要干净关闭，一切都很好。停电了怎么办？如果 Redis 默认情况下配置为每秒在磁盘上同步一次，则重新启动后我们的key可能会丢失。理论上，如果我们想在任何类型的实例重启时保证锁的安全，我们需要在持久化设置中启用fsync=always。由于额外的同步开销，这将影响性能。</p>
+<p>  然而，事情比乍一看要好。基本上，只要实例在崩溃后重新启动时，它不再参与任何当前活动的锁，算法的安全性就会得到保留。这意味着实例重新启动时当前活动的一组锁都是通过锁定除重新加入系统之外的实例而获得的。</p>
+<p>  为了保证这一点，我们只需要让一个实例在崩溃后至少比我们使用的最大 TTL 长一点的时间内不可用。这是实例崩溃时存在的锁的所有键失效并自动释放所需的时间。</p>
+<p>  使用延迟重启，即使没有任何可用的 Redis 持久性，基本上也可以实现安全性，但请注意，这可能会转化为可用性损失。例如，如果多数实例崩溃，系统将变得全局不可用，无法达到 TTL（这里全局意味着在此期间根本没有资源可锁定）。</p>
+<h3 id="让算法更可靠扩展锁"><a class="markdownIt-Anchor" href="#让算法更可靠扩展锁"></a> 让算法更可靠：扩展锁</h3>
+<p>  如果客户端执行的工作由小步骤组成，则可以默认使用较小的锁有效时间，并扩展实现锁扩展机制的算法。基本上，如果在计算过程中，当锁有效性接近较低值时，客户端可以通过向所有扩展该键的 TTL 的实例发送 Lua 脚本来扩展锁，如果这个key存在并且其值仍然是获取锁时客户端分配的随机值。</p>
+<p>  仅当客户端能够将锁扩展到大多数实例并且在有效时间内（基本上使用的算法与获取锁时使用的算法非常相似）时，客户端才应该考虑重新获取锁。</p>
+<p>  然而，这在技术上并没有改变算法，因此应该限制锁重新获取尝试的最大次数，否则就会违反活性属性之一。</p>
+<h3 id="关于一致性的免责声明"><a class="markdownIt-Anchor" href="#关于一致性的免责声明"></a> 关于一致性的免责声明</h3>
+<p>  请考虑仔细阅读本页末尾的 Redlock 分析部分。Martin Kleppman 的文章和 antirez 的回答非常相关。如果您担心一致性和正确性，则应注意以下主题：</p>
+<ol>
+<li>您应该实现栅栏令牌。这对于可能花费大量时间并适用于任何分布式锁定系统的进程尤其重要。延长锁的生命周期也是一种选择，但不要假设只要获取锁的进程还活着，锁就会被保留。</li>
+<li>Redis 不使用单调时钟作为 TTL 过期机制。这意味着挂钟偏移可能会导致锁被多个进程获取。尽管可以通过阻止管理员手动设置服务器时间并正确设置 NTP 来缓解该问题，但在现实生活中仍然有可能发生此问题并影响一致性。</li>
+</ol>
+<h3 id="redlock的分析"><a class="markdownIt-Anchor" href="#redlock的分析"></a> Redlock的分析</h3>
+<p>  Martin Kleppmann 的 <a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a> 分析过 Redlock。与此分析相反的观点<a target="_blank" rel="noopener" href="http://antirez.com/news/101">Is Redlock safe?</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/26/Distributed%20System/3%E3%80%81Is%20Redlock%20safe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/26/Distributed%20System/3%E3%80%81Is%20Redlock%20safe/" class="post-title-link" itemprop="url">Is Redlock safe?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-08-26 19:28:26" itemprop="dateCreated datePublished" datetime="2023-08-26T19:28:26+08:00">2023-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-27 00:28:09" itemprop="dateModified" datetime="2023-08-27T00:28:09+08:00">2023-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  这是一篇人工手动Google翻译的文章，原文<a target="_blank" rel="noopener" href="http://antirez.com/news/101">Is Redlock safe?</a>。</p>
+<p>  分布式系统研究员 Martin Kleppmann 昨天发表了对 <a target="_blank" rel="noopener" href="http://redis.io/topics/distlock">Redlock</a>的分析 ，您可以在这里找到这篇文章<a target="_blank" rel="noopener" href="http://martin.kleppmann.com/2016/02/08/How-to-do-distributed-locking.html">How to do distributed locking</a>。</p>
+<p>  Redlock是我设计的与Redis一起使用的客户端分布式锁定算法，但该算法在客户端编排了一组实现具有某些功能的数据存储的节点，以创建多主容错的、希望安全的、具有自动释放功能的分布式锁。<br />
+  例如，您可以使用 MySQL 而不是 Redis 来实现 Redlock。</p>
+<p>  该算法的目标是将使用单个 Redis 实例或具有故障转移的主从模式的人们转移到更可靠和安全的东西上，以实现分布式锁，但具有非常低的复杂性和良好的性能。</p>
+<p>  自从我发布 Redlock 以来，人们用多种语言实现了它，并将其用于不同的目的。</p>
+<p>  Martin 对算法的分析得出的结论是 Redlock 并不安全。很高兴 Martin 发表了分析，我在这里要求在原始 <a target="_blank" rel="noopener" href="http://redis.io/topics/distlock">Redlock 规范</a>中进行分析。 所以谢谢你马丁。不过我不同意这个分析。好处是，与其他编程领域不同，分布式系统在数学上相当精确，或者不是，因此可以通过算法保证一组给定的属性，或者在某些假设下该算法可能无法保证它们。在这篇分析中，我将分析Martin的分析，以便该领域的其他专家可以检查两个文件（分析和反分析），最终我们可以了解Redlock是否可以被认为是安全的。</p>
+<h3 id="为什么马丁认为-redlock-不安全"><a class="markdownIt-Anchor" href="#为什么马丁认为-redlock-不安全"></a> 为什么马丁认为 Redlock 不安全</h3>
+<p>  分析中的论点主要有两个：</p>
+<ol>
+<li>具有自动释放功能的分布式锁（互斥锁属性仅在获取锁后的固定时间内有效）需要一种方法来避免客户端在过期时间之后使用锁时违反互斥性的问题访问共享资源。Martin说Redlock没有这样的机制。</li>
+<li>马丁表示，无论问题 1 如何，该算法本质上都是不安全的，因为它对系统模型做出的假设在实际系统中无法得到保证。</li>
+</ol>
+<p>  为了清楚起见，我将分别解决这两个问题，从第一个问题开始。</p>
+<h3 id="分布式锁-自动释放和令牌"><a class="markdownIt-Anchor" href="#分布式锁-自动释放和令牌"></a> 分布式锁、自动释放和令牌</h3>
+<p>  没有自动释放机制的分布式锁（锁所有者将无限期地持有它）基本上是没有用的。如果持有锁的客户端崩溃并且无法在短时间内恢复到完整状态，则会创建死锁，分布式锁试图保护的共享资源将永远无法访问。这会产生在大多数情况下不可接受的活性问题，因此健全的分布式锁必须能够自动释放自身。</p>
+<p>  因此，为客户端提供了实用的锁，并具有一个最长的使用寿命。过期时间之后，互斥保证（锁的主要属性）就消失了：另一个客户端可能已经拥有该锁。如果两个客户端在两个不同的时间获取锁，但第一个客户端由于 GC 暂停或其他调度问题而太慢，会尝试与第二个获取了锁的客户端同时在共享资源的上下文中执行工作，会发生什么情况？</p>
+<p>  Martin 说，这个问题可以通过让分布式锁服务器为每个锁提供一个令牌来避免，在他的示例中，令牌只是一个保证始终递增的数字。Martin 使用令牌的基本原理是这样，当两个不同的客户端同时访问锁定的资源时，我们可以在数据库写入事务中使用令牌（假设实现客户端所做的工作）： 只有具有最大锁号的客户端才能写入数据库。</p>
+<p>  用马丁的话来说：</p>
+<p>  “这个问题的修复实际上非常简单：您需要在对存储服务的每个写入请求中包含一个栅栏令牌。 在这种情况下，防护令牌只是一个每次客户端获取锁时都会增加的数字（例如，由锁服务递增）”。<br />
+  “请注意，这要求存储服务器主动检查令牌，并拒绝令牌已倒退的任何写入”。</p>
+<p>  我认为这个论点有几个问题：</p>
+<ol>
+<li>大多数时候，当你需要一个可以保证互斥性的分布式锁系统时，当这个属性被侵犯时，你就已经丢失了锁。 当我们对共享资源没有其他控制权时，分布式锁非常有用。在他的分析中，马丁假设当锁的互斥性被侵犯时，你总是有其他方法来避免竞争条件。我认为这是一种非常奇怪的方式来推理具有强保证的分布式锁，如果您可以以不同的方式解决竞争，那么根本不清楚为什么您会使用具有强属性的锁。然而，我将继续讨论下面的其他观点，只是为了表明 Redlock 可以在这种非常人为的环境中很好地工作。</li>
+<li>如果您的数据存储始终只能在您的令牌大于所有过去的令牌时接受写入，那么它就是线性化存储。如果你有一个线性化存储，你可以为每个获取的 Redlock 生成一个增量 ID，因此这将使 Redlock 相当于另一个分布式锁系统，为每个新锁提供增量令牌 ID。然而，在下一点中，我将展示为什么不需要这样做。</li>
+<li>然而，问题 2 无论如何都不是一个明智的选择：大多数时候，处理共享资源的结果不是写入线性化存储，那么该怎么办呢？ 每个 Redlock 都与一个大的随机令牌相关联（该令牌以可以忽略冲突的方式生成。Redlock 规范假定文本上为“来自 /dev/urandom 的 20 个字节”）。您如何使用一个唯一的令牌？例如，您可以实施检查和设置。当开始使用共享资源时，我们将其状态设置为“<code>&lt;token&gt;</code>”，然后仅当令牌与写入时相同时才进行读取-修改-写入操作。</li>
+<li>请注意，在某些用例中，人们可能会说，无论如何有序令牌都是有用的。虽然很难思考用例，但请注意，对于 Martin 提到的同一个 GC 暂停，获取令牌的顺序不一定遵循客户端尝试处理共享资源的顺序，因此 锁定顺序可能不会与共享资源的工作效果随意相关。</li>
+<li>大多数时候，锁用于访问以非事务性方式更新的资源。例如，有时我们使用分布式锁来移动物理对象。或者与另一个外部 API 交互，等等。</li>
+</ol>
+<p>  我想再次提及的是，这一切的奇怪之处在于，假设您总是必须有一种方法来处理违反互斥的事实。实际上，如果你有这样一个系统来避免竞争条件下的问题，你可能根本不需要分布式锁，或者至少不需要具有强保证的锁，而只需要弱锁避免大多数情况下的出于性能原因的并发访问。</p>
+<p>  然而，即使您碰巧同意 Martin 的观点，即上述内容非常有用，但最重要的是，每个锁的唯一标识符可以用于相同的目标，但在不需要来自存储的强有力保证方面更实用。</p>
+<h3 id="我们来谈谈系统模型"><a class="markdownIt-Anchor" href="#我们来谈谈系统模型"></a> 我们来谈谈系统模型</h3>
+<p>  上述批评基本上是所有具有自动释放功能的分布式锁的共同点，而不是为每个锁提供单调递增的计数器。然而，对马丁的另一种批评是针对Redlock的。在这里，马丁真正分析了算法，得出的结论是它被破坏了。</p>
+<p>  Redlock 假设一个半同步系统模型，其中不同的进程可以以或多或少相同的“速度”来计算时间。不同的进程不需要以任何方式在绝对时间上有一定的误差。他们需要做的只是，例如，能够以最大 10% 的误差来数 5 秒。所以一个进程计数实际的 4.5 秒，另一个进程计数5.5 秒，我们就没事了。</p>
+<p>  Martin 还指出 Redlock 要求绑定消息最大延迟，据我所知，这是不正确的（稍后我将解释他的推理有什么问题）。</p>
+<p>  因此，让我们从不同进程无法以相同速率计算时间的问题开始。</p>
+<p>  马丁说，由于两个问题，时钟可以在系统中随机跳跃：</p>
+<ol>
+<li>系统管理员手动更改时钟。</li>
+<li>ntpd 守护进程会因为收到更新而频繁更改时钟。</li>
+</ol>
+<p>  上述两个问题可以通过 1 不这样做来避免（否则即使使用“echo foo &gt; /my/raft/log.bin”破坏Raft日志也是一个问题）， 2 使用不直接跳跃来更改时间的ntpd ，但通过在更大的时间跨度上分配变化来更改时间。</p>
+<p>  不过，我认为 Martin 是对的，Redis 和 Redlock 实现应该切换到大多数操作系统提供的单调时间 API，以使上述问题不再成为问题。这在过去被提出过几次，增加了 Redis 内部的一些复杂性，但这是一个好主意：我将在接下来的几周内实现它。然而，当我们将切换到单调时间 API，由于存在优点，在没有软件（时间服务器）或人类（系统管理员）元素改变时钟的操作系统中运行的进程，即使使用 gettimeofday()也可以计算具有边界误差的相对时间。</p>
+<p>  请注意，即使假设有一定的绝对时间误差（通过使用 GPS 单位），过去也尝试过实现分布式系统。例如Redlock 不需要类似的东西，只需要不同进程能够将 10 秒计数为 9.5 或 11.2（示例中最多+/- 2 秒）。</p>
+<p>  那么Redlock安全吗？这取决于上述情况。假设我们使用单调递增的时间 API，为了简单起见，排除实现细节（喜欢 POKE 和时间服务器的系统管理员）。进程能否以最大误差的固定百分比来计算相对时间？我认为这听起来是“是”，并且回答“是”比回答“进程可以在不破坏日志的情况下写入日志”更简单吗？</p>
+<h3 id="网络延迟和时钟漂移"><a class="markdownIt-Anchor" href="#网络延迟和时钟漂移"></a> 网络延迟和时钟漂移</h3>
+<p>  Martin 表示，Redlock 不仅仅依赖于进程可以在大约同一时间计算时间这一事实，他说：</p>
+<p>  “然而，Redlock却不是这样的。它的安全性取决于很多计时假设：它假设所有 Redis 节点在过期之前将密钥保存大约正确的时间长度；与到期时间相比，网络延迟很小；并且该过程的暂停时间比到期时间短得多。”</p>
+<p>  因此，让我们将上述主张分为不同的部分：</p>
+<ol>
+<li>Redis 节点将密钥保存大约正确的时间长度。</li>
+<li>与到期时间相比，网络延迟很小。</li>
+<li>进程暂停时间比到期时间短得多。</li>
+</ol>
+<p>  马丁总是说“系统时钟跳跃”，我认为我们通过不以对算法造成问题的方式来修改系统时间来解决这个问题，或者为了简单起见，使用单调时间 API。 所以：</p>
+<p>  关于主张 1：这不是问题，我们假设我们可以大致以相同的速度计算时间，除非有任何实际的反对意见。</p>
+<p>  关于主张 2：事情有点复杂。 马丁 说：</p>
+<p>  “好吧，也许您认为时钟跳跃是不现实的，因为您非常有信心正确配置 NTP，使其只改变时钟。 （是的，我们同意；-）他继续说……”</p>
+<p>  在这种情况下，让我们看一个进程暂停如何导致算法失败的示例：</p>
+<blockquote>
+<p>客户端 1 请求对节点 A、B、C、D、E 进行锁定。<br />
+当对客户端 1 的响应正在进行时，客户端 1 进入 stop-the-world GC。<br />
+所有 Redis 节点上的锁都会过期。<br />
+客户端 2 获取节点 A、B、C、D、E 上的锁。<br />
+客户端 1 完成 GC，并收到来自 Redis 节点的响应，表明它已成功获取锁（当进程暂停时，它们被保存在客户端 1 的内核网络缓冲区中）。<br />
+客户 1 和 2 现在都相信他们持有锁。</p>
+</blockquote>
+<p>  如果您阅读了我几个月没有碰过的 Redlock 规范，您可以看到获取锁的步骤是：</p>
+<ol>
+<li>获取当前时间</li>
+<li>获取锁所需的所有步骤</li>
+<li>再次获取当前时间。</li>
+<li>检查我们是否已经超时，或者我们是否足够快地获取锁。</li>
+<li>对你的锁进行一些处理。</li>
+</ol>
+<p>  请注意步骤 1 和 3。无论网络中或所涉及的过程中发生什么延迟，在获得多数之后，我们再次检查我们是否超时。延迟只能发生在步骤 3 之后，导致锁在实际过期时被认为是正常的，也就是说，我们回到了 Martin 发现的分布式锁的第一个问题，其中客户端未能在锁过期之前停止对共享资源的工作。让我再次讲述这个问题在所有分布式锁实现中的常见情况，以及栅栏令牌作为解决方案是如何既不现实又可以与 Redlock 一起使用。</p>
+<p>  请注意，无论 1 到 3 之间发生什么，您都可以添加所需的网络延迟，如果经过了太多时间，锁将始终被视为无效，因此 Redlock 看起来完全不受进程之间具有未绑定延迟的消息的影响。它的设计就是考虑到这个目标，我看不出上述竞争条件是如何发生的。</p>
+<p>  然而，Martin 的博客文章也经过了多位 DS(distributed system) 专家的审阅，所以我不确定我是否在这里遗漏了一些东西，或者只是 Redlock 的工作方式同时被许多人忽视了。我很高兴收到对此的一些澄清。</p>
+<p>  上面还解决了“进程暂停”问题 3。获取锁过程中的暂停不会影响算法的正确性。然而，它们可能会影响客户端在指定的锁定时间内完成工作的能力，就像上面已经介绍的任何其他具有自动释放功能的分布式锁一样。</p>
+<h3 id="关于网络延迟的题外话"><a class="markdownIt-Anchor" href="#关于网络延迟的题外话"></a> 关于网络延迟的题外话</h3>
+<p>  只是一个快速说明。在具有自动释放功能的分布式锁的服务器端实现中，客户端可能会要求获取锁，服务器可能会允许客户端这样做，但进程可能会停止并进入 GC 暂停状态，或者网络可能会很慢等等 ，因此当锁已经过期时，客户端可能会太晚收到“OK，锁是你的”。但是，您可以做很多事情来避免进程长时间休眠，并且您无法做很多事情来避免网络延迟，因此检查获取锁之前/之后的时间的步骤，以查看还剩多少时间，实际上应该是常见的做法，即使在使用其他系统实现具有到期期限的锁时也是如此。</p>
+<h3 id="是否-fsync"><a class="markdownIt-Anchor" href="#是否-fsync"></a> 是否 Fsync</h3>
+<p>  sync、fsync、fdatasync是Linux系统的三种同步机制。</p>
+<p>  在某个时候，Martin 谈到了 Redlock 使用延迟重启节点的事实。 这再次需要能够等待或多或少指定时间的能力，如上所述。 同样的事情重复一遍是没有用的。</p>
+<p>  然而重要的是，这一步是可选的。您可以将每个 Redis 节点配置为在每次操作时进行fsync，这样当客户端收到回复时，它就知道锁已经持久化到磁盘上了。这就是大多数其他提供强一致性的系统的工作方式。Redlock 非常有趣的一点是，您可以通过实施延迟重启来选择完全退出任何磁盘参与。这意味着用几个 Redis 实例每秒可以处理数十万个锁，这是其他系统无法实现的。</p>
+<h3 id="gps-单位与本地计算机时钟"><a class="markdownIt-Anchor" href="#gps-单位与本地计算机时钟"></a> GPS 单位与本地计算机时钟</h3>
+<p>  回到系统模型，使 Redlock 系统模型实用的一件事是您可以假设进程永远不会与系统时钟分区。请注意，这与使用 GPS 单元的其他半同步模型不同，因为在这种情况下可能会发生两个不明显的分区：</p>
+<ol>
+<li>GPS 与 GPS 网络隔离，因此无法获取定位。</li>
+<li>进程和 GPS 无法交换消息或交换的消息存在延迟。</li>
+</ol>
+<p>  上述问题可能会导致活性或安全违规，具体取决于系统的编排方式（仅当存在设计错误时才会发生安全问题，例如，如果 GPS 异步更新系统时间，那么当 GPS 不工作时，绝对时间误差可能会超过最大范围）。</p>
+<p>  Redlock 系统模型没有这些复杂性，也不需要额外的硬件，只需计算机时钟，甚至是一个非常便宜的时钟，由于晶体温度和其他影响精度的因素而具有所有明显的偏差。</p>
+<h3 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h3>
+<p>  我认为 Martin 关于单调 API 的观点是有道理的，Redis 和 Redlock 实现应该使用它来避免由于系统时钟被更改而导致的问题。然而，正如上面所解释的，我无法识别影响 Redlock 安全性的分析的其他要点，我也没有发现他的最终结论，当需要互斥保证时，人们不应该使用 Redlock，是合理的。</p>
+<p>  如果能够收到更多专家的反馈并使用 Jepsen 或类似工具测试算法以积累更多数据，那就太好了。</p>
+<p>  非常感谢帮助我审阅这篇文章的朋友。</p>
+<p>  <font color="red">文章末尾的评论。</font></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/16/Distributed%20System/2%E3%80%81How%20to%20do%20distributed%20locking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/08/16/Distributed%20System/2%E3%80%81How%20to%20do%20distributed%20locking/" class="post-title-link" itemprop="url">How to do distributed locking</a>
         </h2>
 
         <div class="post-meta">
@@ -196,7 +523,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-26 18:32:39" itemprop="dateModified" datetime="2023-08-26T18:32:39+08:00">2023-08-26</time>
+                <time title="Modified: 2023-08-26 19:22:51" itemprop="dateModified" datetime="2023-08-26T19:22:51+08:00">2023-08-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -204,7 +531,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                  <a href="/categories/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
                 </span>
             </span>
 
@@ -220,12 +547,12 @@
 
       
           <p>  Martin Kleppmann的<a target="_blank" rel="noopener" href="https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">How to do distributed locking</a>是对Redis的Redlock算法的评论。原文翻译如下。</p>
-<p>  作为我的书研究的一部分，我在 Redis 网站上发现了一种名为 Redlock 的算法。该算法声称在 Redis 之上实现容错分布式锁（或者更确切地说，租赁(<a href="https://www.goodserendipity.com/asserts/redis/Leases%20An%20Efficient%20Fault-Tolerant%20Mechanism%20for%20Distributed%20File%20Cache%20Consistency.pdf">Leases An Efficient Fault-Tolerant Mechanism for Distributed File Cache Consistency</a>)），并且该页面请求分布式系统人员的反馈。该算法本能地在我的脑海中敲响了警钟，所以我花了一些时间思考它并写下了这些笔记。</p>
+<p>  作为我的书研究的一部分，我在 Redis 网站上发现了一种名为 Redlock 的算法。该算法声称在 Redis 之上实现容错分布式锁（或者更确切地说，租赁(<a href="https://www.goodserendipity.com/asserts/distributed-system/Leases%20An%20Efficient%20Fault-Tolerant%20Mechanism%20for%20Distributed%20File%20Cache%20Consistency.pdf">Leases An Efficient Fault-Tolerant Mechanism for Distributed File Cache Consistency</a>)），并且该页面请求分布式系统人员的反馈。该算法本能地在我的脑海中敲响了警钟，所以我花了一些时间思考它并写下了这些笔记。</p>
 <p>  由于 Redlock 已经有超过 10 个独立实现，而且我们不知道谁已经在依赖这个算法，所以我认为值得公开分享我的笔记。 我不会讨论 Redis 的其他方面，其中一些方面已经在其他地方受到了批评。</p>
 <p>  在详细介绍 Redlock 之前，我要说的是，我非常喜欢 Redis，并且我过去已经在生产中成功地使用过它。 我认为它非常适合您想要在服务器之间共享一些瞬态、近似、快速变化的数据的情况，并且如果您偶尔由于某种原因丢失这些数据也没什么大不了的。 例如，一个好的用例是维护每个 IP 地址的请求计数器（用于速率限制目的）和每个用户 ID 的不同 IP 地址集（用于滥用检测）。</p>
 <p>  然而，Redis 已经逐渐进军数据管理领域，这些领域对一致性和持久性有更强的期望——这让我很担心，因为这不是 Redis 的设计目的。 可以说，分布式锁定就是其中之一。 让我们更详细地研究一下。</p>
 <h3 id="你用那个锁做什么"><a class="markdownIt-Anchor" href="#你用那个锁做什么"></a> 你用那个锁做什么？</h3>
-<p>  锁的目的是确保在可能尝试执行同一工作的多个节点中，只有一个节点实际执行该操作（至少一次只有一个）。 这项工作可能是将一些数据写入共享存储系统、执行一些计算、调用一些外部 API 等。 从高层次来看，您可能需要在分布式应用程序中使用锁有两个原因：为了效率或为了正确性(<a href="https://www.goodserendipity.com/asserts/redis/The%20Chubby%20lock%20service%20for%20loosely-coupled%20distributed%20systems.pdf">The Chubby lock service for loosely-coupled distributed systems</a>)。 为了区分这些情况，你可以询问如果锁失败会发生什么：</p>
+<p>  锁的目的是确保在可能尝试执行同一工作的多个节点中，只有一个节点实际执行该操作（至少一次只有一个）。 这项工作可能是将一些数据写入共享存储系统、执行一些计算、调用一些外部 API 等。 从高层次来看，您可能需要在分布式应用程序中使用锁有两个原因：为了效率或为了正确性(<a href="https://www.goodserendipity.com/asserts/distributed-system/The%20Chubby%20lock%20service%20for%20loosely-coupled%20distributed%20systems.pdf">The Chubby lock service for loosely-coupled distributed systems</a>)。 为了区分这些情况，你可以询问如果锁失败会发生什么：</p>
 <blockquote>
 <p><strong>效率</strong> 采取锁定可以避免不必要地重复相同的工作（例如一些昂贵的计算）。如果锁定失败并且两个节点最终执行相同的工作，结果是成本略有增加（您最终向 AWS 支付的费用比其他情况下多了 5 美分）或造成了轻微的不便（例如，用户最终 收到相同的电子邮件通知两次）。</p>
 </blockquote>
@@ -241,26 +568,26 @@
 <p>  例如，假设您有一个应用程序，其中一个客户端需要更新共享存储（例如 HDFS 或 S3）中的文件。一个客户端首先获取锁，然后读取文件，进行一些更改，将修改后的文件写回，最后释放锁。该锁可防止两个客户端同时执行将导致更新丢失的读取-修改-写入循环。代码可能看起来像这样：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">writeData</span>(<span class="params">filename, data</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> lock = lockService.<span class="title function_">acquireLock</span>(filename);</span><br><span class="line">    <span class="keyword">if</span> (!lock) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="string">&#x27;Failed to acquire lock&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> file = storage.<span class="title function_">readFile</span>(filename);</span><br><span class="line">        <span class="keyword">var</span> updated = <span class="title function_">updateContents</span>(file, data);</span><br><span class="line">        storage.<span class="title function_">writeFile</span>(filename, updated);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.<span class="title function_">release</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>  不幸的是，即使你有完美的锁服务，上面的代码也被破坏了。 下图显示了如何导致数据损坏：<br />
-<img src="https://www.goodserendipity.com/asserts/redis/unsafe-lock1.png" alt="不安全的锁" /></p>
+<img src="https://www.goodserendipity.com/asserts/distributed-system/unsafe-lock1.png" alt="不安全的锁" /></p>
 <p>  在此示例中，获取锁的客户端在持有锁的同时会暂停很长一段时间，例如因为垃圾收集器 (GC) 启动。锁有超时（即，它是租约），这总是一个好主意（否则崩溃的客户端可能会永远持有锁并且永远不会释放它）。 然而，如果 GC 暂停的持续时间超过了租约到期时间，并且客户端没有意识到它已经到期，它可能会继续进行一些不安全的更改。</p>
 <p>  这个错误不是理论上的：HBase 曾经有过这个问题(<a href="https://www.goodserendipity.com/asserts/zookeeper/O'Reilly.ZooKeeper.Distributed%20process%20coordination.2013.pdf">ZooKeeper: Distributed Process Coordination</a> 和 <a target="_blank" rel="noopener" href="https://www.slideshare.net/enissoz/hbase-and-hdfs-understanding-filesystem-usage">HBase and HDFS: Understanding filesystem usage in HBase</a>)。 通常，GC 暂停时间非常短，但众所周知，“stop-the-world”GC 暂停有时会持续几分钟 <a target="_blank" rel="noopener" href="https://blog.cloudera.com/">Avoiding Full GCs in Apache HBase with MemStore-Local Allocation Buffers: Part 1</a> – 当然足够长，足以让租约到期。 即使像 HotSpot JVM 的 CMS 这样所谓的“并发”垃圾收集器也无法与应用程序代码完全并行运行——即使它们需要时不时地停止运行 <a target="_blank" rel="noopener" href="https://mechanical-sympathy.blogspot.com/2013/07/java-garbage-collection-distilled.html">Java Garbage Collection Distilled</a>。</p>
 <p>  您无法通过在写回存储之前插入锁定到期检查来解决此问题。请记住，GC 可以在任何点暂停正在运行的线程，包括对您来说非常不方便的点（在最后一次检查和写入操作之间）。</p>
 <p>  如果您因编程语言运行时没有长时间的 GC 暂停而感到沾沾自喜，那么还有许多其他原因可能导致您的进程暂停。 也许您的进程尝试读取尚未加载到内存中的地址，因此它会出现页面错误并暂停，直到从磁盘加载页面为止。 也许您的磁盘实际上是 EBS(Elastic Block Store)，因此读取变量不知不觉地变成了 Amazon 拥塞网络上的同步网络请求。 也许有许多其他进程争夺 CPU，并且您在调度程序树中遇到了黑色节点。 也许有人不小心向进程发送了 SIGSTOP。不管怎样，您的进程将暂停。</p>
-<p>  如果您仍然不相信我关于进程暂停的说法，请考虑文件写入请求在到达存储服务之前可能会在网络中延迟。以太网和 IP 等数据包网络可能会任意延迟数据包，而且确实如此<a href="https://www.goodserendipity.com/asserts/redis/The%20Network%20is%20Reliable.pdf">The Network is Reliable</a>：在 GitHub 上的一个著名事件<a target="_blank" rel="noopener" href="https://github.blog/2012-12-26-downtime-last-saturday/">Downtime last Saturday</a>中，数据包在网络中延迟了大约 90 秒。这意味着应用程序进程可能会发送写请求，并且可能会在租约已经过期的情况下在一分钟后到达存储服务器。</p>
+<p>  如果您仍然不相信我关于进程暂停的说法，请考虑文件写入请求在到达存储服务之前可能会在网络中延迟。以太网和 IP 等数据包网络可能会任意延迟数据包，而且确实如此<a href="https://www.goodserendipity.com/asserts/distributed-system/The%20Network%20is%20Reliable.pdf">The Network is Reliable</a>：在 GitHub 上的一个著名事件<a target="_blank" rel="noopener" href="https://github.blog/2012-12-26-downtime-last-saturday/">Downtime last Saturday</a>中，数据包在网络中延迟了大约 90 秒。这意味着应用程序进程可能会发送写请求，并且可能会在租约已经过期的情况下在一分钟后到达存储服务器。</p>
 <p>  即使在管理良好的网络中，这种事情也可能发生。您根本无法对时间做出任何假设，这就是为什么上面的代码从根本上来说是不安全的，无论您使用什么锁服务。</p>
 <h3 id="使用围栏确保锁的安全"><a class="markdownIt-Anchor" href="#使用围栏确保锁的安全"></a> 使用围栏确保锁的安全</h3>
-<p>  这个问题的修复实际上非常简单：您需要在对存储服务的每个写入请求中包含一个隔离令牌。在这种情况下，防护令牌只是一个每次客户端获取锁时都会增加的数字（例如，由锁服务递增）。如下图所示：<br />
-<img src="https://www.goodserendipity.com/asserts/redis/fencing-tokens.png" alt="隔离令牌锁" /></p>
+<p>  这个问题的修复实际上非常简单：您需要在对存储服务的每个写入请求中包含一个栅栏令牌。在这种情况下，防护令牌只是一个每次客户端获取锁时都会增加的数字（例如，由锁服务递增）。如下图所示：<br />
+<img src="https://www.goodserendipity.com/asserts/distributed-system/fencing-tokens.png" alt="栅栏令牌锁" /></p>
 <p>  客户端 1 获取租约并获得令牌 33，但随后它进入长时间暂停状态并且租约到期。客户端 2 获取租约，获取令牌 34（数字始终增加），然后将其写入发送到存储服务，包括 34 的令牌。稍后，客户端 1 恢复正常并将其写入发送到存储服务 ，包括其令牌值 33。但是，存储服务器记得它已经处理了具有更高令牌编号 (34) 的写入，因此它拒绝具有令牌 33 的请求。</p>
 <p>  请注意，这要求存储服务器主动检查令牌，并拒绝令牌已倒退的任何写入。 但一旦你掌握了窍门，这并不是特别难。 如果锁服务生成严格单调递增的令牌，则这使得锁是安全的。 例如，如果您使用 ZooKeeper 作为锁服务，则可以使用 zxid 或 znode 版本号作为 fencing 令牌，这样就处于良好状态 <a href="https://www.goodserendipity.com/asserts/zookeeper/O'Reilly.ZooKeeper.Distributed%20process%20coordination.2013.pdf">ZooKeeper: Distributed Process Coordination</a>。</p>
-<p>  然而，这给我们带来了 Redlock 的第一个大问题：它没有任何生成隔离令牌的工具。该算法不会产生任何保证每次客户端获取锁时都会增加的数字。这意味着即使该算法在其他方面很完美，使用起来也不安全，因为在一个客户端暂停或其数据包延迟的情况下，您无法阻止客户端之间的竞争条件。</p>
-<p>  对我来说，如何改变 Redlock 算法来开始生成隔离令牌并不明显。它使用的唯一随机值不能提供所需的单调性。仅仅在一个 Redis 节点上保留一个计数器是不够的，因为该节点可能会发生故障。在多个节点上保留计数器意味着它们会不同步。您可能需要一个共识算法来生成隔离令牌。（如果只增加一个计数器很简单就好了。）</p>
+<p>  然而，这给我们带来了 Redlock 的第一个大问题：它没有任何生成栅栏令牌的工具。该算法不会产生任何保证每次客户端获取锁时都会增加的数字。这意味着即使该算法在其他方面很完美，使用起来也不安全，因为在一个客户端暂停或其数据包延迟的情况下，您无法阻止客户端之间的竞争条件。</p>
+<p>  对我来说，如何改变 Redlock 算法来开始生成栅栏令牌并不明显。它使用的唯一随机值不能提供所需的单调性。仅仅在一个 Redis 节点上保留一个计数器是不够的，因为该节点可能会发生故障。在多个节点上保留计数器意味着它们会不同步。您可能需要一个共识算法来生成栅栏令牌。（如果只增加一个计数器很简单就好了。）</p>
 <h3 id="利用时间达成共识"><a class="markdownIt-Anchor" href="#利用时间达成共识"></a> 利用时间达成共识</h3>
 <p>  Redlock 无法生成防护令牌这一事实应该已经成为在正确性取决于锁的情况下不使用它的充分理由。 但还有一些进一步的问题值得讨论。</p>
-<p>  在学术文献中，此类算法最实用的系统模型是具有不可靠故障检测器的异步模型<a href="https://www.goodserendipity.com/asserts/redis/Unreliable%20Failure%20Detectors%20for%20Reliable%20Distributed%20Systems.pdf">Unreliable Failure Detectors for Reliable Distributed Systems</a>。简单来讲，这意味着算法不对时间做出任何假设：进程可能会暂停任意长度的时间，数据包可能在网络中任意延迟，时钟可能任意错误 - 但算法仍然期望做正确的事情。鉴于我们上面讨论的内容，这些都是非常合理的假设。</p>
-<p>  算法使用时钟的唯一目的是生成超时，以避免在节点关闭时永远等待。但超时不一定是准确的：仅仅因为请求超时，并不意味着另一个节点肯定已关闭 - 也可能是网络中存在较大延迟，或者您的本地时钟是错误的。当被用作故障检测器时，超时只是对出现问题的猜测。（如果可以的话，分布式算法将完全不需要时钟，但是共识就变得不可能<a href="https://www.goodserendipity.com/asserts/redis/Impossibility%20of%20Distributed%20Consensus%20with%20One%20Faulty%20Process.pdf">Impossibility of Distributed Consensus with One Faulty Process</a>。获取锁就像CAS操作需要共识<a href="https://www.goodserendipity.com/asserts/redis/Wait-Free%20Synchronization.pdf">Wait-Free Synchronization</a>。）</p>
+<p>  在学术文献中，此类算法最实用的系统模型是具有不可靠故障检测器的异步模型<a href="https://www.goodserendipity.com/asserts/distributed-system/Unreliable%20Failure%20Detectors%20for%20Reliable%20Distributed%20Systems.pdf">Unreliable Failure Detectors for Reliable Distributed Systems</a>。简单来讲，这意味着算法不对时间做出任何假设：进程可能会暂停任意长度的时间，数据包可能在网络中任意延迟，时钟可能任意错误 - 但算法仍然期望做正确的事情。鉴于我们上面讨论的内容，这些都是非常合理的假设。</p>
+<p>  算法使用时钟的唯一目的是生成超时，以避免在节点关闭时永远等待。但超时不一定是准确的：仅仅因为请求超时，并不意味着另一个节点肯定已关闭 - 也可能是网络中存在较大延迟，或者您的本地时钟是错误的。当被用作故障检测器时，超时只是对出现问题的猜测。（如果可以的话，分布式算法将完全不需要时钟，但是共识就变得不可能<a href="https://www.goodserendipity.com/asserts/distributed-system/Impossibility%20of%20Distributed%20Consensus%20with%20One%20Faulty%20Process.pdf">Impossibility of Distributed Consensus with One Faulty Process</a>。获取锁就像CAS操作需要共识<a href="https://www.goodserendipity.com/asserts/distributed-system/Wait-Free%20Synchronization.pdf">Wait-Free Synchronization</a>。）</p>
 <p>  请注意，Redis 使用 gettimeofday 而不是<a target="_blank" rel="noopener" href="https://linux.die.net/man/2/clock_gettime">单调时钟</a>来确定密钥的到期时间。<a target="_blank" rel="noopener" href="https://linux.die.net/man/2/gettimeofday">gettimeofday</a> 的手册页明确指出，它返回的时间会受到系统时间不连续跳跃的影响 - 也就是说，它可能会突然向前跳跃几分钟，甚至向后跳跃（例如，时钟与 NTP 服务器相差太大然后由 <a target="_blank" rel="noopener" href="https://www.eecis.udel.edu/~mills/ntp/html/clock.html">NTP 步进</a>，或者时钟是由管理员手动调整）。因此，如果系统时钟做了奇怪的事情，很容易发生 Redis 中的密钥过期比预期快得多或慢得多的情况。</p>
-<p>  对于异步模型中的算法来说，这不是一个大问题：这些算法通常确保它们的安全属性始终保持不变，而无需做出任何时序假设<a href="https://www.goodserendipity.com/asserts/redis/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。只有活性属性取决于超时或其他一些故障检测器。简单来讲，这意味着即使系统中的计时到处都是（进程暂停、网络延迟、时钟向前和向后跳跃），算法的性能可能会下降，但算法永远不会做出错误的决定。</p>
+<p>  对于异步模型中的算法来说，这不是一个大问题：这些算法通常确保它们的安全属性始终保持不变，而无需做出任何时序假设<a href="https://www.goodserendipity.com/asserts/distributed-system/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。只有活性属性取决于超时或其他一些故障检测器。简单来讲，这意味着即使系统中的计时到处都是（进程暂停、网络延迟、时钟向前和向后跳跃），算法的性能可能会下降，但算法永远不会做出错误的决定。</p>
 <p>  然而，Redlock却不是这样的。它的安全性取决于很多计时假设：它假设所有 Redis 节点在过期之前将密钥保存大约正确的时间长度；与到期时间相比，网络延迟很小；并且进程的暂停时间比到期时间短得多。</p>
 <h3 id="错误的时序打破-redlock"><a class="markdownIt-Anchor" href="#错误的时序打破-redlock"></a> 错误的时序打破 Redlock</h3>
 <p>  让我们看一些例子来证明 Redlock 对时序假设的依赖。假设系统有五个 Redis 节点（A、B、C、D 和 E）和两个客户端（1 和 2）。 如果其中一个 Redis 节点上的时钟向前跳动，会发生什么情况？</p>
@@ -289,19 +616,20 @@
 <li>有界进程暂停（换句话说，硬实时约束，通常只在汽车安全气囊系统等中找到）</li>
 <li>有限时钟错误（祈祷您没有从坏的 NTP 服务器获取时间）</li>
 </ol>
-<p>  请注意，同步模型并不意味着完全同步的时钟：它意味着您假设网络延迟、进程暂停和时钟漂移有一个已知的固定上限 <a href="https://www.goodserendipity.com/asserts/redis/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。 Redlock 假设网络延迟、进程暂停和时钟漂移漂移相对于锁的生存时间都很小；如果时序问题变得与生存时间一样大，算法就会失败。</p>
-<p>  在性能相当良好的数据中心环境中，大多数时间都会满足时序假设——这称为部分同步系统<a href="https://www.goodserendipity.com/asserts/redis/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。但这足够好吗？ 一旦这些时序假设被打破，Redlock 可能会违反其安全属性，例如 在一客户端到期之前向另一客户端授予租约。如果您依赖锁保证正确性，“大多数时候”是不够的 - 您需要它始终正确。</p>
-<p>  有大量证据表明，对于大多数实际系统环境假设同步系统模型是不安全的，参考<a href="https://www.goodserendipity.com/asserts/redis/The%20Network%20is%20Reliable.pdf">The Network is Reliable</a> 和 <a target="_blank" rel="noopener" href="https://github.blog/2012-12-26-downtime-last-saturday/">Downtime last Saturday</a>。不断提醒自己 GitHub 90 秒数据包延迟事件。Redlock 不太可能在<a target="_blank" rel="noopener" href="https://aphyr.com/tags/jepsen">Jepsen</a>测试中幸存下来。</p>
+<p>  请注意，同步模型并不意味着完全同步的时钟：它意味着您假设网络延迟、进程暂停和时钟漂移有一个已知的固定上限 <a href="https://www.goodserendipity.com/asserts/distributed-system/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。 Redlock 假设网络延迟、进程暂停和时钟漂移漂移相对于锁的生存时间都很小；如果时序问题变得与生存时间一样大，算法就会失败。</p>
+<p>  在性能相当良好的数据中心环境中，大多数时间都会满足时序假设——这称为部分同步系统<a href="https://www.goodserendipity.com/asserts/distributed-system/Consensus%20in%20the%20Presence%20of%20Partial%20Synchrony.pdf">Consensus in the Presence of Partial Synchrony</a>。但这足够好吗？ 一旦这些时序假设被打破，Redlock 可能会违反其安全属性，例如 在一客户端到期之前向另一客户端授予租约。如果您依赖锁保证正确性，“大多数时候”是不够的 - 您需要它始终正确。</p>
+<p>  有大量证据表明，对于大多数实际系统环境假设同步系统模型是不安全的，参考<a href="https://www.goodserendipity.com/asserts/distributed-system/The%20Network%20is%20Reliable.pdf">The Network is Reliable</a> 和 <a target="_blank" rel="noopener" href="https://github.blog/2012-12-26-downtime-last-saturday/">Downtime last Saturday</a>。不断提醒自己 GitHub 90 秒数据包延迟事件。Redlock 不太可能在<a target="_blank" rel="noopener" href="https://aphyr.com/tags/jepsen">Jepsen</a>测试中幸存下来。</p>
 <p>  另一方面，为部分同步系统模型（或带有故障检测器的异步模型）设计的共识算法实际上有机会起作用。 Raft、Viewstamped Replication、Zab 和 Paxos 都属于这一类。这样的算法必须放弃所有时序假设。这很难：人们很容易认为网络延迟、进程暂停和时钟漂移比实际情况更可靠。但在分布式系统的混乱现实中，您必须非常小心您的假设。</p>
 <h3 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h3>
 <p>  我认为 Redlock 算法是一个糟糕的选择，因为它“不伦不类”：对于效率优化锁来说，它不必要地重量级和昂贵，但对于正确性依赖于锁的情况来说，它不够安全。</p>
-<p>  特别是，该算法对时序和系统时钟做出了危险的假设（本质上假设同步系统具有有限的网络延迟和有限的操作执行时间），如果不满足这些假设，则会违反安全属性。此外，它缺乏生成隔离令牌的工具（保护系统免受网络延迟或暂停进程中的长时间延迟的影响）。</p>
+<p>  特别是，该算法对时序和系统时钟做出了危险的假设（本质上假设同步系统具有有限的网络延迟和有限的操作执行时间），如果不满足这些假设，则会违反安全属性。此外，它缺乏生成栅栏令牌的工具（保护系统免受网络延迟或暂停进程中的长时间延迟的影响）。</p>
 <p>  如果您仅需要尽力而为的基础上的锁（作为效率优化，而不是为了正确性），我建议坚持使用简单的 Redis 单节点锁定算法（有条件的setnx获取锁，原子删除 delete-if-value-matches 来释放锁），并在代码中非常清楚地记录这些锁只是近似的，有时可能会失败。不必费心设置五个 Redis 节点的集群。</p>
-<p>  另一方面，如果您需要锁来确保正确性，请不要使用 Redlock。相反，请使用适当的共识系统，例如 ZooKeeper，可能通过实现了锁的Curator 配方之一。（至少，使用具有合理事务保证的数据库 <a target="_blank" rel="noopener" href="https://www.postgresql.org/">PostgreSQL</a>。）并且请在锁定下的所有资源访问上强制使用隔离令牌。</p>
+<p>  另一方面，如果您需要锁来确保正确性，请不要使用 Redlock。相反，请使用适当的共识系统，例如 ZooKeeper，可能通过实现了锁的Curator 配方之一。（至少，使用具有合理事务保证的数据库 <a target="_blank" rel="noopener" href="https://www.postgresql.org/">PostgreSQL</a>。）并且请在锁定下的所有资源访问上强制使用栅栏令牌。</p>
 <p>  正如我一开始所说，如果使用得当，Redis 是一个出色的工具。上述任何一项都不会削弱 Redis 对其预期用途的实用性。Salvatore(redis的作者) 多年来一直致力于该项目，其成功是当之无愧的。 但每种工具都有局限性，了解它们并做出相应的规划非常重要。</p>
-<p>  如果您想了解更多信息，我将在<a href="https://www.goodserendipity.com/asserts/redis/Designing%20Data-Intensive%20Applications%20-%20Martin%20Kleppmann.pdf">Designing Data-Intensive Applications</a>的第 8 章和第 9 章中更详细地解释该主题，该书现已在 O’Reilly 的早期版本中提供。（上图摘自我的书。）为了学习如何使用 ZooKeeper，我推荐 Junqueira 和 Reed 的书 <a href="https://www.goodserendipity.com/asserts/zookeeper/O'Reilly.ZooKeeper.Distributed%20process%20coordination.2013.pdf">ZooKeeper: Distributed Process Coordination</a>。 为了更好地介绍分布式系统理论，我推荐 Cachin、Guerraoui 和 Rodrigues 的教科书 <a href="https://www.goodserendipity.com/asserts/redis/Introduction%20to%20Reliable%20and%20Secure%20Distributed%20Second%20Edition%202.pdf">Introduction to Reliable and Secure Distributed Programming</a>，<a target="_blank" rel="noopener" href="https://www.distributedprogramming.net/">官方链接</a>。</p>
+<p>  如果您想了解更多信息，我将在<a href="https://www.goodserendipity.com/asserts/distributed-system/Designing%20Data-Intensive%20Applications%20-%20Martin%20Kleppmann.pdf">Designing Data-Intensive Applications</a>的第 8 章和第 9 章中更详细地解释该主题，该书现已在 O’Reilly 的早期版本中提供。（上图摘自我的书。）为了学习如何使用 ZooKeeper，我推荐 Junqueira 和 Reed 的书 <a href="https://www.goodserendipity.com/asserts/zookeeper/O'Reilly.ZooKeeper.Distributed%20process%20coordination.2013.pdf">ZooKeeper: Distributed Process Coordination</a>。 为了更好地介绍分布式系统理论，我推荐 Cachin、Guerraoui 和 Rodrigues 的教科书 <a href="https://www.goodserendipity.com/asserts/distributed-system/Introduction%20to%20Reliable%20and%20Secure%20Distributed%20Second%20Edition%202.pdf">Introduction to Reliable and Secure Distributed Programming</a>，<a target="_blank" rel="noopener" href="https://www.distributedprogramming.net/">官方链接</a>。</p>
 <p>  感谢 <a target="_blank" rel="noopener" href="https://aphyr.com/">Kyle Kingsbury</a>、<a target="_blank" rel="noopener" href="https://twitter.com/skamille">Camille Fournier</a>、<a target="_blank" rel="noopener" href="https://www.camilletalk.com/">Camille Fournier的个人站点</a>、<a target="_blank" rel="noopener" href="https://cncf.pravega.io/">Flavio Junqueira</a> 和 <a target="_blank" rel="noopener" href="http://antirez.com/latest/0">Salvatore Sanfilippo</a> 审阅本文草稿。当然，任何错误都是我的。</p>
 <p>  2016 年 2 月 9 日更新:Redlock 的原作者 Salvatore 发表了对本文的反驳（另见 <a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=11065933">HN 讨论</a>）。他提出了一些很好的观点，但我坚持我的结论。 如果有时间，我可能会在后续文章中详细阐述，但请形成您自己的意见 - 并请查阅下面的参考文献，其中许多参考文献都经过了严格的学术同行评审（与我们的任何一篇博客文章不同）。</p>
+<p>  <font color="red">原文末尾有一些非常有价值的评论，可以参考。</font></p>
 
       
     </div>
@@ -389,7 +717,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/12/%E5%AE%B9%E5%99%A8/1%E3%80%81rancher/">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/12/k8s/1%E3%80%81rancher/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -403,7 +731,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/08/12/%E5%AE%B9%E5%99%A8/1%E3%80%81rancher/" class="post-title-link" itemprop="url">rancher</a>
+            <a href="/2023/08/12/k8s/1%E3%80%81rancher/" class="post-title-link" itemprop="url">rancher</a>
         </h2>
 
         <div class="post-meta">
@@ -412,17 +740,23 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-08-12 20:00:11 / Modified: 20:01:19" itemprop="dateCreated datePublished" datetime="2023-08-12T20:00:11+08:00">2023-08-12</time>
+              <time title="Created: 2023-08-12 20:00:11" itemprop="dateCreated datePublished" datetime="2023-08-12T20:00:11+08:00">2023-08-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-08-26 19:00:30" itemprop="dateModified" datetime="2023-08-26T19:00:30+08:00">2023-08-26</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">容器</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -913,157 +1247,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/10/MySQL/1%E3%80%81%E8%AE%A1%E7%AE%97B+Tree%E7%9A%84%E9%AB%98%E5%BA%A6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/10/MySQL/1%E3%80%81%E8%AE%A1%E7%AE%97B+Tree%E7%9A%84%E9%AB%98%E5%BA%A6/" class="post-title-link" itemprop="url">计算B+Tree的高度</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-08-10 12:47:12 / Modified: 13:21:43" itemprop="dateCreated datePublished" datetime="2023-08-10T12:47:12+08:00">2023-08-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>查询主键索引根页的page number</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">b.name, a.name, index_id, type, a.space, a.PAGE_NO</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">information_schema.INNODB_SYS_INDEXES a,</span><br><span class="line">information_schema.INNODB_SYS_TABLES b</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">a.table_id <span class="operator">=</span> b.table_id <span class="keyword">AND</span> a.space <span class="operator">&lt;&gt;</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">and</span> b.name <span class="keyword">like</span> <span class="string">&#x27;%XXX&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<p>hexdump查看表空间文件指定偏移量的数据</p>
-<p>查看页大小</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xfs_growfs /dev/mapper/centos-root | grep bsize</span><br><span class="line">tune2fs -l /dev/mapper/centos-root | grep Block</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/08/07/DataStructuresAndAlgorithms/43%E3%80%81DSW%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/08/07/DataStructuresAndAlgorithms/43%E3%80%81DSW%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">DSW算法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-08-07 19:38:15" itemprop="dateCreated datePublished" datetime="2023-08-07T19:38:15+08:00">2023-08-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-12 18:13:27" itemprop="dateModified" datetime="2023-08-12T18:13:27+08:00">2023-08-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  DSW算法是对已有的二叉查找树进行全局平衡的算法，二叉树中的每个节点都有可能改变位置。它的算法复杂度是O(n)，这一时间随着n线性增长，而且只需要很小且固定的存储空间。总之，DSW是一个非常优秀的对二叉树进行全局平衡的算法。<br />
-<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903750927122439?utm_source=gold_browser_extension">https://juejin.cn/post/6844903750927122439?utm_source=gold_browser_extension</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1129,7 +1316,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">72</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

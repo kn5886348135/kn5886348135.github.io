@@ -165,6 +165,194 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/18/DataStructuresAndAlgorithms/21%E3%80%81segmenttree/" class="post-title-link" itemprop="url">segmenttree</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-18 19:59:07" itemprop="dateCreated datePublished" datetime="2023-04-18T19:59:07+08:00">2023-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-28 12:23:00" itemprop="dateModified" datetime="2023-04-28T12:23:00+08:00">2023-04-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>  <a target="_blank" rel="noopener" href="https://oi-wiki.org/ds/seg/">线段树</a>可以在 O(logN) 的时间复杂度内实现单点修改、区间修改、区间查询（区间求和，求区间最大值，求区间最小值）等操作。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Segment_tree">线段树</a>可以用递归实现，也可以将递归改成迭代方式。线段树的递归深度可控，可以用于工程实践。<br />
+  线段树适用于可以根据左右节点的信息加工，并且加工的时间复杂度O(1)，不需要知道左右子树的具体信息，解决区间查询、更新类的问题的场景。<br />
+  任意数组arr的长度为n，存在k，满足2<sup>k</sup> - 1 ≤ n  ≤ 2<sup>k+1</sup> - 1。则这个数组的所有元素可以填充在高度为k+1的满二叉树叶子节点上，并且满二叉树的最下面一层最右边填充n - 2<sup>k</sup> + 1个空节点。<br />
+<img src="https://www.goodserendipity.com/asserts/data-structures-and-algorithms/segmenttree.svg" alt="segment tree" /><br />
+  lazy数组，i节点task1任务的preLeft、preRight包含<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">i \times 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>或者<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(i \times 2+1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span>节点的left、right，即preLeft ≤ left &amp;&amp; preRight ≥ right，则任务不再继续下发，否则任务下发。如果task2任务来到i节点并且i节点的task1任务没有下发，则先下发task1任务再执行task2。</p>
+<hr />
+<h3 id="线段树"><a class="markdownIt-Anchor" href="#线段树"></a> 线段树</h3>
+<p>  给定一个数组arr，实现如下三个方法，要求时间复杂度都是O(logN)</p>
+<ol>
+<li>void add(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都加上value</li>
+<li>void update(int left, int right, int value) :  让数组arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]上每个数都变成value</li>
+<li>int sum(int left, int right) :让返回arr[left <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">…</mo></mrow><annotation encoding="application/x-tex">{ \dots }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.12em;vertical-align:0em;"></span><span class="mord"><span class="minner">…</span></span></span></span></span> right]这个范围整体的累加和</li>
+</ol>
+<h3 id="积方块问题-leetcode699"><a class="markdownIt-Anchor" href="#积方块问题-leetcode699"></a> 积方块问题 LeetCode699</h3>
+<p>  简化版的俄罗斯方块游戏，X轴是积木最终下落到底的轴线</p>
+<ol>
+<li>只会下落正方形积木</li>
+<li>[a,b] -&gt; 代表一个边长为b的正方形积木，积木左边缘沿着X = a这条线从上方掉落</li>
+<li>认为整个X轴都可能接住积木，也就是说简化版游戏是没有整体的左右边界的</li>
+<li>没有整体的左右边界，所以简化版游戏不会消除积木，因为不会有哪一层被填满。</li>
+</ol>
+<p>  给定一个N <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo lspace="0em" rspace="0em">×</mo></mrow><annotation encoding="application/x-tex">{ \times }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">×</span></span></span></span></span> 2的二维数组matrix，可以代表N个积木依次掉落，返回每一次掉落之后的最大高度。</p>
+<h3 id="刷房子"><a class="markdownIt-Anchor" href="#刷房子"></a> 刷房子</h3>
+<p>  1-n有n个房子，随时可以将left-right的房子刷成56中颜色的一种，问粉刷几次后left-right有多少种颜色？<br />
+  long类型的二进制位表示56中颜色，左子树|右子树就是当前节点的颜色数量。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/20%E3%80%81morris/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Louis">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="缘分天注定">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/04/18/DataStructuresAndAlgorithms/20%E3%80%81morris/" class="post-title-link" itemprop="url">morris</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-18 19:58:18" itemprop="dateCreated datePublished" datetime="2023-04-18T19:58:18+08:00">2023-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-26 08:42:36" itemprop="dateModified" datetime="2023-04-26T08:42:36+08:00">2023-04-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="morris遍历算法"><a class="markdownIt-Anchor" href="#morris遍历算法"></a> Morris遍历算法</h4>
+<p>  一种遍历二叉树的方式，并且时间复杂度O(N)，额外空间复杂度O(1)。通过利用原树中大量空闲指针的方式，达到节省空间的目的。如果要求获得左树和右树的信息，必须使用二叉树的递归解决，否则可以使用morris遍历解决。第一次遍历的时候将左子树的最右子节点指向当前节点，第二次遍历的时候将左子树的最右子节点指向null。morris遍历的实质是对于没有左子树的节点只到达一次，对于有左子树的节点会到达两次。</p>
+<h4 id="morris遍历细节"><a class="markdownIt-Anchor" href="#morris遍历细节"></a> Morris遍历细节</h4>
+<p>  假设来到当前节点cur，开始时cur来到头节点位置</p>
+<ol>
+<li>如果cur没有左孩子，cur向右移动(cur = cur.right)</li>
+<li>如果cur有左孩子，找到左子树上最右的节点mostRight
+<ul>
+<li>a.如果mostRight的右指针指向空，让其指向cur，然后cur向左移动(cur = cur.left)</li>
+<li>b.如果mostRight的右指针指向cur，让其指向null，然后cur向右移动(cur = cur.right)</li>
+</ul>
+</li>
+<li>cur为空时遍历停止</li>
+</ol>
+<hr />
+<h5 id="二叉树最小深度"><a class="markdownIt-Anchor" href="#二叉树最小深度"></a> 二叉树最小深度</h5>
+<p>  给定一棵二叉树的头节点head，求以head为头的树中，最小深度是多少？</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/18/DataStructuresAndAlgorithms/18%E3%80%81bfprt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1105,253 +1293,10 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/13/DataStructuresAndAlgorithms/10%E3%80%81%E5%9B%BE/" class="post-title-link" itemprop="url">图</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-13 22:11:32" itemprop="dateCreated datePublished" datetime="2023-04-13T22:11:32+08:00">2023-04-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-08-13 00:06:21" itemprop="dateModified" datetime="2023-08-13T00:06:21+08:00">2023-08-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  交通运输、社交网络、互联网、工作安排、脑区活动、程序状态执行等场景可以使用图这种数据结构。常用的图算法有网络拓扑排序、OSPF路由协议(最短路径)、最小生成树、网络流建模(最大流、dinic)、游戏开发中的路径搜索算法(BFS、DFS、A*)、导航软件(最短路径、路径搜索算法)、网络bridge的STP协议用到最小生成树算法、网页排名的PageRank算法。</p>
-<h4 id="图的概念"><a class="markdownIt-Anchor" href="#图的概念"></a> 图的概念</h4>
-<ul>
-<li>由点的集合和边的集合构成</li>
-<li>虽然存在有向图和无向图的概念，但实际上都可以用有向图来表达</li>
-<li>边上可能带有权值</li>
-</ul>
-<p>  图的表示方法邻接表法、邻接矩阵法等。题目会以各种方式给出图的表达方式，可以将它转化为一种熟悉的表达方式，方便操作。可以将图表示为节点和边的集合，例如Graph。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Graph</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> Map&lt;Integer, Node&gt; nodes;</span><br><span class="line">    <span class="keyword">public</span> Set&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Graph</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.nodes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="built_in">this</span>.edges = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="comment">// 节点值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> value;</span><br><span class="line">    <span class="comment">// 入度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> in;</span><br><span class="line">    <span class="comment">// 出度</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> out;</span><br><span class="line">    <span class="comment">// 相邻节点</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Node&gt; nexts;</span><br><span class="line">    <span class="comment">// 节点的边</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Edge&gt; edges;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.value = value;</span><br><span class="line">        in = <span class="number">0</span>;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">        nexts = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        edges = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="comment">// 边的权重</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> weight;</span><br><span class="line">    <span class="comment">// 边的起始节点</span></span><br><span class="line">    <span class="keyword">public</span> Node from;</span><br><span class="line">    <span class="comment">// 边的结束节点</span></span><br><span class="line">    <span class="keyword">public</span> Node to;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Edge</span><span class="params">(<span class="type">int</span> weight, Node from, Node to)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.weight = weight;</span><br><span class="line">        <span class="built_in">this</span>.from = from;</span><br><span class="line">        <span class="built_in">this</span>.to = to;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="宽度优先遍历"><a class="markdownIt-Anchor" href="#宽度优先遍历"></a> 宽度优先遍历</h4>
-<ul>
-<li>利用队列实现(也可以使用栈实现)</li>
-<li>从源节点开始依次按照宽度进队列，然后弹出</li>
-<li>每弹出一个点，把该节点所有没有进过队列的邻接点放入队列</li>
-<li>直到队列变空</li>
-</ul>
-<h4 id="深度优先遍历"><a class="markdownIt-Anchor" href="#深度优先遍历"></a> 深度优先遍历</h4>
-<ul>
-<li>利用栈实现(也可以用队列实现)</li>
-<li>从源节点开始把节点按照深度放入栈，然后弹出</li>
-<li>每弹出一个点，把该节点下一个没有进过栈的邻接点放入栈</li>
-<li>直到栈变空</li>
-</ul>
-<h4 id="拓扑排序"><a class="markdownIt-Anchor" href="#拓扑排序"></a> 拓扑排序</h4>
-<p>  拓扑排序要求有向无环图，拓扑排序结果不唯一，可以用宽度优先遍历和深度优先遍历实现。应用场景有事件安排、编译顺序等</p>
-<ul>
-<li>在图中找到所有入度为0的点输出</li>
-<li>把所有入度为0的点在图中删掉，继续找入度为0的点输出，周而复始</li>
-<li>图的所有点都被删除后，依次输出的顺序就是拓扑排序</li>
-</ul>
-<h4 id="最小生成树无向图"><a class="markdownIt-Anchor" href="#最小生成树无向图"></a> 最小生成树(无向图)</h4>
-<p>  <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91">最小生成树</a>要求无向图，可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Kruskal</a>和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Prim</a>算法实现，Kruskal和Prim都是贪心算法。</p>
-<h4 id="kruskal算法使用并查集"><a class="markdownIt-Anchor" href="#kruskal算法使用并查集"></a> Kruskal算法使用并查集</h4>
-<ul>
-<li>总是从权值最小的边开始考虑，依次考察权值依次变大的边</li>
-<li>当前的边要么进入最小生成树的集合，要么丢弃</li>
-<li>如果当前的边进入最小生成树的集合中不会形成环，就要当前边</li>
-<li>如果当前的边进入最小生成树的集合中会形成环，就不要当前边</li>
-<li>考察完所有边之后，最小生成树的集合也得到了</li>
-</ul>
-<h4 id="prim算法"><a class="markdownIt-Anchor" href="#prim算法"></a> Prim算法</h4>
-<ol>
-<li>可以从任意节点出发来寻找最小生成树</li>
-<li>某个点加入到被选取的点中后，解锁这个点出发的所有新的边</li>
-<li>在所有解锁的边中选最小的边，然后看看这个边会不会形成环</li>
-<li>如果会，不要当前边，继续考察剩下解锁的边中最小的边，重复3</li>
-<li>如果不会，要当前边，将该边的指向点加入到被选取的点中，重复2</li>
-<li>当所有点都被选取，最小生成树就得到了</li>
-</ol>
-<h4 id="最短路径算法"><a class="markdownIt-Anchor" href="#最短路径算法"></a> 最短路径算法</h4>
-<p>  可以使用<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra</a>算法实现最短路径。</p>
-<h4 id="迪瑞克斯拉算法有向-无负权重-可以有环"><a class="markdownIt-Anchor" href="#迪瑞克斯拉算法有向-无负权重-可以有环"></a> 迪瑞克斯拉算法(有向、无负权重、可以有环)</h4>
-<ol>
-<li>Dijkstra算法必须指定一个源点</li>
-<li>生成一个源点到各个点的最小距离表，一开始只有一条记录，即原点到自己的最小距离为0，源点到其他所有点的最小距离都为正无穷大</li>
-<li>从距离表中拿出没拿过记录里的最小记录，通过这个点发出的边，更新源点到各个点的最小距离表，不断重复这一步</li>
-<li>源点到所有的点记录如果都被拿过一遍，过程停止，最小距离表得到了</li>
-</ol>
-<h4 id="dijkstral算法优化"><a class="markdownIt-Anchor" href="#dijkstral算法优化"></a> Dijkstral算法优化</h4>
-<p>  利用加强堆<br />
-  某个节点最短距离改变时做动态调整</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://www.goodserendipity.com/2023/04/12/DataStructuresAndAlgorithms/9%E3%80%81%E5%B9%B6%E6%9F%A5%E9%9B%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Louis">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="缘分天注定">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/12/DataStructuresAndAlgorithms/9%E3%80%81%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="post-title-link" itemprop="url">并查集</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-04-12 21:33:07" itemprop="dateCreated datePublished" datetime="2023-04-12T21:33:07+08:00">2023-04-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-04-14 03:32:52" itemprop="dateModified" datetime="2023-04-14T03:32:52+08:00">2023-04-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>  在计算机科学中，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">并查集</a>（英文：Disjoint-set data structure，直译为不交集数据结构）是一种数据结构，用于处理一些不交集（Disjoint sets，一系列没有重复元素的集合）的合并及查询问题。<br />
-  解决两大块区域的合并问题，常用在图等领域中。<br />
-<br /></p>
-<h4 id="并查集的模型"><a class="markdownIt-Anchor" href="#并查集的模型"></a> 并查集的模型</h4>
-<ul>
-<li>有若干个样本a、b、c、d…类型假设是V</li>
-<li>在并查集中一开始认为每个样本都在单独的集合里</li>
-<li>用户可以在任何时候调用如下两个方法：
-<ul>
-<li>boolean isSameSet(V x, V y) : 查询样本x和样本y是否属于一个集合</li>
-<li>void union(V x, V y) : 把x和y各自所在集合的所有样本合并成一个集合</li>
-</ul>
-</li>
-<li>isSameSet和union方法的代价越低越好</li>
-</ul>
-<h4 id="合并"><a class="markdownIt-Anchor" href="#合并"></a> 合并</h4>
-<p>  合并操作是将两个并查集指向同一个代表节点，而不是将两个集合放到一个新的集合中。可以使用map或者数组实现合并操作。数组实现的合并操作在常数项时间复杂度更有优势。小集合挂在大集合的下面，可以减少路径压缩操作。</p>
-<h4 id="查询"><a class="markdownIt-Anchor" href="#查询"></a> 查询</h4>
-<p>  从下往上递归查找代表节点，并处理路径压缩。可以借助Stack或者数组处理路径压缩。</p>
-<h4 id="并查集的特点"><a class="markdownIt-Anchor" href="#并查集的特点"></a> 并查集的特点</h4>
-<ul>
-<li>每个节点都有一条往上指的指针</li>
-<li>节点a往上找到的头节点，叫做a所在集合的代表节点</li>
-<li>查询x和y是否属于同一个集合，就是看看找到的代表节点是不是一个</li>
-<li>把x和y各自所在集合的所有点合并成一个集合，只需要小集合的代表点挂在大集合的代表点的下方</li>
-<li>如果方法调用很频繁，那么单次调用的时间复杂度为O(1)</li>
-</ul>
-<hr />
-<h5 id="leetcode547-friend-circles"><a class="markdownIt-Anchor" href="#leetcode547-friend-circles"></a> LeetCode547 Friend Circles</h5>
-<p>  使用并查集合并，最后返回子集的个数</p>
-<h5 id="leetcode200-number-of-islands"><a class="markdownIt-Anchor" href="#leetcode200-number-of-islands"></a> LeetCode200 Number of Islands</h5>
-<p>  给定一个二维数组matrix，里面的值不是1就是0，上、下、左、右相邻的1认为是一片岛，返回matrix中岛的数量。<br />
-  合并、查询，暴力循环(上下左右递归感染)、使用map实现并查集、使用数组实现并查集</p>
-<h5 id="leetcode305-number-of-islands-ii"><a class="markdownIt-Anchor" href="#leetcode305-number-of-islands-ii"></a> LeetCode305 Number of Islands II</h5>
-<h5 id="岛问题扩展"><a class="markdownIt-Anchor" href="#岛问题扩展"></a> 岛问题扩展</h5>
-<p>  如果matrix极大，设计一种可行的并行计算方案??</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1417,7 +1362,7 @@ a_{11} &amp; 0      &amp; \cdots &amp; 0 \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">72</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
